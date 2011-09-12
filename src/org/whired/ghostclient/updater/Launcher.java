@@ -23,7 +23,7 @@ public class Launcher
 	/** Where the packages are save */
 	private static final String LOCAL_CODEBASE = System.getProperty("user.home") + "/.ghost/";
 	/** The first version of this program */
-	private static final String FIRST_PACKAGE = "ghost0-0-0.jar";
+	private static final String FIRST_PACKAGE = "ghostclient0-0-0.jar";
 
 	public static void main(String[] args) throws URISyntaxException, IOException
 	{
@@ -55,7 +55,7 @@ public class Launcher
 						String pathToJar = LOCAL_CODEBASE + (newestLocPkg != null ? newestLocPkg : FIRST_PACKAGE);
 						System.out.println(pathToJar);
 
-						final String pkgName = pathToJar.substring(pathToJar.lastIndexOf("/ghost") + 1, pathToJar.length());
+						final String pkgName = pathToJar.substring(pathToJar.lastIndexOf("/ghostclient") + 1, pathToJar.length());
 						String newPkg = null;
 						form.log("Checking for update..");
 						try
@@ -150,7 +150,7 @@ public class Launcher
 				major++;
 			}
 		}
-		return "ghost" + major + "-" + minor + "-" + rev + ".jar";
+		return "ghostclient" + major + "-" + minor + "-" + rev + ".jar";
 	}
 
 	/**
@@ -244,6 +244,6 @@ public class Launcher
 	 */
 	private static String[] getVersionParts(String pkgName)
 	{
-		return pkgName.replace("ghost", "").replace(".jar", "").split("-");
+		return pkgName.replace("ghostclient", "").replace(".jar", "").split("-");
 	}
 }
