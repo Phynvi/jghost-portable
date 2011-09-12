@@ -928,7 +928,8 @@ public class RSMap extends RSCanvas implements PaintObserver
 		byte abyte0[] = null;
 		System.out.print("RES: ");
 		System.out.println(this.getClass().getResource("/org/whired/rsmap/io/worldmap.dat").getPath());
-		abyte0 = FileOperations.ReadFile(this.getClass().getResource("/org/whired/rsmap/io/worldmap.dat").getPath());
+
+		abyte0 = FileOperations.ReadFile(this.getClass().getResourceAsStream("/org/whired/rsmap/io/worldmap.dat"));
 		return new CacheLoader(abyte0);
 	}
 

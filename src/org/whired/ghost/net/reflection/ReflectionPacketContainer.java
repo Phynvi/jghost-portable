@@ -10,7 +10,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 /**
- * Simple container for ArrayList<Accessor> to be serialized and deserialized
+ * Simple container for {@code ArrayList<Accessor>} to be serialized and deserialized
  *
  * @author Whired
  */
@@ -24,7 +24,7 @@ public class ReflectionPacketContainer implements java.io.Serializable
 	/**
 	 * Creates a new instance of ReflectionPacketContainer
 	 *
-	 * @param accessorChain the chain of <code>Accessor</code>s to contain
+	 * @param accessorChain the chain of accessors to contain
 	 */
 	public ReflectionPacketContainer(String packetName, ArrayList<Accessor> accessorChain)
 	{
@@ -33,9 +33,9 @@ public class ReflectionPacketContainer implements java.io.Serializable
 	}
 
 	/**
-	 * Saves the specified chain of <code>Accessor</code>s to the local disk
+	 * Saves the specified chain of accessors to the local disk
 	 *
-	 * @param accessorChain the chain of <code>Accessor</code>s to save
+	 * @param accessorChain the chain of accessors to save
 	 */
 	public static void saveContainer(ReflectionPacketContainer c) throws java.io.IOException
 	{
@@ -60,7 +60,7 @@ public class ReflectionPacketContainer implements java.io.Serializable
 	 * @return the chain of accessors that was loaded
 	 *
 	 * @throws java.io.IOException if the file could not be found
-	 * @throws ClassNotFoundException when the loaded object can not  be cast to <code>ArrayList<Accessor></code>
+	 * @throws ClassNotFoundException when the loaded object can not  be cast to {@code ArrayList<Accessor>}
 	 */
 	public static ReflectionPacketContainer loadContainer(String packetName) throws java.io.IOException, ClassNotFoundException
 	{
@@ -71,8 +71,8 @@ public class ReflectionPacketContainer implements java.io.Serializable
 	}
 
 	/**
-	 * Loads all containers that reside in <code>SAVE_DIR</code>
-	 * 
+	 * Loads all containers that might be saved to the local disk
+	 *
 	 * @return the list of containers that were loaded
 	 */
 	public static ArrayList<ReflectionPacketContainer> loadAllContainers()
@@ -98,12 +98,12 @@ public class ReflectionPacketContainer implements java.io.Serializable
 		}
 		return list;
 	}
-	
+
 	public static void invoke(ReflectionPacketContainer container, Connection connection)
 	{
 		invoke(container.accessorChain, connection);
 	}
-	
+
 	public static void invoke(ArrayList<Accessor> accessorChain, Connection connection)
 	{
 		connection.sendPacket(5, accessorChain, true);

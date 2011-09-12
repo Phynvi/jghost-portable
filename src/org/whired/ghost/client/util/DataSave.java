@@ -23,7 +23,7 @@ public class DataSave implements Serializable
 		DataSave ds = null;
 		try
 		{
-			ObjectInputStream obj = new ObjectInputStream(new FileInputStream(new File("Settings.NS")));
+			ObjectInputStream obj = new ObjectInputStream(new FileInputStream(new File(System.getProperty("user.home") + "/.ghost/Settings.NS")));
 			ds = (DataSave) obj.readObject();
 			obj.close();
 		}
@@ -36,6 +36,12 @@ public class DataSave implements Serializable
 		}
 		Vars.setDebug(ds.debugOn);
 		return ds;
+	}
+
+	public static void saveSettings() throws FileNotFoundException, IOException
+	{
+		ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(System.getProperty("user.home") + "/.ghost/Settings.NS"));
+		obj.writeObject(getSettings());
 	}
 
 	/**
