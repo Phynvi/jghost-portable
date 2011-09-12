@@ -163,8 +163,18 @@ public class Connection implements SessionManager
 
 	/**
 	 * Sends a packet with the specified id and payload
+	 * <p>
+	 * An example usage of this method might look like this:
+	 * <pre><code>
+	 * sendPacket(77, player.getName(), player.getIP());
+	 * // Or
+	 * sendPacket(15, player.getName(), player.getSkillLevel(0), player.getSkillLevel(1), player.getSkillLevel(2));
+	 * </code></pre>
+	 *
+	 * Alternatively, {@link org.whired.ghost.net.packet.GhostPacket} can be extended to make this process easier.
+	 * </p>
 	 * @param packetId the id of the packet to send
-	 * @param data the data, in correct order, separated by commas, to send
+	 * @param data the data (in correct order, separated by commas) to send
 	 */
 	public void sendPacket(int packetId, Object... data)
 	{
