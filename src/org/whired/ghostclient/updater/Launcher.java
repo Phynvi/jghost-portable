@@ -21,7 +21,7 @@ public class Launcher
 	//private static final String REMOTE_CODEBASE = "https://raw.github.com/Whired/jghost-portable/master/dist/"; // Stable branch
 	private static final String REMOTE_CODEBASE = "https://raw.github.com/Whired/jghost-portable/master/dist/dev/"; // Dev branch
 	/** Where the packages are save */
-	private static final String LOCAL_CODEBASE = System.getProperty("user.home") + "/.ghost/";
+	private static final String LOCAL_CODEBASE = System.getProperty("user.home") + "/.ghost/cache/";
 	/** The first version of this program */
 	private static final String FIRST_PACKAGE = "ghostclient0-0-0.jar";
 
