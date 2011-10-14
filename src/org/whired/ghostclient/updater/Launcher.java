@@ -48,13 +48,17 @@ public class Launcher implements Runnable {
 			String remoteHash = getRemoteHash(REMOTE_CODEBASE + PACKAGE_NAME);
 			String localHash = getLocalHash(LOCAL_CODEBASE + PACKAGE_NAME);
 			boolean match = remoteHash.toLowerCase().equals(localHash.toLowerCase());
-			form.log("Expected hash: " + remoteHash);
-			form.log("Local hash: " + localHash);
+			form.log("Remote: " + remoteHash.substring(remoteHash.length()/2));
+			form.log("Local: " + localHash.substring(localHash.length()/2));
 			while (!match) {
-				form.log("Downloading version for "+remoteHash+"..");
+				form.log("Hash mismatch.");
+				form.log("Downloading new version..");
 				HttpClient.saveToDisk(LOCAL_CODEBASE + PACKAGE_NAME, REMOTE_CODEBASE + PACKAGE_NAME);
-				form.log("Newest version downloaded. Checking sanity..");
+				localHash = getLocalHash(LOCAL_CODEBASE + PACKAGE_NAME);
+				form.log("Newest version downloaded.");
+				form.log("Checking sanity..");
 				match = remoteHash.toLowerCase().equals(localHash.toLowerCase());
+				break;
 			}
 			form.log("Hashes match, GHOST is up-to-date!");
 			form.log("Attempting to launch..");
@@ -63,7 +67,7 @@ public class Launcher implements Runnable {
 				pb.start();
 				form.log("Exiting..");
 				try {
-					Thread.sleep(4000);
+					Thread.sleep(8000);
 				}
 				catch (InterruptedException ex) {}
 				System.exit(0);
