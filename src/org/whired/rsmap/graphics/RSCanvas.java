@@ -105,7 +105,7 @@ public abstract class RSCanvas extends Component implements Runnable, MouseWheel
 		charQueue = new int[128];
 		readIndex = 0;
 		writeIndex = 0;
-		graphics = getGraphics();
+		graphics = null;//getGraphics();
 
 		addMouseListener(new MouseAdapter()
 		{
@@ -477,37 +477,11 @@ public abstract class RSCanvas extends Component implements Runnable, MouseWheel
 		anInt184 = endY / 2;
 	}
 
-	// TODO make signature drawButton(MapButton button)
-	/**
-	 * Draws a button
-	 * @param buttonX the x-coordinate of the button
-	 * @param buttonY the y-coordinate of the button
-	 * @param buttonWidth the width of the button
-	 * @param buttonHeight the height of the button
-	 * @param buttonHexRGB the color of the button
-	 * @param borderHexRGB the color of the border
-	 * @param text the text to display
-	 * @param textRenderer the renderer to use
-	 */
-	public void drawButton(int buttonX, int buttonY, int buttonWidth, int buttonHeight, int buttonHexRGB, int borderHexRGB, String text, TextRenderer textRenderer)
-	{
-		int i1 = borderHexRGB;
-		drawRect(buttonX, buttonY, buttonWidth, buttonHeight, 0);
-		buttonX++;
-		buttonY++;
-		buttonWidth -= 2;
-		buttonHeight -= 2;
-		fillColor(pixels, new Dimension(getWidth(), getHeight()), buttonX, buttonY, buttonWidth, buttonHeight, buttonHexRGB);
-		drawHorizontalLine(buttonX, buttonY, buttonWidth, i1);
-		drawVerticalLine(buttonX, buttonY, buttonHeight, i1);
-		drawHorizontalLine(buttonX, (buttonY + buttonHeight) - 1, buttonWidth, borderHexRGB);
-		drawVerticalLine((buttonX + buttonWidth) - 1, buttonY, buttonHeight, borderHexRGB);
-		textRenderer.renderText(text, buttonX + buttonWidth / 2 + 1, buttonY + buttonHeight / 2 + 1 + 4, 0);
-		textRenderer.renderText(text, buttonX + buttonWidth / 2, buttonY + buttonHeight / 2 + 4, 0xffffff);
-	}
-
-	// Time to improve!
 	// TODO give Button a foreground (text) color
+	/**
+	 * Draws the given button
+	 * @param button the button to draw
+	 */
 	public void drawButton(MapButton button)
 	{
 		fillColor(pixels, new Dimension(getWidth(), getHeight()), button.getX(), button.getY(), button.getWidth(), button.getHeight(), button.getBackgroundColor());
@@ -527,10 +501,13 @@ public abstract class RSCanvas extends Component implements Runnable, MouseWheel
 	 */
 	public abstract void process();
 	/** Used for explicit drawing */
-	private Graphics graphics;
+	public Graphics graphics;
 
+	@Override
 	public void update(Graphics g)
 	{
+		System.out.println("Update called..");
+		graphics = g;
 		if (graphics == null)
 		{
 			graphics = g;
@@ -542,6 +519,7 @@ public abstract class RSCanvas extends Component implements Runnable, MouseWheel
 		catch (NullPointerException e)
 		{
 			System.out.println("Draw error: " + e.toString());
+			e.printStackTrace();
 		}
 		shouldClearScreen = true;
 		cyclesUntilPaint = 0;
@@ -554,6 +532,25 @@ public abstract class RSCanvas extends Component implements Runnable, MouseWheel
 	 */
 	public final void paint(Graphics g)
 	{
+		try
+		{
+			// Okay so this works and never throws an exception..
+			// Why does the other method not use the right Graphics object?
+			System.out.println("Given graphics equal to getGraphics? "+(g == getGraphics()));
+			this.graphics = g;
+			if(g != null)
+			{
+				System.out.println("Are given graphics equal to instance graphics? "+(g == this.graphics));
+				g.drawString("Test", 20, 20);
+				System.out.println("Paint graphics object: "+g);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		//graphics = g;
+		//System.out.println("Paint called...");
 		if (graphics == null)
 		{
 			graphics = g;
@@ -1481,7 +1478,7 @@ public abstract class RSCanvas extends Component implements Runnable, MouseWheel
 		while (graphics == null)
 		{
 			System.out.println("Graphics are null..");
-			graphics = getGraphics();
+			//graphics = getGraphics(); // TODO Is this messing drawing up?
 			System.out.println("getSize: "+getWidth()+", "+getHeight());
 			try
 			{

@@ -10,6 +10,7 @@ import java.awt.image.PixelGrabber;
 import org.whired.rsmap.graphics.RSCanvas;
 
 /**
+ * Represents a string of text that can be drawn on the map
  *
  * @author Whired
  */

@@ -40,6 +40,8 @@ public class DataSave implements Serializable
 
 	public static void saveSettings() throws FileNotFoundException, IOException
 	{
+		File f = new File(System.getProperty("user.home") + "/.ghost/");
+		if(!f.exists()) f.mkdirs();
 		ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(System.getProperty("user.home") + "/.ghost/Settings.NS"));
 		obj.writeObject(getSettings());
 	}

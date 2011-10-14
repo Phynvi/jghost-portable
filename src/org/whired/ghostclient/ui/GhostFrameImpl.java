@@ -25,6 +25,7 @@ import org.whired.ghost.net.reflection.ReflectionPacketContainer;
  */
 public class GhostFrameImpl extends GhostFrameUI
 {
+
 	public GhostFrameImpl()
 	{
 		initCommands();
@@ -60,6 +61,15 @@ public class GhostFrameImpl extends GhostFrameUI
 				getUser().getSettings().getPlayer().setRights(Integer.parseInt(args[0]));
 			}
 		});
+		CommandHandler.addCommand(new Command("setname")
+		{
+
+			@Override
+			public void handle(String[] args)
+			{
+				getUser().getSettings().getPlayer().setName(args[0]);
+			}
+		});
 		CommandHandler.addCommand(new Command("pm")
 		{
 
@@ -67,9 +77,9 @@ public class GhostFrameImpl extends GhostFrameUI
 			public void handle(String[] args)
 			{
 				String message = "";
-				for(int i = 1; i < args.length; i++)
+				for (int i = 1; i < args.length; i++)
 				{
-					message += args[i]+" ";
+					message += args[i] + " ";
 				}
 				displayPrivateChat(getUser().getSettings().getPlayer(), new Player(args[0], 0), message);
 			}
@@ -80,7 +90,20 @@ public class GhostFrameImpl extends GhostFrameUI
 			@Override
 			public void handle(String[] args)
 			{
-				if (args.length > 0 && args[0] != null)
+				if (args == null)
+				{
+					String[] con = getUser().getSettings().defaultConnect;
+					try
+					{
+						setConnection(ClientConnection.connect(con[0], Integer.parseInt(con[1]), con[2], GhostFrameImpl.this));
+					}
+					catch (Exception e)
+					{
+						Vars.getLogger().warning("Unable to connect to " + con[0] + ":" + con[1]+" - "+e.toString());
+						Vars.getLogger().fine(e.getMessage());
+					}
+				}
+				else if (args.length > 0 && args[0] != null)
 				{
 					if (args.length > 1 && args[1] != null)
 					{
@@ -212,7 +235,7 @@ public class GhostFrameImpl extends GhostFrameUI
 				StyleConstants.setBold(pmOutput.getInputAttributes(), true);
 				pmOutput.getStyledDocument().insertString(pmOutput.getStyledDocument().getLength(), sender.getName(), pmOutput.getInputAttributes());
 				pmOutput.getStyledDocument().insertString(pmOutput.getStyledDocument().getLength(), " to ", null);
-				if(recipient.getRights() > 0)
+				if (recipient.getRights() > 0)
 				{
 					StyleConstants.setIcon(iconOnly, recpIcon);
 					pmOutput.getStyledDocument().insertString(pmOutput.getStyledDocument().getLength(), "dummytext", iconOnly);

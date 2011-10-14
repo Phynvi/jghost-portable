@@ -81,15 +81,28 @@ public class Server implements Runnable
 	 */
 	public Server(int port, Receivable receivable, String passPhrase) throws IOException, IllegalArgumentException
 	{
-		if (((passPhrase.length() < 6) && (!passPhrase.contains("[^A-Za-z]"))) || (passPhrase.length() < 12))
+		// TODO Use regex
+		boolean canBeShort = false;
+		for (char c : passPhrase.toCharArray())
+		{
+			if (!Character.isLetter(c))
+			{
+				canBeShort = true;
+				break;
+			}
+		}
+		if (((passPhrase.length() >= 6) && canBeShort) || (passPhrase.length() >= 12))
+		{
+			this.PORT_NUM = port;
+			this.receivable = receivable;
+			this.passPhrase = passPhrase;
+			this.ssock = new ServerSocket(this.PORT_NUM);
+			new Thread(this, "ServerAccepter").start();
+		}
+		else
 		{
 			throw new IllegalArgumentException("Password must be at least 6 characters with symbols/numerals or 12 characters without.");
 		}
-		this.PORT_NUM = port;
-		this.receivable = receivable;
-		this.passPhrase = passPhrase;
-		this.ssock = new ServerSocket(this.PORT_NUM);
-		new Thread(this, "ServerAccepter").start();
 	}
 
 	public void run()

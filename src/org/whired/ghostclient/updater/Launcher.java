@@ -1,11 +1,8 @@
 package org.whired.ghostclient.updater;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.logging.Level;
+import java.io.*;
+import java.security.MessageDigest;
 import javax.swing.SwingUtilities;
-import org.whired.ghost.Vars;
 import org.whired.ghostclient.updater.io.HttpClient;
 import org.whired.ghostclient.updater.ui.UpdaterForm;
 
@@ -14,236 +11,138 @@ import org.whired.ghostclient.updater.ui.UpdaterForm;
  *
  * @author Whired
  */
-public class Launcher
-{
+public class Launcher implements Runnable {
 
-	/** Where the packages are hosted */
-	//private static final String REMOTE_CODEBASE = "https://raw.github.com/Whired/jghost-portable/master/dist/"; // Stable branch
-	private static final String REMOTE_CODEBASE = "https://raw.github.com/Whired/jghost-portable/master/dist/dev/"; // Dev branch
-	/** Where the packages are save */
+	/**
+	 * The name of the package
+	 */
+	private static final String PACKAGE_NAME = "ghostclient.jar";
+	/**
+	 * Where the packages are hosted
+	 */
+	private static final String REMOTE_CODEBASE = "https://raw.github.com/Whired/jghost-portable/master/dist/dev/"; // Stable branch
+	/**
+	 * Where the packages are saved
+	 */
 	private static final String LOCAL_CODEBASE = System.getProperty("user.home") + "/.ghost/cache/";
-	/** The first version of this program */
-	private static final String FIRST_PACKAGE = "ghostclient0-0-0.jar";
+	/**
+	 * The GUI to display output on
+	 */
+	private final UpdaterForm form;
 
-	public static void main(String[] args) throws URISyntaxException, IOException
-	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
+	/**
+	 * Creates a new launcher for the given form
+	 * @param form the form to display output to
+	 */
+	public Launcher(UpdaterForm form) {
+		this.form = form;
+	}
+	
+	public void run() {
+		form.log("Preparing system..");
+		File f = new File(LOCAL_CODEBASE);
+		if(!f.exists())
+			f.mkdirs();
+		form.log("Grabbing file version..");
+		try {
+			String remoteHash = getRemoteHash(REMOTE_CODEBASE + PACKAGE_NAME);
+			String localHash = getLocalHash(LOCAL_CODEBASE + PACKAGE_NAME);
+			boolean match = remoteHash.toLowerCase().equals(localHash.toLowerCase());
+			form.log("Expected hash: " + remoteHash);
+			form.log("Local hash: " + localHash);
+			while (!match) {
+				form.log("Downloading version for "+remoteHash+"..");
+				HttpClient.saveToDisk(LOCAL_CODEBASE + PACKAGE_NAME, REMOTE_CODEBASE + PACKAGE_NAME);
+				form.log("Newest version downloaded. Checking sanity..");
+				match = remoteHash.toLowerCase().equals(localHash.toLowerCase());
+			}
+			form.log("Hashes match, GHOST is up-to-date!");
+			form.log("Attempting to launch..");
+			try {
+				ProcessBuilder pb = new ProcessBuilder("java", "-classpath", LOCAL_CODEBASE + PACKAGE_NAME, "org.whired.ghostclient.Main");
+				pb.start();
+				form.log("Exiting..");
+				try {
+					Thread.sleep(4000);
+				}
+				catch (InterruptedException ex) {}
+				System.exit(0);
+			}
+			catch (IOException e) {
+				form.log("Unable to launch GHOST: " + e.toString());
+			}
+		}
+		catch (IOException ex) {
+			form.log("Unable to update: "+(ex.getMessage() == null ? "Hash not available" : ex.getMessage()));
+		}
+	}
 
-			public void run()
-			{
+	/**
+	 * Gets the hash from the file at the specified url
+	 * @param url the url of the file to get the hash of
+	 * @return the hash that was read
+	 */
+	private String getRemoteHash(String url) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(HttpClient.getStream(url + ".MD5")));
+		StringBuilder sb = new StringBuilder();
+		String line;
+		while ((line = br.readLine()) != null)
+			sb.append(line);
+		return sb.toString();
+	}
+
+	/**
+	 * Gets the hash from the file at the given path
+	 * @param path the path to the file
+	 * @return the hash of the file
+	 */
+	private String getLocalHash(String path) {
+		BufferedInputStream bis = null;
+		try {
+			File file = new File(path);
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			int bytesRead;
+			byte[] buffer = new byte[1024];
+			bis = new BufferedInputStream(new FileInputStream(file));
+			while ((bytesRead = bis.read(buffer)) != -1)
+				md.update(buffer, 0, bytesRead);
+			bis.close();
+			return toHexString(md.digest());
+		}
+		catch (Exception ex) {} // Swallow irrelevant exceptions
+		finally {
+			try {
+				bis.close();
+			}
+			catch (IOException ex) {}
+		}
+		return null;
+	}
+
+	/**
+	 * Converts an array of bytes to a hexidecimal string
+	 * @param bytes the bytes to convert
+	 * @return the resulting string
+	 */
+	public static String toHexString(byte[] bytes) {
+		char[] hexArray = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+		char[] hexChars = new char[bytes.length * 2];
+		int v;
+		for (int j = 0; j < bytes.length; j++) {
+			v = bytes[j] & 0xFF;
+			hexChars[j * 2] = hexArray[v / 16];
+			hexChars[j * 2 + 1] = hexArray[v % 16];
+		}
+		return new String(hexChars);
+	}
+	
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			public void run() {
 				final UpdaterForm form = new UpdaterForm();
-				new Thread(new Runnable()
-				{
-
-					@Override
-					public void run()
-					{
-						// Find the latest local codebase, if any
-						File base = new File(LOCAL_CODEBASE);
-						String newestLocPkg = null;
-						if (!base.exists())
-						{
-							base.mkdirs();
-						}
-						File[] locPkgs = base.listFiles();
-						if (locPkgs != null && locPkgs.length > 0)
-						{
-							newestLocPkg = findNewest(locPkgs);
-						}
-
-						String pathToJar = LOCAL_CODEBASE + (newestLocPkg != null ? newestLocPkg : FIRST_PACKAGE);
-						System.out.println(pathToJar);
-
-						final String pkgName = pathToJar.substring(pathToJar.lastIndexOf("/ghostclient") + 1, pathToJar.length());
-						String newPkg = null;
-						form.log("Checking for update..");
-						try
-						{
-							// Check for update
-							if (!doesExist(pkgName))
-							{
-								form.log("Update found for " + pkgName + ".");
-
-								newPkg = getNextPackage(pkgName);
-								while (!doesExist(newPkg))
-								{
-									form.log(newPkg + " not found.");
-									newPkg = getNextPackage(newPkg);
-								}
-								form.log("New package found: " + newPkg);
-								form.log("Downloading..");
-								HttpClient.saveToDisk(LOCAL_CODEBASE + newPkg, REMOTE_CODEBASE + newPkg);
-								form.log("Download complete.");
-								pathToJar = pathToJar.replace(pkgName, newPkg);
-							}
-							else
-							{
-								form.log("Current package is up-to-date.");
-							}
-						}
-						catch (IOException e)
-						{
-							form.log("Error while updating: " + e.toString());
-							if (Vars.getLogger().getLevel().intValue() <= Level.FINE.intValue())
-							{
-								e.printStackTrace();
-							}
-						}
-
-						form.log("Launching "+(newPkg == null ? pkgName : newPkg).replace(".jar", "")+"..");
-
-						// Run
-						try
-						{
-							ProcessBuilder pb = new ProcessBuilder("java", "-classpath", pathToJar, "org.whired.ghostclient.Main");
-							pb.start();
-							form.log("Exiting..");
-							try
-							{
-								Thread.sleep(4000);
-							}
-							catch (InterruptedException ex)
-							{}
-							System.exit(0);
-						}
-						catch (IOException e)
-						{
-							form.log("Unable to launch GHOST: " + e.toString());
-						}
-					}
-				}).start();
+				new Thread(new Launcher(form)).start();
 			}
 		});
-	}
-
-	/**
-	 * Gets the next package name based on the name of the current package
-	 *
-	 * @param curPkg the name of the current package
-	 */
-	private static String getNextPackage(String curPkg)
-	{
-		// The build numbers
-		int major, minor, rev;
-
-		String[] parts = getVersionParts(curPkg);
-
-		major = Integer.parseInt(parts[0]);
-		minor = Integer.parseInt(parts[1]);
-		rev = Integer.parseInt(parts[2]);
-
-		if (rev + 1 < 10)
-		{
-			rev++;
-		}
-		else
-		{
-			rev = 0;
-			if (minor + 1 < 10)
-			{
-				minor++;
-			}
-			else
-			{
-				minor = 0;
-				major++;
-			}
-		}
-		return "ghostclient" + major + "-" + minor + "-" + rev + ".jar";
-	}
-
-	/**
-	 * Checks whether or not a package is being hosted
-	 * @param pkgName the package to check
-	 * @return {@code true} if the package was found, otherwise {@code false}
-	 * @throws IOException if the server can't be reached or if an invalid status code is returned
-	 */
-	private static boolean doesExist(String pkgName) throws IOException
-	{
-		int stat = -1;
-		stat = HttpClient.getStatus(REMOTE_CODEBASE + pkgName);
-		if (stat == 404)
-		{
-			return false;
-		}
-		else if (stat == 200)
-		{
-			return true;
-		}
-		else
-		{
-			throw new IOException("Unexpected status: " + stat);
-		}
-	}
-
-	/**
-	 * Finds the newest package out of a given collection of packages
-	 *
-	 * @param bases the collection to compare
-	 * @return the name of the newest local package
-	 */
-	private static String findNewest(File[] bases)
-	{
-		File newest = null;
-		for (File f : bases)
-		{
-			if (newest == null)
-			{
-				newest = f;
-			}
-			else
-			{
-				newest = getNewest(newest, f);
-			}
-		}
-		return newest.getName();
-	}
-
-	/**
-	 * Compares two files to find the newest version
-	 *
-	 * @param base1
-	 * @param base2
-	 * @return the file with the newest version
-	 */
-	private static File getNewest(File base1, File base2)
-	{
-		int b1Maj, b1Min, b1Rev;
-		int b2Maj, b2Min, b2Rev;
-
-		String[] b1Parts = getVersionParts(base1.getName());
-		String[] b2Parts = getVersionParts(base2.getName());
-
-		b1Maj = Integer.parseInt(b1Parts[0]);
-		b1Min = Integer.parseInt(b1Parts[1]);
-		b1Rev = Integer.parseInt(b1Parts[2]);
-
-		b2Maj = Integer.parseInt(b2Parts[0]);
-		b2Min = Integer.parseInt(b2Parts[1]);
-		b2Rev = Integer.parseInt(b2Parts[2]);
-
-		int b1Ver = b1Maj * 100 + b1Min * 10 + b1Rev;
-		int b2Ver = b2Maj * 100 + b2Min * 10 + b2Rev;
-
-		if (b1Ver >= b2Ver)
-		{
-			return base1;
-		}
-		else
-		{
-			return base2;
-		}
-	}
-
-	/**
-	 * Strips information away from a package name and parses the version numbers
-	 *
-	 * @param pkgName the name of the package to parse
-	 * @return the version numbers (major, minor, revision)
-	 */
-	private static String[] getVersionParts(String pkgName)
-	{
-		return pkgName.replace("ghostclient", "").replace(".jar", "").split("-");
 	}
 }

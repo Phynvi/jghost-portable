@@ -4,7 +4,6 @@
  */
 package org.whired.ghostclient.updater.ui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.BorderFactory;
@@ -22,6 +21,9 @@ import javax.swing.UIManager;
  */
 public class UpdaterForm extends JFrame
 {
+	/**
+	 * Creates a new updater form
+	 */
 	public UpdaterForm()
 	{
 		UIManager.put("ScrollBar.width", 12);
@@ -61,8 +63,7 @@ public class UpdaterForm extends JFrame
 
 		pane.setViewportView(output);
 		pane.getViewport().setOpaque(false);
-		//pane..setBackground(new Color(0, 0, 250, 20));
-		//
+		
 		this.getContentPane().add(pane, 0);
 		this.getContentPane().add(iconLbl, 1);
 
@@ -89,6 +90,10 @@ public class UpdaterForm extends JFrame
 		});
 	}
 
+	/**
+	 * Logs a message to the primary output box
+	 * @param message the message to log
+	 */
 	public void log(final String message)
 	{
 		SwingUtilities.invokeLater(new Runnable()
