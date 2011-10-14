@@ -91,7 +91,7 @@ public class ReflectionPacketBuilderManager
 				{
 					for (String s : meth.getParamTypeNames())
 					{
-						meth.addArgument(getAccessorChain("Choose a value for argument (type '" + s + "')", "org.hyperion.rs2.model.World", true)); //TODO REMOVE HARDCODE
+						meth.addArgument(getAccessorChain("Choose a value for argument (type '" + s + "')", JOptionPane.showInputDialog(owner, "Enter entry point of application\nExample: org.whired.app.Main", "Choose entry", JOptionPane.QUESTION_MESSAGE), true)); //TODO REMOVE HARDCODE
 					}
 				}
 				finished = finished || a.getType().equals("void");
@@ -110,7 +110,7 @@ public class ReflectionPacketBuilderManager
 
 	/**
 	 * Sets the loader for created packets.
-	 * 
+	 *
 	 * @param packetLoader the loader to notify when a packet should be loaded
 	 */
 	public void setPacketLoader(final PacketLoader packetLoader)

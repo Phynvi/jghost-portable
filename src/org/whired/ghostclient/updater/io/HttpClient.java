@@ -16,7 +16,7 @@ import java.net.UnknownHostException;
 
 /**
  * Acts as a client for HTTP
- * @author Derek White
+ * @author Whired
  */
 public class HttpClient
 {

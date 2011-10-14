@@ -68,7 +68,7 @@ public class Connection implements SessionManager
 	{
 		this(inputStream, outputStream, receivable, null);
 	}
-	// TODO organize datamembers
+
 	/** The Thread to interrupt when listening should stop */
 	private Thread listenerThread = null;
 

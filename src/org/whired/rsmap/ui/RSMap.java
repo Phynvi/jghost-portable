@@ -10,6 +10,7 @@ import org.whired.rsmap.graphics.OverviewArea;
 import org.whired.rsmap.io.CacheLoader;
 import org.whired.rsmap.io.ByteBuffer;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -586,15 +587,14 @@ public class RSMap extends RSCanvas implements PaintObserver
 
 	public void draw()
 	{
+
+		// TODO: What the hell this worked.
+		System.out.println("Rsmap graphics object: "+this.getGraphics());
+		super.graphics = this.getGraphics();
 		int i = overviewCenterX - (int) ((double) super.getWidth() / currentZoomLevel);
 		int j = overviewCenterY - (int) ((double) super.getHeight() / currentZoomLevel);
 		int k = overviewCenterX + (int) ((double) super.getWidth() / currentZoomLevel);
 		int l = overviewCenterY + (int) ((double) super.getHeight() / currentZoomLevel);
-
-		int m = overviewCenterX - (int) ((double) overviewArea.areaWidth / currentZoomLevel);
-		int n = overviewCenterY - (int) ((double) overviewArea.areaHeight / currentZoomLevel);
-		int o = overviewCenterX + (int) ((double) overviewArea.areaWidth / currentZoomLevel);
-		int p = overviewCenterY + (int) ((double) overviewArea.areaHeight / currentZoomLevel);
 
 		renderMap(pixels, new Dimension(super.getWidth(), super.getHeight()), i, j, k, l);
 
@@ -961,6 +961,7 @@ public class RSMap extends RSCanvas implements PaintObserver
 					});
 					buttons.add(new MapButton("Test", 110, RSMap.super.getHeight() - 20 - 5, 100, 20, Color.MAGENTA, Color.PINK)
 					{
+
 						@Override
 						public void draw()
 						{
@@ -980,8 +981,36 @@ public class RSMap extends RSCanvas implements PaintObserver
 
 				currentZoomLevel = 3D;
 				desiredZoomLevel = 3D;
+				//load();
+				//new Thread(RSMap.this).start();
+			}
+		});
+
+	}
+	public boolean loaded = false;
+
+	/**
+	 * Initializes this map
+	 */
+	public void init()
+	{
+		loaded = true;
+		SwingUtilities.invokeLater(new Runnable()
+		{
+
+			public void run()
+			{
 				load();
-				new Thread(RSMap.this).start();
+				new Thread(new Runnable()
+				{
+
+					@Override
+					public void run()
+					{
+
+						RSMap.this.run();
+					}
+				}).start();
 			}
 		});
 
@@ -990,19 +1019,18 @@ public class RSMap extends RSCanvas implements PaintObserver
 	@Override
 	public void clicked(Point p)
 	{
-		System.out.println("Click received at "+p);
-		synchronized(RSMap.this)
+		System.out.println("Click received at " + p);
+		synchronized (RSMap.this)
 		{
-			for(MapButton b : buttons)
+			for (MapButton b : buttons)
 			{
-				if(b.contains(p))
+				if (b.contains(p))
 				{
 					b.clicked();
 				}
 			}
 		}
 	}
-
 	private ArrayList<MapButton> buttons = new ArrayList<MapButton>();
 	public int mapStartX;
 	public int mapStartY;

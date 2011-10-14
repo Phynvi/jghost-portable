@@ -9,21 +9,21 @@ import java.util.ArrayList;
 */
 public class Accessor implements java.io.Serializable
 {
-	/** The name of the Accessor */
+	/** The name of the accessor */
 	private final String name;
 
-	/** The name of the type of the Accessor */
+	/** The name of the type of the accessor */
 	private final String typeName;
-	
-	/** The class that contains this Accessor */
+
+	/** The class that contains this accessor */
 	private final String declaringClass;
 
-	/** Whether or not the Accessor is static */
+	/** Whether or not the accessor is static */
 	private final boolean isStatic;
 
-	/** The description of the Object this Accessor represents */
+	/** The description of the Object this accessor represents */
 	private final String description;
-	
+
 	public Accessor(String name, String typeName, String declaringClass, boolean isStatic, String description)
 	{
 		this.name = name;
@@ -34,9 +34,9 @@ public class Accessor implements java.io.Serializable
 	}
 
 	/**
-	* Gets the name of this Accessor
+	* Gets the name of this accessor
 	*
-	* @return the name of this Accessor
+	* @return the name of this accessor
 	*/
 	public String getName()
 	{
@@ -44,9 +44,10 @@ public class Accessor implements java.io.Serializable
 	}
 
 	/**
-	* Gets the declaring class for this Accessor
+	* Gets the declaring class for this accessor
 	*
-	* @return the <code>Class</code> that contains this Accessor
+	 * @return the <code>Class</code> that contains this accessor
+	 * @throws ClassNotFoundException When this accessor cannot be cast to {@link org.whired.ghost.net.reflection.Accessor#getDeclaringClassName()}
 	*/
 	public Class getDeclaringClass() throws ClassNotFoundException
 	{
@@ -64,9 +65,9 @@ public class Accessor implements java.io.Serializable
 	}
 
 	/**
-	* Specifies whether or not this Accessor is static
+	* Specifies whether or not this accessor is static
 	*
-	* @return true if this Accessor is static, otherwise false
+	* @return {@code true} if this accessor is static, otherwise {@code false}
 	*/
 	public boolean isStatic()
 	{
@@ -74,19 +75,19 @@ public class Accessor implements java.io.Serializable
 	}
 
 	/**
-	* Checks to see if this Accessor is a ghost.network.reflection.Field
+	* Checks to see if this accessor is a {@link org.whired.ghost.net.reflection.Field}
 	*
-	* @return true if the Accessor is a ghost.network.reflection.Field, otherwise false.
+	* @return {@code true} if the accessor is a {@code Field}, otherwise {@code false}
 	*/
 	public boolean isField()
 	{
 		return this instanceof org.whired.ghost.net.reflection.Field;
 	}
-	
+
 	/**
-	* Checks to see if this Accessor is a ghost.network.reflection.Method
+	* Checks to see if this accessor is a {@link org.whired.ghost.net.reflection.Method}
 	*
-	* @return true if the Accessor is a ghost.network.reflection.Method, otherwise false.
+	* @return {@code true} if the accessor is a {@code Method}, otherwise {@code false}
 	*/
 	public boolean isMethod()
 	{
@@ -94,9 +95,9 @@ public class Accessor implements java.io.Serializable
 	}
 
 	/**
-	* Gets the type of this Accessor
+	* Gets the type of this accessor
 	*
-	* @return the name of the type this Accessor represents
+	* @return the name of the type this accessor represents
 	*/
 	public String getType()
 	{
@@ -104,9 +105,9 @@ public class Accessor implements java.io.Serializable
 	}
 
 	/**
-	* Gets the String that represents this Accessor
+	* Gets the String that represents this accessor
 	*
-	* @return the formatted String that represents this Accessor
+	* @return the formatted String that represents this accessor
 	*/
 	@Override
 	public String toString()
@@ -115,14 +116,14 @@ public class Accessor implements java.io.Serializable
 	}
 
 	/**
-	* Gets a list of Accessors within a given class
+	* Gets a list of accessors within a given class
 	*
 	* @throws ClassNotFoundException if the given class could not be found
 	*
 	* @param top the name of the class to search in
-	* @param staticOnly whether or not to search only static Accessors
+	* @param staticOnly whether or not to search only static accessors
 	*
-	* @return the list of Accessors that were found
+	* @return the list of accessors that were found
 	*/
 	public static ArrayList<Accessor> getAccessors(String top, boolean staticOnly) throws ClassNotFoundException
 	{

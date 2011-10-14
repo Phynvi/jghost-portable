@@ -18,15 +18,15 @@ import org.whired.ghost.net.reflection.Accessor;
 import org.whired.rsmap.ui.RSMap;
 
 /**
- * Provides basic functionality and layout for a standard implementation of a JFrame
- * that utilizes Ghost's core functionality
+ * Provides the functionality and layout for a standard implementation of a JFrame
+ * that will utilize Ghost's core functionality
  *
  * @author Whired
  */
 public abstract class GhostFrame extends JFrame implements Receivable, SessionManager
 {
 
-	/** The connection used by this frame **/
+	/** The connection used by this frame */
 	private Connection connection;
 	/** The user of this frame */
 	private GhostUser ghostUser;
@@ -68,16 +68,14 @@ public abstract class GhostFrame extends JFrame implements Receivable, SessionMa
 	/**
 	 * Gets the connection for this frame
 	 *
-	 * @return the connection if one exists, otherwise null
+	 * @return the connection if one exists, otherwise {@code null}
 	 */
 	public Connection getConnection()
 	{
 		return this.connection;
 	}
 
-	/**
-	 * Cleans up the connection when a termination request is received
-	 */
+	@Override
 	public void terminationRequested(String reason)
 	{
 		this.connection = null;
@@ -160,12 +158,17 @@ public abstract class GhostFrame extends JFrame implements Receivable, SessionMa
 //				}
 //				break;
 			default:
+				// Notify whatever higher listener that they are to handle this packet
 				Vars.getLogger().fine("Pushing noninternal packet " + packetId + " to external listener " + this.getUser());
 				return this.getUser().handlePacket(packetId, packetLength, connection);
 		}
 		return true;
 	}
 
+	/**
+	 * Displays the window that allows the user to select a chain of accessors that will result in
+	 * the formation of a reflection packet
+	 */
 	protected void displayReflectionManager()
 	{
 		reflectionPacketBuilderManager = new ReflectionPacketBuilderManager((JFrame) this.getOwner(), this.getConnection());

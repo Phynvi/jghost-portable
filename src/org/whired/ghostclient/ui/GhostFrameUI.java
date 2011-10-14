@@ -210,6 +210,13 @@ public abstract class GhostFrameUI extends GhostFrame
 				{
 					jTabbedPane1.setForegroundAt(ti, Color.red);
 				}
+				if(jTabbedPane1.getSelectedIndex() == 3)
+				{
+					if(!map.loaded)
+					{
+						map.init();
+					}
+				}
 			}
 
 			public void removeUpdate(DocumentEvent e)
