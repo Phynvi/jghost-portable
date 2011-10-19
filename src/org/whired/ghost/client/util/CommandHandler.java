@@ -84,8 +84,8 @@ public class CommandHandler
 			{
 				try
 				{
-					command.handle(args);
-					String message = "Command successful: "+command;
+					boolean success = command.handle(args);
+					String message = "Command "+ (success ? "successful" : "failed") +": "+command;
 					if(args != null)
 					{
 						for(String arg : args)

@@ -28,7 +28,7 @@ public abstract class Command
 	 * @param args the arguments for the command. If no arguments are parsed, this is {@code null}.
 	 *	Otherwise, each argument is guaranteed to have a {@code length} greater than zero.
 	 */
-	public abstract void handle(String[] args);
+	public abstract boolean handle(String[] args);
 
 	public void printFailure(Logger log, String reason)
 	{

@@ -20,7 +20,7 @@ public class Launcher implements Runnable {
 	/**
 	 * Where the packages are hosted
 	 */
-	private static final String REMOTE_CODEBASE = "https://raw.github.com/Whired/jghost-portable/master/dist/dev/"; // Stable branch
+	private static final String REMOTE_CODEBASE = "https://raw.github.com/Whired/jghost-portable/master/dist/dev/"; // Dev branch
 	/**
 	 * Where the packages are saved
 	 */
