@@ -38,12 +38,12 @@ public class DataSave implements Serializable
 		return ds;
 	}
 
-	public static void saveSettings() throws FileNotFoundException, IOException
+	public static void saveSettings(DataSave ds) throws FileNotFoundException, IOException
 	{
 		File f = new File(System.getProperty("user.home") + "/.ghost/");
 		if(!f.exists()) f.mkdirs();
 		ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(System.getProperty("user.home") + "/.ghost/Settings.NS"));
-		obj.writeObject(getSettings());
+		obj.writeObject(ds);
 	}
 
 	/**

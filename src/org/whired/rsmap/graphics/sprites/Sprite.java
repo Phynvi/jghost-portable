@@ -8,24 +8,22 @@ import org.whired.rsmap.graphics.RSCanvas;
 
 /**
  * Represents an image to be drawn
+ *
  * @author whired
  */
-public abstract class Sprite
-{
+public abstract class Sprite {
+
 	private final int width;
 	private final int height;
 	public boolean isRelativeToMap = true;
 	public Point location;
 	private ArrayList<MouseListener> listeners = new ArrayList<MouseListener>();
-
-
-	/** The values of the pixels for this sprite */
+	/**
+	 * The values of the pixels for this sprite
+	 */
 	public int spritePixels[];
 
-
-
-	public Sprite(int width, int height)
-	{
+	public Sprite(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}
@@ -34,8 +32,7 @@ public abstract class Sprite
 	 * Adds a mouse listener to this sprite
 	 * @param listener the listener to add
 	 */
-	public void addMouseListener(MouseListener listener)
-	{
+	public void addMouseListener(MouseListener listener) {
 		listeners.add(listener);
 	}
 
@@ -43,8 +40,7 @@ public abstract class Sprite
 	 * Removes a mouse listener from this sprite
 	 * @param listener the listener to add
 	 */
-	public void removeMouseListener(MouseListener listener)
-	{
+	public void removeMouseListener(MouseListener listener) {
 		listeners.remove(listener);
 	}
 
@@ -53,12 +49,9 @@ public abstract class Sprite
 	 * @param eventType the type of event to fire
 	 * @param event the event to fire
 	 */
-	private void fireMouseEvent(int eventType, MouseEvent event)
-	{
-		for(MouseListener ml : listeners)
-		{
-			switch(eventType)
-			{
+	private void fireMouseEvent(int eventType, MouseEvent event) {
+		for (MouseListener ml : listeners)
+			switch (eventType) {
 				case MouseEvent.MOUSE_CLICKED:
 					ml.mouseClicked(event);
 					break;
@@ -75,7 +68,6 @@ public abstract class Sprite
 					ml.mouseReleased(event);
 					break;
 			}
-		}
 	}
 
 	/**
@@ -86,76 +78,48 @@ public abstract class Sprite
 	 */
 	public abstract void drawSprite(int x, int y, RSCanvas area);
 
-	public int method40()
-	{
+	public int method40() {
 		int someInt = spritePixels[8] - 1;
 		//System.out.println("SomeInt: "+ someInt);
 		return someInt;
 	}
 
-	public void drawLetter(int ai[], int abyte0[], int i, int j, int k, int l, int i1, int j1, int k1)
-	{
-		try
-		{
+	public void drawLetter(int ai[], int abyte0[], int i, int j, int k, int l, int i1, int j1, int k1) {
+		try {
 			int l1 = -(l >> 2);
 			l = -(l & 3);
-			for (int i2 = -i1; i2 < 0; i2++)
-			{
-				for (int j2 = l1; j2 < 0; j2++)
-				{
+			for (int i2 = -i1; i2 < 0; i2++) {
+				for (int j2 = l1; j2 < 0; j2++) {
 					if (abyte0[j++] != 0)
-					{
 						ai[k++] = i;
-					}
 					else
-					{
 						k++;
-					}
 					if (abyte0[j++] != 0)
-					{
 						ai[k++] = i;
-					}
 					else
-					{
 						k++;
-					}
 					if (abyte0[j++] != 0)
-					{
 						ai[k++] = i;
-					}
 					else
-					{
 						k++;
-					}
 					if (abyte0[j++] != 0)
-					{
 						ai[k++] = i;
-					}
 					else
-					{
 						k++;
-					}
 				}
 
 				for (int k2 = l; k2 < 0; k2++)
-				{
 					if (abyte0[j++] != 0)
-					{
 						ai[k++] = i;
-					}
 					else
-					{
 						k++;
-					}
-				}
 
 				k += j1;
 				j += k1;
 			}
 
 		}
-		catch (Exception exception)
-		{
+		catch (Exception exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -176,13 +140,11 @@ public abstract class Sprite
 //		}
 //
 //	}
-
 	/**
 	 * Gets the width of this sprite
 	 * @return the width
 	 */
-	public int getWidth()
-	{
+	public int getWidth() {
 		return width;
 	}
 
@@ -190,8 +152,7 @@ public abstract class Sprite
 	 * Gets the height of this sprite
 	 * @return the height
 	 */
-	public int getHeight()
-	{
+	public int getHeight() {
 		return height;
 	}
 }

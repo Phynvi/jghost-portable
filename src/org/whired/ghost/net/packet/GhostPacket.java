@@ -5,14 +5,14 @@ import org.whired.ghost.net.Connection;
 
 /**
  * The layout a standard packet
+ *
  * @author Whired
  */
 public abstract class GhostPacket {
 
-	/** The connection that will handle data transfers */
-	protected final Connection connection;
-
-	/** The ID of this packet */
+	/**
+	 * The ID of this packet
+	 */
 	protected final int id;
 
 	/**
@@ -21,26 +21,27 @@ public abstract class GhostPacket {
 	 * @param connection the connection that will handle data transfer
 	 * @param id the id of this packet
 	 */
-	public GhostPacket(Connection connection, int id)
-	{
-		this.connection = connection;
+	public GhostPacket(int id) {
 		this.id = id;
 	}
-
+	/**
+	 * Gets the id of this packet
+	 * @return the id
+	 */
+	public int getId() {
+		return this.id;
+	}
 	/**
 	 * Sends a payload with a checked exception
 	 *
 	 * @param payload the payload to send
 	 * @throws Exception the exception that was caught
 	 */
-	public void sendChecked(Object... payload) throws Exception
-	{
-		try
-		{
+	public void sendChecked(Connection connection, Object... payload) throws Exception {
+		try {
 			connection.sendPacket(id, payload);
 		}
-		catch(Exception e)
-		{
+		catch (Exception e) {
 			throw e;
 		}
 	}
@@ -51,19 +52,16 @@ public abstract class GhostPacket {
 	 * @param payload the payload to send
 	 * @return {@code true} if no exception was thrown, otherwise {@code false}
 	 */
-	public boolean sendUnchecked(Object... payload)
-	{
-		try
-		{
+	public boolean sendUnchecked(Connection connection, Object... payload) {
+		try {
 			connection.sendPacket(id, payload);
 			return true;
 		}
-		catch(Exception e)
-		{
-			if(connection == null)
+		catch (Exception e) {
+			if (connection == null)
 				Vars.getLogger().warning("Dropped packet (no connection)");
 			else
-				Vars.getLogger().warning("Dropped packet: "+e.toString());
+				Vars.getLogger().warning("Dropped packet: " + e.toString());
 			return false;
 		}
 	}
@@ -73,5 +71,5 @@ public abstract class GhostPacket {
 	 * @return {@code true} if the packet was successfully received,
 	 *	otherwise {@code false}
 	 */
-	public abstract boolean receive();
+	public abstract boolean receive(Connection connection);
 }

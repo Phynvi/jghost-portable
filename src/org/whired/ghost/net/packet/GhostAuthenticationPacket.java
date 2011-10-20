@@ -4,26 +4,23 @@ import org.whired.ghost.net.Connection;
 
 /**
  * An authentication packet
+ *
  * @author Whired
  */
-public class GhostAuthenticationPacket extends GhostPacket
-{
+public class GhostAuthenticationPacket extends GhostPacket {
+
 	public String password;
 
-	public GhostAuthenticationPacket(Connection connection)
-	{
-		super(connection, PacketType.AUTHENTICATION);
+	public GhostAuthenticationPacket() {
+		super(PacketType.AUTHENTICATION);
 	}
 
-	public boolean receive()
-	{
-		try
-		{
+	public boolean receive(Connection connection) {
+		try {
 			password = connection.getInputStream().readString();
 			return true;
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			return false;
 		}
 	}

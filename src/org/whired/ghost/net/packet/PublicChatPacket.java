@@ -13,12 +13,12 @@ public class PublicChatPacket extends GhostChatPacket
 	 * Creates a new public chat packet on the connection specified
 	 * @param connection the connection to transfer the packet
 	 */
-	public PublicChatPacket(Connection connection)
+	public PublicChatPacket()
 	{
-		super(connection, PacketType.PUBLIC_CHAT);
+		super(PacketType.PUBLIC_CHAT);
 	}
 
-	public boolean receive()
+	public boolean receive(Connection connection)
 	{
 		try
 		{
@@ -33,17 +33,17 @@ public class PublicChatPacket extends GhostChatPacket
 		}
 	}
 
-	public boolean send(Player sender, String message)
+	public boolean send(Connection connection, Player sender, String message)
 	{
 		this.sender = sender;
 		this.message = message;
-		return sendUnchecked(sender, message);
+		return sendUnchecked(connection, sender, message);
 	}
 
-	public boolean send(Player sender, byte[] chatText, int chatTextSize)
+	public boolean send(Connection connection, Player sender, byte[] chatText, int chatTextSize)
 	{
 		this.sender = sender;
 		this.message = unpackMessage(chatText, chatTextSize);
-		return sendUnchecked(sender, message);
+		return sendUnchecked(connection, sender, message);
 	}
 }

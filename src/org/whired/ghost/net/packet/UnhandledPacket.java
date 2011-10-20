@@ -10,13 +10,13 @@ public class UnhandledPacket extends GhostPacket {
 
 	private final int length;
 
-	public UnhandledPacket(Connection connection, int length)
+	public UnhandledPacket(int length)
 	{
-		super(connection, PacketType.UNHANDLED);
+		super(PacketType.UNHANDLED);
 		this.length = length;
 	}
 
-	public boolean receive()
+	public boolean receive(Connection connection)
 	{
 		try
 		{

@@ -11,15 +11,17 @@ public abstract class Command
 {
 	/** The identifier for this {@code Command} */
 	private final String command;
+	private final int minArgs;
 
 	/**
 	 * Constructs a new {@code Command} with the specified command string
 	 *
 	 * @param command the identifier for this command
 	 */
-	public Command(String command)
+	public Command(String command, int minArgs)
 	{
 		this.command = command;
+		this.minArgs = minArgs;
 	}
 
 	/**
@@ -35,6 +37,11 @@ public abstract class Command
 		log.warning("Command failed: "+reason);
 	}
 
+	public int getMinArgs()
+	{
+		return this.minArgs;
+	}
+	
 	@Override
 	public String toString()
 	{

@@ -1,29 +1,21 @@
 package org.whired.ghostclient.ui;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.text.BadLocationException;
-import org.whired.ghost.client.util.CommandMalformedException;
-import org.whired.ghost.client.util.CommandNotFoundException;
-import org.whired.ghost.Vars;
-import org.whired.ghost.net.reflection.ReflectionPacketContainer;
-import java.io.*;
-import java.awt.event.*;
-import javax.swing.event.*;
 import java.awt.*;
+import java.awt.event.*;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.TreeMap;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.*;
 import javax.swing.text.JTextComponent;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import org.whired.ghost.client.net.ClientConnection;
+import org.whired.ghost.Vars;
 import org.whired.ghost.client.ui.GhostFrame;
-import org.whired.ghost.client.util.Command;
 import org.whired.ghost.client.util.CommandHandler;
+import org.whired.ghost.client.util.CommandMalformedException;
+import org.whired.ghost.client.util.CommandNotFoundException;
 import org.whired.ghost.client.util.DataSave;
-import org.whired.ghost.net.model.player.MapPlayer;
 import org.whired.ghost.net.model.player.Player;
-import org.whired.ghost.net.packet.PrivateChatPacket;
 import org.whired.ghost.net.packet.PublicChatPacket;
 import org.whired.rsmap.ui.RSMap;
 
@@ -32,8 +24,7 @@ import org.whired.rsmap.ui.RSMap;
  *
  * The Frame. Hosts and initializes graphical components and logic.
  */
-public abstract class GhostFrameUI extends GhostFrame
-{
+public abstract class GhostFrameUI extends GhostFrame {
 
 	private JList playerListComponent = new JList();
 	protected DefaultListModel playerList;
@@ -70,7 +61,7 @@ public abstract class GhostFrameUI extends GhostFrame
 	private JLabel pkpDisp;
 	private JLabel pkpLabel;
 	private JLabel playerCount;
-	protected JTextPane pmOutput;
+	protected LinkingJTextPane pmOutput;
 	private JLabel pwDisp;
 	private JLabel pwLabel;
 	private JLabel rangeDisp;
@@ -85,19 +76,14 @@ public abstract class GhostFrameUI extends GhostFrame
 	/**
 	 * Builds and initializes the graphical client.
 	 */
-	public GhostFrameUI()
-	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
+	public GhostFrameUI() {
+		SwingUtilities.invokeLater(new Runnable() {
 
-			public void run()
-			{
-				try
-				{
+			public void run() {
+				try {
 					redirectSystemStreams();
 				}
-				catch (Exception e)
-				{
+				catch (Exception e) {
 					e.printStackTrace();
 				}
 				setLookAndFeel();
@@ -110,24 +96,18 @@ public abstract class GhostFrameUI extends GhostFrame
 		});
 	}
 
-
-
 	/**
 	 * Sets the look and feel of the program
 	 */
-	protected void setLookAndFeel()
-	{
-		try
-		{
+	protected void setLookAndFeel() {
+		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			Vars.getLogger().warning("Error setting Metal look and feel:");
 			e.printStackTrace();
 		}
-		try
-		{
+		try {
 			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/arial.ttf")).deriveFont(9F);
 			Font f2 = f.deriveFont(10F);
 			UIManager.put("OptionPane.messageFont", f);
@@ -149,8 +129,7 @@ public abstract class GhostFrameUI extends GhostFrame
 			UIManager.put("TabbedPane.tabsOpaque", false);
 
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			Vars.getLogger().warning("Error while overriding look and feel:");
 			e.printStackTrace();
 		}
@@ -160,15 +139,12 @@ public abstract class GhostFrameUI extends GhostFrame
 	 * Gets the path for opening quick logs.
 	 * @return the String that represents the absolute path name of the file chosen
 	 */
-	public String getPathTo()
-	{
+	public String getPathTo() {
 		final JFileChooser fc = new JFileChooser();
 		fc.showOpenDialog(jPanel1);
 		String f = "";
 		if (fc.getSelectedFile() != null)
-		{
 			f = fc.getSelectedFile().getAbsolutePath();
-		}
 		return f;
 	}
 
@@ -176,18 +152,14 @@ public abstract class GhostFrameUI extends GhostFrame
 	 * Quickly handles a command.
 	 * @param command the String that will be parsed to a command
 	 */
-	protected void doCommand(String command)
-	{
-		try
-		{
+	protected void doCommand(String command) {
+		try {
 			new CommandHandler(Vars.getLogger()).handleInput(command);
 		}
-		catch (CommandMalformedException ex)
-		{
+		catch (CommandMalformedException ex) {
 			Vars.getLogger().warning(ex.toString());
 		}
-		catch (CommandNotFoundException ex)
-		{
+		catch (CommandNotFoundException ex) {
 			Vars.getLogger().warning(ex.toString());
 		}
 	}
@@ -198,33 +170,22 @@ public abstract class GhostFrameUI extends GhostFrame
 	 * @param box the JTextArea to set up the handler for
 	 * @param tabIndex the corresponding index for the tab in which "box" lies
 	 */
-	private void createTabHandler(JTextComponent box, int tabIndex)
-	{
+	private void createTabHandler(JTextComponent box, int tabIndex) {
 		final int ti = tabIndex;
-		box.getDocument().addDocumentListener(new DocumentListener()
-		{
+		box.getDocument().addDocumentListener(new DocumentListener() {
 
-			public void insertUpdate(DocumentEvent e)
-			{
+			public void insertUpdate(DocumentEvent e) {
 				if (jTabbedPane1.getSelectedIndex() != ti && jTabbedPane1.getForegroundAt(ti) != Color.red)
-				{
 					jTabbedPane1.setForegroundAt(ti, Color.red);
-				}
-				if(jTabbedPane1.getSelectedIndex() == 3)
-				{
-					if(!map.loaded)
-					{
+				if (jTabbedPane1.getSelectedIndex() == 3)
+					if (!map.loaded)
 						map.init();
-					}
-				}
 			}
 
-			public void removeUpdate(DocumentEvent e)
-			{
+			public void removeUpdate(DocumentEvent e) {
 			}
 
-			public void changedUpdate(DocumentEvent e)
-			{
+			public void changedUpdate(DocumentEvent e) {
 			}
 		});
 	}
@@ -238,26 +199,21 @@ public abstract class GhostFrameUI extends GhostFrame
 	/**
 	 * Used for hooking debugOutput to System.out/err
 	 */
-	private synchronized void redirectSystemStreams()
-	{
-		java.io.OutputStream out = new java.io.OutputStream()
-		{
+	private synchronized void redirectSystemStreams() {
+		java.io.OutputStream out = new java.io.OutputStream() {
 
 			@Override
-			public void write(int b) throws IOException
-			{
+			public void write(int b) throws IOException {
 				updateTextArea(String.valueOf((char) b));
 			}
 
 			@Override
-			public void write(byte[] b, int off, int len) throws IOException
-			{
+			public void write(byte[] b, int off, int len) throws IOException {
 				updateTextArea(new String(b, off, len));
 			}
 
 			@Override
-			public void write(byte[] b) throws IOException
-			{
+			public void write(byte[] b) throws IOException {
 				write(b, 0, b.length);
 			}
 		};
@@ -272,71 +228,56 @@ public abstract class GhostFrameUI extends GhostFrame
 	 */
 	public abstract void menuActionPerformed(int i, ActionEvent e);
 
-	protected void tryExtendedConnect()
-	{
+	protected void tryExtendedConnect() {
 		final JDialog jd = new JDialog();
 		jd.setTitle("Connect");
 		jd.setLocationRelativeTo(null);
 		final JTextField connectInput = new JTextField();
 		final JTextField portInput = new JTextField();
 		final JPasswordField passwordInput = new JPasswordField();
-		final JOptionPane jo = new JOptionPane(new Object[]
-			   {
+		final JOptionPane jo = new JOptionPane(new Object[]{
 				   "Enter IP, port, and password.", connectInput, portInput, passwordInput
-			   }, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[]
-			   {
+			   }, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[]{
 				   "OK", "Cancel"
 			   }, "OK");
 		jd.setContentPane(jo);
 		jd.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		// Close the window here, but save the values entered
-		jd.addWindowListener(new WindowAdapter()
-		{
+		jd.addWindowListener(new WindowAdapter() {
 
 			@Override
-			public void windowClosing(WindowEvent we)
-			{
+			public void windowClosing(WindowEvent we) {
 				jo.setValue(JOptionPane.CLOSED_OPTION);
 			}
 		});
 		jo.addPropertyChangeListener(
-			   new java.beans.PropertyChangeListener()
-			   {
+			   new java.beans.PropertyChangeListener() {
 
-				   public void propertyChange(java.beans.PropertyChangeEvent e)
-				   {
+				   public void propertyChange(java.beans.PropertyChangeEvent e) {
 					   String prop = e.getPropertyName();
-					   if (isVisible() && (e.getSource() == jo) && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop)))
-					   {
+					   if (isVisible() && (e.getSource() == jo) && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
 						   Object value = jo.getValue();
 						   if (value == JOptionPane.UNINITIALIZED_VALUE)
-						   {
 							   return;
-						   }
 						   jo.setValue(JOptionPane.UNINITIALIZED_VALUE);
-						   if (value.equals("OK"))
-						   {
+						   if (value.equals("OK")) {
 							   String IP = connectInput.getText();
 							   String port = portInput.getText();
 							   String password = new String(passwordInput.getPassword());
-							   if (IP.length() == 0 || port.length() == 0 || password.length() == 0)
-							   {
+							   if (IP.length() == 0 || port.length() == 0 || password.length() == 0) {
 								   JOptionPane.showMessageDialog(jd, "Not all fields were filled out properly.", "Error", JOptionPane.ERROR_MESSAGE);
 								   return;
 							   }
-							   try
-							   {
+							   try {
 								   port = "" + Integer.parseInt(portInput.getText());
 							   }
-							   catch (Exception err)
-							   {
+							   catch (Exception err) {
 								   JOptionPane.showMessageDialog(jd, "The port must be numeric!", "Error", JOptionPane.ERROR_MESSAGE);
 								   portInput.setText(null);
 								   portInput.requestFocusInWindow();
 								   return;
 							   }
-							   if (!IP.contains(".") && !IP.toLowerCase().equals("localhost"))
-							   {
+							   if (!IP.contains(".") && !IP.toLowerCase().equals("localhost")) {
 								   JOptionPane.showMessageDialog(jd, "The IP entered was invalid.", "Error", JOptionPane.ERROR_MESSAGE);
 								   connectInput.setText(null);
 								   connectInput.requestFocusInWindow();
@@ -346,9 +287,7 @@ public abstract class GhostFrameUI extends GhostFrame
 							   doCommand("connect " + IP + " " + port + " " + password);
 						   }
 						   else
-						   {
 							   jd.dispose();
-						   }
 					   }
 				   }
 			   });
@@ -364,18 +303,14 @@ public abstract class GhostFrameUI extends GhostFrame
 	 * @see redirectSystemStreams()
 	 * @param text the text to append to debugOutput
 	 */
-	private void updateTextArea(final String text)
-	{
+	private void updateTextArea(final String text) {
 		// Supposedly thread-safe, apparently not--keep on EDT
-		SwingUtilities.invokeLater(new Runnable()
-		{
+		SwingUtilities.invokeLater(new Runnable() {
 
-			public void run()
-			{
+			public void run() {
 				cal = java.util.Calendar.getInstance();
 				// Append the debug, but ensure it displays properly
-				if (debugOutput != null && debugOutput.getDocument() != null)
-				{
+				if (debugOutput != null && debugOutput.getDocument() != null) {
 					debugOutput.append(!text.contains(System.getProperty("line.separator")) ? "[" + sdf.format(cal.getTime()) + "]" + " " + text : text);
 					debugOutput.setCaretPosition(debugOutput.getDocument().getLength());
 				}
@@ -383,26 +318,25 @@ public abstract class GhostFrameUI extends GhostFrame
 		});
 	}
 	private JLabel imageLabel;
-	protected Icon[] rightsIcons;
+	//protected Icon[] rightsIcons;
+	protected TreeMap<Integer, Icon> rightsIcons = new TreeMap<Integer, Icon>();
 
+	protected Icon getRightsIcon(int right) {
+		return rightsIcons.get(right < rightsIcons.firstKey() ? rightsIcons.firstKey() : right > rightsIcons.lastKey() ? rightsIcons.lastKey() : right);
+	}
+	
 	/**
 	 * Builds the GUI components
 	 */
-	private void initComponents()
-	{
+	private void initComponents() {
 		jPanel1 = new JPanel();
-		try
-		{
+		try {
 			imageLabel = new JLabel();
 			imageLabel.setIcon(new ImageIcon(this.getClass().getResource("resources/interfacetest.png")));
-			rightsIcons = new ImageIcon[5];
-			for (int i = 0; i < rightsIcons.length; i++)
-			{
-				rightsIcons[i] = new ImageIcon(this.getClass().getResource("resources/level_" + i + ".png"));
-			}
+			for (int i = 0; i < 5; i++)
+				rightsIcons.put(i, new ImageIcon(this.getClass().getResource("resources/level_" + i + ".png")));
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			Vars.getLogger().warning("Error while loading graphical resources:");
 			e.printStackTrace();
 		}
@@ -415,7 +349,7 @@ public abstract class GhostFrameUI extends GhostFrame
 		jScrollPane1 = new JScrollPane();
 		chatOutput = new LinkingJTextPane();
 		jScrollPane2 = new JScrollPane();
-		pmOutput = new JTextPane();
+		pmOutput = new LinkingJTextPane();
 		jScrollPane3 = new JScrollPane();
 		debugOutput = new JTextArea();
 		pkpDisp = new JLabel();
@@ -423,31 +357,34 @@ public abstract class GhostFrameUI extends GhostFrame
 		rangeDisp = new JLabel();
 		coordsLabel = new JLabel();
 		jScrollPane4 = new JScrollPane();
-		MouseListener mouseListener = new MouseAdapter()
-		{
+		MouseListener mouseListener = new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e)
-			{
+			public void mouseClicked(MouseEvent e) {
 				Object x = playerListComponent.getSelectedValue();
-				if (e.getClickCount() == 1)
-				{
-					if (x != null)
-					{
+				if (e.getClickCount() == 1) {
+					if (x != null) {
 						//Load stats here
 					}
 				}
-				else
-				{
-					if (e.getClickCount() == 1)
-					{
-						chatOutput.setText("/pm " + x + " ");
-						chatInput.requestFocus();
-					}
+				else if (e.getClickCount() == 1) {
+					chatOutput.setText("/pm " + x + " ");
+					chatInput.requestFocus();
 				}
 			}
 		};
 		playerListComponent = new JList();
+		playerListComponent.setCellRenderer(new DefaultListCellRenderer() {
+			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+				JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				if(value instanceof Player) {
+					Player player = (Player)value;
+					label.setIcon(getRightsIcon(player.getRights()));
+					label.setHorizontalTextPosition(JLabel.LEFT);
+				}
+				return label;
+			}
+		});
 		playerList = new DefaultListModel();
 		playerListComponent.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		playerListComponent.addMouseListener(mouseListener);
@@ -491,43 +428,33 @@ public abstract class GhostFrameUI extends GhostFrame
 		jmb.add(jmFile);
 		jmb.add(jmBinding);
 		setJMenuBar(jmb);
-		jmiConnect.addActionListener(new ActionListener()
-		{
+		jmiConnect.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent evt)
-			{
+			public void actionPerformed(ActionEvent evt) {
 				menuActionPerformed(0, evt);
 			}
 		});
-		jmiQConnect.addActionListener(new ActionListener()
-		{
+		jmiQConnect.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent evt)
-			{
+			public void actionPerformed(ActionEvent evt) {
 				menuActionPerformed(1, evt);
 			}
 		});
-		jmiOpen.addActionListener(new ActionListener()
-		{
+		jmiOpen.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent evt)
-			{
+			public void actionPerformed(ActionEvent evt) {
 				menuActionPerformed(2, evt);
 			}
 		});
-		jmiExit.addActionListener(new ActionListener()
-		{
+		jmiExit.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent evt)
-			{
+			public void actionPerformed(ActionEvent evt) {
 				menuActionPerformed(3, evt);
 			}
 		});
-		jmiNew.addActionListener(new ActionListener()
-		{
+		jmiNew.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent evt)
-			{
+			public void actionPerformed(ActionEvent evt) {
 				menuActionPerformed(4, evt);
 			}
 		});
@@ -547,16 +474,16 @@ public abstract class GhostFrameUI extends GhostFrame
 		jTabbedPane1.setAutoscrolls(true);
 		layeredPane.add(jTabbedPane1, 1);
 		chatOutput.setEditable(false);
-		chatOutput.addLinkEventListener(new LinkEventListener()
-		{
+		LinkEventListener l = new LinkEventListener() {
 
 			@Override
-			public void linkClicked(String linkText)
-			{
+			public void linkClicked(String linkText) {
 				chatInput.setText("/pm " + linkText + " ");
 				chatInput.requestFocus();
 			}
-		});
+		};
+		chatOutput.addLinkEventListener(l);
+		pmOutput.addLinkEventListener(l);
 		jScrollPane1.setViewportView(chatOutput);
 		jTabbedPane1.addTab("Chat", jScrollPane1);
 		pmOutput.setEditable(false);
@@ -571,106 +498,70 @@ public abstract class GhostFrameUI extends GhostFrame
 		map = new RSMap(737, 318);//738, 315
 		// is this changing the size..?
 		jTabbedPane1.addTab("Map", map);
-		jTabbedPane1.addChangeListener(new ChangeListener()
-		{
+		jTabbedPane1.addChangeListener(new ChangeListener() {
 
-			public void stateChanged(ChangeEvent evt)
-			{
+			public void stateChanged(ChangeEvent evt) {
 				if (jTabbedPane1.getForegroundAt(jTabbedPane1.getSelectedIndex()) == Color.red)
-				{
 					jTabbedPane1.setForegroundAt(jTabbedPane1.getSelectedIndex(), Color.black);
-				}
 			}
 		});
 		pkpDisp.setHorizontalAlignment(SwingConstants.CENTER);
 		pkpDisp.setText("n/a");
-		addWindowListener(new WindowAdapter()
-		{
+		addWindowListener(new WindowAdapter() {
 
 			@Override
-			public void windowClosing(WindowEvent e)
-			{
-				try
-				{
-					DataSave.saveSettings();
+			public void windowClosing(WindowEvent e) {
+				try {
+					DataSave.saveSettings(getUser().getSettings());
 				}
-				catch (Exception fe)
-				{
+				catch (Exception fe) {
 					// It's too late to do anything here
 				}
 				System.exit(0);
 			}
 		});
-		chatInput.addKeyListener(new KeyAdapter()
-		{
+		chatInput.addKeyListener(new KeyAdapter() {
 
 			@Override
-			public void keyPressed(KeyEvent ke)
-			{
-				if (ke.getKeyCode() == 38)
-				{
+			public void keyPressed(KeyEvent ke) {
+				if (ke.getKeyCode() == 38) {
 					if (historyIndex > 1)
-					{
 						historyIndex--;
-					}
 					chatInput.setText((String) chatHistory.get(historyIndex));
 				}
-				else
-				{
-					if (ke.getKeyCode() == 40)
-					{
-						if (historyIndex < (chatHistory.size() + 1))
-						{
-							historyIndex++;
-							chatInput.setText((String) chatHistory.get(historyIndex));
-						}
-						else
-						{
-							chatInput.setText(null);
-						}
-					}
-				}
-			}
-		});
-		chatInput.addActionListener(new ActionListener()
-		{
-
-			public void actionPerformed(ActionEvent evt)
-			{
-				String message = chatInput.getText();
-				chatInput.setText("");
-				if (!message.equals(""))
-				{
-					if (!message.startsWith("/"))
-					{
-						displayPublicChat(getUser().getSettings().getPlayer(), message);
-						new PublicChatPacket(getConnection()).send(getUser().getSettings().getPlayer(), message);
+				else if (ke.getKeyCode() == 40)
+					if (historyIndex < (chatHistory.size() + 1)) {
+						historyIndex++;
+						chatInput.setText((String) chatHistory.get(historyIndex));
 					}
 					else
-					{
-						doCommand(message.substring(1, message.length()));
+						chatInput.setText(null);
+			}
+		});
+		chatInput.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent evt) {
+				String message = chatInput.getText();
+				chatInput.setText("");
+				if (!message.equals("")) {
+					if (!message.startsWith("/")) {
+						displayPublicChat(getUser().getSettings().getPlayer(), message);
+						new PublicChatPacket().send(getConnection(), getUser().getSettings().getPlayer(), message);
 					}
-					if (historyIndex > 250)
-					{
+					else
+						doCommand(message.substring(1, message.length()));
+					if (historyIndex > 250) {
 						historyIndex = 1;
 						chatHistory.clear();
 					}
 					if (chatHistory.isEmpty())
-					{
 						historyIndex = 1;
-					}
 					else
-					{
 						historyIndex = chatHistory.size() + 1;
-					}
 					if (chatHistory.get(historyIndex - 1) == null || !chatHistory.get(historyIndex - 1).equalsIgnoreCase(message))
-					{
 						chatHistory.put(historyIndex++, message);
-					}
 					else
-					{
 						Vars.getLogger().fine("History match, input not saved");
-					}
 				}
 			}
 		});
@@ -704,11 +595,9 @@ public abstract class GhostFrameUI extends GhostFrame
 		mageDisp.setHorizontalAlignment(SwingConstants.CENTER);
 		mageDisp.setText("n/a");
 		restartBut.setText("Restart");
-		restartBut.addActionListener(new ActionListener()
-		{
+		restartBut.addActionListener(new ActionListener() {
 
-			public void actionPerformed(ActionEvent evt)
-			{
+			public void actionPerformed(ActionEvent evt) {
 				restartButActionPerformed(evt);
 			}
 		});
@@ -742,33 +631,28 @@ public abstract class GhostFrameUI extends GhostFrame
 		playerCount.setHorizontalAlignment(SwingConstants.CENTER);
 		playerCount.setText("Players - 0");
 		pkpLabel.setText("PK points: ");
-		playerList.addListDataListener(new ListDataListener()
-		{
+		playerList.addListDataListener(new ListDataListener() {
 
-			public void intervalAdded(ListDataEvent e)
-			{
+			public void intervalAdded(ListDataEvent e) {
 				consumeEvent(((DefaultListModel) e.getSource()), (String) ((DefaultListModel) e.getSource()).elementAt(e.getIndex0()).toString(), true);
 			}
 
-			public void intervalRemoved(ListDataEvent e)
-			{
+			public void intervalRemoved(ListDataEvent e) {
 				consumeEvent(((DefaultListModel) e.getSource()), (String) ((DefaultListModel) e.getSource()).elementAt(e.getIndex0()).toString(), false);
 			}
 
-			public void contentsChanged(ListDataEvent e)
-			{
+			public void contentsChanged(ListDataEvent e) {
 			}
 
-			private void consumeEvent(DefaultListModel source, String item, boolean add)
-			{
+			private void consumeEvent(DefaultListModel source, String item, boolean add) {
 				playerCount.setText("Players - " + source.getSize());
-				if (add)
-				{
+				if (add) {
 					chatOutput.addMatch(item);
+					pmOutput.addMatch(item);
 				}
-				else
-				{
+				else {
 					chatOutput.removeMatch(item);
+					pmOutput.removeMatch(item);
 				}
 			}
 		});
@@ -777,8 +661,7 @@ public abstract class GhostFrameUI extends GhostFrame
 		jPanel1.setLayout(jPanel1Layout);
 		jPanel1Layout.setHorizontalGroup(
 			   jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(jPanel1Layout.createSequentialGroup().addContainerGap().addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(jScrollPane4, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE).addComponent(playerCount, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE).addComponent(restartBut, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(jLabel2, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 739, Short.MAX_VALUE).addGroup(GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup().addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false).addGroup(jPanel1Layout.createSequentialGroup().addGap(10, 10, 10).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup().addComponent(thpLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(thpDisp, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)).addGroup(GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false).addGroup(jPanel1Layout.createSequentialGroup().addComponent(hpLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(hpDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(rangeLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(rangeDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(mageLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(mageDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(defLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(defDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(strLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(strDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(atkLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(atkDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(pkpLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(pkpDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(ipLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(ipDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(pwLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(pwDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(coordsLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(coordDisp, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE))))).addComponent(jLabel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(jLabel5, GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))))).addContainerGap()));
-		jPanel1Layout.linkSize(SwingConstants.HORIZONTAL, new Component[]
-			   {
+		jPanel1Layout.linkSize(SwingConstants.HORIZONTAL, new Component[]{
 				   atkLabel, coordsLabel, defLabel, hpLabel, ipLabel, mageLabel, pkpLabel, pwLabel, rangeLabel, strLabel, thpLabel
 			   });
 		jPanel1Layout.setVerticalGroup(

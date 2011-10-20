@@ -14,8 +14,7 @@ import java.util.ArrayList;
  *
  * @author Whired
  */
-public class ReflectionPacketContainer implements java.io.Serializable
-{
+public class ReflectionPacketContainer implements java.io.Serializable {
 
 	private final static transient String SAVE_DIR = "." + System.getProperty("file.separator") + "packets" + System.getProperty("file.separator");
 	public final ArrayList<Accessor> accessorChain;
@@ -26,8 +25,7 @@ public class ReflectionPacketContainer implements java.io.Serializable
 	 *
 	 * @param accessorChain the chain of accessors to contain
 	 */
-	public ReflectionPacketContainer(String packetName, ArrayList<Accessor> accessorChain)
-	{
+	public ReflectionPacketContainer(String packetName, ArrayList<Accessor> accessorChain) {
 		this.packetName = packetName;
 		this.accessorChain = accessorChain;
 	}
@@ -37,16 +35,11 @@ public class ReflectionPacketContainer implements java.io.Serializable
 	 *
 	 * @param accessorChain the chain of accessors to save
 	 */
-	public static void saveContainer(ReflectionPacketContainer c) throws java.io.IOException
-	{
+	public static void saveContainer(ReflectionPacketContainer c) throws java.io.IOException {
 		File dir = new File(ReflectionPacketContainer.SAVE_DIR);
 		if (!dir.exists())
-		{
 			if (!dir.mkdir())
-			{
 				throw new java.io.IOException("Unable to create save directory");
-			}
-		}
 		ObjectOutputStream out = null;
 		out = new ObjectOutputStream(new FileOutputStream(ReflectionPacketContainer.SAVE_DIR + c.packetName));
 		out.writeObject(c);
@@ -62,8 +55,7 @@ public class ReflectionPacketContainer implements java.io.Serializable
 	 * @throws java.io.IOException if the file could not be found
 	 * @throws ClassNotFoundException when the loaded object can not  be cast to {@code ArrayList<Accessor>}
 	 */
-	public static ReflectionPacketContainer loadContainer(String packetName) throws java.io.IOException, ClassNotFoundException
-	{
+	public static ReflectionPacketContainer loadContainer(String packetName) throws java.io.IOException, ClassNotFoundException {
 		ObjectInputStream in = new ObjectInputStream(new FileInputStream(ReflectionPacketContainer.SAVE_DIR + packetName));
 		ReflectionPacketContainer accessorChain = (ReflectionPacketContainer) in.readObject();
 		in.close();
@@ -75,37 +67,29 @@ public class ReflectionPacketContainer implements java.io.Serializable
 	 *
 	 * @return the list of containers that were loaded
 	 */
-	public static ArrayList<ReflectionPacketContainer> loadAllContainers()
-	{
+	public static ArrayList<ReflectionPacketContainer> loadAllContainers() {
 		ArrayList<ReflectionPacketContainer> list = new ArrayList<ReflectionPacketContainer>();
 		File dir = new File(ReflectionPacketContainer.SAVE_DIR);
-		if (dir.exists())
-		{
+		if (dir.exists()) {
 			String[] files = dir.list();
 			for (String file : files)
-			{
-				try
-				{
+				try {
 					list.add(ReflectionPacketContainer.loadContainer(file));
 				}
-				catch (Exception e)
-				{
+				catch (Exception e) {
 					//e.printStackTrace();
-					Vars.getLogger().warning("Failed to load "+file+": "+e.toString());
+					Vars.getLogger().warning("Failed to load " + file + ": " + e.toString());
 					//System.out.println("Failed to load "+file+": "+e.toString());
 				}
-			}
 		}
 		return list;
 	}
 
-	public static void invoke(ReflectionPacketContainer container, Connection connection)
-	{
+	public static void invoke(ReflectionPacketContainer container, Connection connection) {
 		invoke(container.accessorChain, connection);
 	}
 
-	public static void invoke(ArrayList<Accessor> accessorChain, Connection connection)
-	{
+	public static void invoke(ArrayList<Accessor> accessorChain, Connection connection) {
 		connection.sendPacket(5, accessorChain, true);
 	}
 }

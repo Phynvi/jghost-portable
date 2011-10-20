@@ -3,17 +3,15 @@ package org.whired.ghostclient.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import org.whired.ghost.Vars;
 import org.whired.ghost.client.net.ClientConnection;
 import org.whired.ghost.client.util.Command;
 import org.whired.ghost.client.util.CommandHandler;
+import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.model.player.MapPlayer;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.packet.PrivateChatPacket;
@@ -34,7 +32,7 @@ public class GhostFrameImpl extends GhostFrameUI {
 	 * Initializes the commands that this frame will utilize
 	 */
 	public void initCommands() {
-		CommandHandler.addCommand(new Command("setrights") {
+		CommandHandler.addCommand(new Command("setrights", 1) {
 
 			@Override
 			public boolean handle(String[] args) {
@@ -42,31 +40,83 @@ public class GhostFrameImpl extends GhostFrameUI {
 				return true;
 			}
 		});
-		CommandHandler.addCommand(new Command("setname") {
+		CommandHandler.addCommand(new Command("disconnect", 0) {
+			public boolean handle(String[] args) {
+				Connection c = getConnection();
+				if(c != null) {
+					c.terminationRequested("User requested.");
+					return true;
+				}
+				else {
+					Vars.getLogger().info("No connection to server currently exists");
+					return false;
+				}
+			}
+		});
+		CommandHandler.addCommand(new Command("setname", 1) {
 
 			@Override
 			public boolean handle(String[] args) {
-				getUser().getSettings().getPlayer().setName(args[0]);
+				StringBuilder finalName = new StringBuilder();
+				for(String s : args)
+				{
+					finalName.append(s);
+					finalName.append(" ");
+				}
+				getUser().getSettings().getPlayer().setName(finalName.toString().trim());
 				return true;
 			}
 		});
-		CommandHandler.addCommand(new Command("pm") {
+		CommandHandler.addCommand(new Command("pm", 2) {
 
 			@Override
 			public boolean handle(String[] args) {
 				String message = "";
 				for (int i = 1; i < args.length; i++)
 					message += args[i] + " ";
-				displayPrivateChat(getUser().getSettings().getPlayer(), new Player(args[0], 0), message);
+				int rights = 0;
+				for(Object o : playerList.toArray()) {
+					if(o instanceof Player) {
+						Player p = (Player)o;
+						if(p.getName().equals(args[0])) {
+							rights = p.getRights();
+							break;
+						}
+					}
+				}
+				displayPrivateChat(getUser().getSettings().getPlayer(), new Player(args[0], rights), message);
 				return true;
 			}
 		});
-		CommandHandler.addCommand(new Command("connect") {
+		CommandHandler.addCommand(new Command("setdebug", 1) {
+			public boolean handle(String[] args) {
+				if(args[0].equals("on")) {
+					Vars.setDebug(true);
+					getUser().getSettings().debugOn = true;
+					Vars.getLogger().info("Debug mode ON");
+				}
+				else if(args[0].equals("off")) {
+					Vars.setDebug(false);
+					getUser().getSettings().debugOn = false;
+					Vars.getLogger().info("Debug mode OFF");
+				}
+				else {
+					Vars.getLogger().info("Unknown state");
+					return false;
+				}
+				return true;
+			}
+		});
+		CommandHandler.addCommand(new Command("connect", 0) {
 
 			@Override
 			public boolean handle(String[] args) {
 				if (args == null) {
 					String[] con = getUser().getSettings().defaultConnect;
+					if(con[0] == null || con[1] == null || con[2] == null) {
+						Vars.getLogger().warning("No default connection saved");
+						return false;
+					}
 					try {
 						setConnection(ClientConnection.connect(con[0], Integer.parseInt(con[1]), con[2], GhostFrameImpl.this));
 						return true;
@@ -135,10 +185,10 @@ public class GhostFrameImpl extends GhostFrameUI {
 		});
 		boundPacketPanel.add(button);
 	}
-
+	private int curRight = 8;
 	@Override
 	public void restartButActionPerformed(ActionEvent evt) {
-		playerList.addElement(new MapPlayer("Whired", 4, 2000, 2000, map)); // TODO actual implementation
+		playerList.addElement(new MapPlayer("whired", curRight--, 2000, 2000, map)); // TODO actual implementation
 	}
 
 	/**
@@ -149,13 +199,13 @@ public class GhostFrameImpl extends GhostFrameUI {
 	 */
 	@Override
 	public void displayPublicChat(Player sender, String message) {
-		Icon i = rightsIcons[sender.getRights()];
+		Icon i = getRightsIcon(sender.getRights());
 		try {
 			Style iconOnly = chatOutput.getStyledDocument().getStyle("iconOnly");
 			if (iconOnly == null)
 				iconOnly = chatOutput.getStyledDocument().addStyle("iconOnly", null);
 			StyleConstants.setIcon(iconOnly, i);
-			chatOutput.getStyledDocument().insertString(chatOutput.getStyledDocument().getLength(), "dummytext", iconOnly);
+			chatOutput.getStyledDocument().insertString(chatOutput.getStyledDocument().getLength(), " ", iconOnly);
 			StyleConstants.setBold(chatOutput.getInputAttributes(), true);
 			chatOutput.getStyledDocument().insertString(chatOutput.getStyledDocument().getLength(), sender.getName(), chatOutput.getInputAttributes());
 			chatOutput.getStyledDocument().insertString(chatOutput.getStyledDocument().getLength(), ": " + message + "\n\r", null);
@@ -168,21 +218,21 @@ public class GhostFrameImpl extends GhostFrameUI {
 
 	@Override
 	public void displayPrivateChat(Player sender, Player recipient, String message) {
-		if (new PrivateChatPacket(getConnection()).send(sender, recipient, message)) {
-			Icon senderIcon = rightsIcons[sender.getRights()];
-			Icon recpIcon = rightsIcons[recipient.getRights()];
+		if (new PrivateChatPacket().send(getConnection(), sender, recipient, message)) {
+			Icon senderIcon = getRightsIcon(sender.getRights());
+			Icon recpIcon = getRightsIcon(recipient.getRights());
 			try {
 				Style iconOnly = pmOutput.getStyledDocument().getStyle("iconOnly");
 				if (iconOnly == null)
 					iconOnly = pmOutput.getStyledDocument().addStyle("iconOnly", null);
 				StyleConstants.setIcon(iconOnly, senderIcon);
-				pmOutput.getStyledDocument().insertString(pmOutput.getStyledDocument().getLength(), "dummytext", iconOnly);
+				pmOutput.getStyledDocument().insertString(pmOutput.getStyledDocument().getLength(), " ", iconOnly);
 				StyleConstants.setBold(pmOutput.getInputAttributes(), true);
 				pmOutput.getStyledDocument().insertString(pmOutput.getStyledDocument().getLength(), sender.getName(), pmOutput.getInputAttributes());
 				pmOutput.getStyledDocument().insertString(pmOutput.getStyledDocument().getLength(), " to ", null);
 				if (recipient.getRights() > 0) {
 					StyleConstants.setIcon(iconOnly, recpIcon);
-					pmOutput.getStyledDocument().insertString(pmOutput.getStyledDocument().getLength(), "dummytext", iconOnly);
+					pmOutput.getStyledDocument().insertString(pmOutput.getStyledDocument().getLength(), " ", iconOnly);
 				}
 				StyleConstants.setBold(pmOutput.getInputAttributes(), true);
 				pmOutput.getStyledDocument().insertString(pmOutput.getStyledDocument().getLength(), recipient.getName(), pmOutput.getInputAttributes());
@@ -208,7 +258,7 @@ public class GhostFrameImpl extends GhostFrameUI {
 				// TODO Send the file request packet here
 				break;
 			case 3:
-				if (JOptionPane.showConfirmDialog(this.getOwner(), "Are you sure you want to quit?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION)
+				if (JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION)
 					System.exit(0);
 				break;
 			case 4:
