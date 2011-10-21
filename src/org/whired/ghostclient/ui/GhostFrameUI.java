@@ -111,6 +111,7 @@ public abstract class GhostFrameUI extends GhostFrame {
 		try {
 			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/arial.ttf")).deriveFont(9F);
 			Font f2 = f.deriveFont(10F);
+			UIManager.put("ToolTip.font", f);
 			UIManager.put("OptionPane.messageFont", f);
 			UIManager.put("List.font", f);
 			UIManager.put("Button.font", f);
