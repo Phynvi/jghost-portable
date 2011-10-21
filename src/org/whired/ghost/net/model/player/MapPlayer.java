@@ -17,9 +17,9 @@ public class MapPlayer extends Player
 	private int absY;
 	private final PaintObserver observer;
 
-	public MapPlayer(String name, int rights, int absX, int absY, PaintObserver observer)
+	public MapPlayer(String name, Rank rank, int absX, int absY, PaintObserver observer)
 	{
-		super(name, rights);
+		super(name, rank);
 		this.absX = absX;
 		this.absY = absY;
 		this.observer = observer;

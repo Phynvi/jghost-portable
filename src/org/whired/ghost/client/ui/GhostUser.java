@@ -1,6 +1,6 @@
 package org.whired.ghost.client.ui;
 
-import org.whired.ghost.client.util.DataSave;
+import org.whired.ghost.client.util.SessionSettings;
 import org.whired.ghost.net.Receivable;
 
 /**
@@ -14,5 +14,5 @@ public interface GhostUser extends Receivable {
 	 *
 	 * @return the settings associated with this user
 	 */
-	public DataSave getSettings();
+	public SessionSettings getSettings();
 }

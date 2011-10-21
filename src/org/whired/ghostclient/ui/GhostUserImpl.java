@@ -3,7 +3,7 @@ package org.whired.ghostclient.ui;
 // TODO add descrip
 import org.whired.ghost.client.ui.GhostFrame;
 import org.whired.ghost.client.ui.GhostUser;
-import org.whired.ghost.client.util.DataSave;
+import org.whired.ghost.client.util.SessionSettings;
 
 public class GhostUserImpl implements GhostUser {
 
@@ -14,17 +14,17 @@ public class GhostUserImpl implements GhostUser {
 	/**
 	 * The settings for this user
 	 */
-	private final DataSave settings;
+	private final SessionSettings settings;
 	/**
 	 * Constructs a new GhostUser
 	 * 
 	 * @param frame the <code>GhostFrame</code> that provides access to 
 	 * the graphical client
 	 */
-	public GhostUserImpl(GhostFrame frame) {
+	public GhostUserImpl(GhostFrame frame, SessionSettings settings) {
 		this.frame = frame;
 		this.frame.setUser(this);
-		this.settings = DataSave.getSettings();
+		this.settings = settings;
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class GhostUserImpl implements GhostUser {
 	 *
 	 * @return the settings associated with this user
 	 */
-	public DataSave getSettings() {
+	public SessionSettings getSettings() {
 		return this.settings;
 	}
 }

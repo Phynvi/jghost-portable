@@ -17,19 +17,15 @@ public class Player implements Serializable {
 	 * The rights of this player
 	 */
 	private byte rights;
-
+	
 	/**
 	 * Creates a new player with the specified name and rights
 	 * @param name the name of the player
 	 * @param rights the rights of the player (-128 to 127)
 	 */
-	public Player(String name, int rights) {
+	public Player(String name, Rank rank) {
 		this.name = name;
-		if (rights > 127)
-			rights = 127;
-		if (rights < 0)
-			rights = 0;
-		this.rights = (byte) rights;
+		this.rights = (byte)rank.getLevel();
 	}
 
 	/**
@@ -76,7 +72,6 @@ public class Player implements Serializable {
 	public int getRights() {
 		return rights;
 	}
-
 	/**
 	 * Sets the rights of this player
 	 * @param rights the rights to set (-128 to 127)

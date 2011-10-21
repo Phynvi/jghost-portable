@@ -14,8 +14,9 @@ import org.whired.ghost.client.ui.GhostFrame;
 import org.whired.ghost.client.util.CommandHandler;
 import org.whired.ghost.client.util.CommandMalformedException;
 import org.whired.ghost.client.util.CommandNotFoundException;
-import org.whired.ghost.client.util.DataSave;
+import org.whired.ghost.client.util.SessionSettings;
 import org.whired.ghost.net.model.player.Player;
+import org.whired.ghost.net.model.player.Rank;
 import org.whired.ghost.net.packet.PublicChatPacket;
 import org.whired.rsmap.ui.RSMap;
 
@@ -318,13 +319,7 @@ public abstract class GhostFrameUI extends GhostFrame {
 		});
 	}
 	private JLabel imageLabel;
-	//protected Icon[] rightsIcons;
-	protected TreeMap<Integer, Icon> rightsIcons = new TreeMap<Integer, Icon>();
 
-	protected Icon getRightsIcon(int right) {
-		return rightsIcons.get(right < rightsIcons.firstKey() ? rightsIcons.firstKey() : right > rightsIcons.lastKey() ? rightsIcons.lastKey() : right);
-	}
-	
 	/**
 	 * Builds the GUI components
 	 */
@@ -333,8 +328,6 @@ public abstract class GhostFrameUI extends GhostFrame {
 		try {
 			imageLabel = new JLabel();
 			imageLabel.setIcon(new ImageIcon(this.getClass().getResource("resources/interfacetest.png")));
-			for (int i = 0; i < 5; i++)
-				rightsIcons.put(i, new ImageIcon(this.getClass().getResource("resources/level_" + i + ".png")));
 		}
 		catch (Exception e) {
 			Vars.getLogger().warning("Error while loading graphical resources:");
@@ -375,13 +368,36 @@ public abstract class GhostFrameUI extends GhostFrame {
 		};
 		playerListComponent = new JList();
 		playerListComponent.setCellRenderer(new DefaultListCellRenderer() {
-			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-				JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-				if(value instanceof Player) {
-					Player player = (Player)value;
-					label.setIcon(getRightsIcon(player.getRights()));
-					label.setHorizontalTextPosition(JLabel.LEFT);
+
+			public Component getListCellRendererComponent(JList list, final Object value, int index, final boolean isSelected, boolean cellHasFocus) {
+				final Player player;
+				final Rank playerRank;
+				if (value instanceof Player) {
+					player = (Player) value;
+					playerRank = getUser().getSettings().getRanks().forLevel(player.getRights());
 				}
+				else {
+					player = null;
+					playerRank = null;
+				}
+				JLabel label = new JLabel(value.toString()) {
+
+					public void paint(Graphics g) {
+						if(isSelected) {
+							g.setColor(new Color(206, 222, 237, 150));
+							g.fillRect(0, 0, this.getWidth(), this.getHeight());
+							g.drawRect(1, 1, this.getWidth()-2, this.getHeight()-2);
+						}
+						super.paint(g);
+						if(playerRank != null) {
+							Icon i = playerRank.getIcon();
+							i.paintIcon(this, g, getWidth() - i.getIconWidth(), this.getHeight()/2 - i.getIconHeight()/2);
+						}
+						g.dispose();
+					}
+				};
+				if(player != null && playerRank != null)
+					label.setToolTipText(player.getName() + " - "+playerRank.getTitle());
 				return label;
 			}
 		});
@@ -512,7 +528,7 @@ public abstract class GhostFrameUI extends GhostFrame {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				try {
-					DataSave.saveSettings(getUser().getSettings());
+					SessionSettings.saveToDisk(getUser().getSettings());
 				}
 				catch (Exception fe) {
 					// It's too late to do anything here

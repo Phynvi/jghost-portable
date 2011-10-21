@@ -14,6 +14,7 @@ import org.whired.ghost.client.util.CommandHandler;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.model.player.MapPlayer;
 import org.whired.ghost.net.model.player.Player;
+import org.whired.ghost.net.model.player.Rank;
 import org.whired.ghost.net.packet.PrivateChatPacket;
 import org.whired.ghost.net.reflection.ReflectionPacketContainer;
 
@@ -84,7 +85,7 @@ public class GhostFrameImpl extends GhostFrameUI {
 						}
 					}
 				}
-				displayPrivateChat(getUser().getSettings().getPlayer(), new Player(args[0], rights), message);
+				displayPrivateChat(getUser().getSettings().getPlayer(), new Player(args[0], getUser().getSettings().getRanks().forLevel(rights)), message);
 				return true;
 			}
 		});
@@ -188,7 +189,7 @@ public class GhostFrameImpl extends GhostFrameUI {
 	private int curRight = 8;
 	@Override
 	public void restartButActionPerformed(ActionEvent evt) {
-		playerList.addElement(new MapPlayer("whired", curRight--, 2000, 2000, map)); // TODO actual implementation
+		playerList.addElement(new MapPlayer("whired", getUser().getSettings().getRanks().forLevel(curRight--), 2000, 2000, map)); // TODO actual implementation
 	}
 
 	/**
@@ -199,7 +200,7 @@ public class GhostFrameImpl extends GhostFrameUI {
 	 */
 	@Override
 	public void displayPublicChat(Player sender, String message) {
-		Icon i = getRightsIcon(sender.getRights());
+		Icon i = getUser().getSettings().getRanks().forLevel(sender.getRights()).getIcon();
 		try {
 			Style iconOnly = chatOutput.getStyledDocument().getStyle("iconOnly");
 			if (iconOnly == null)
@@ -219,8 +220,8 @@ public class GhostFrameImpl extends GhostFrameUI {
 	@Override
 	public void displayPrivateChat(Player sender, Player recipient, String message) {
 		if (new PrivateChatPacket().send(getConnection(), sender, recipient, message)) {
-			Icon senderIcon = getRightsIcon(sender.getRights());
-			Icon recpIcon = getRightsIcon(recipient.getRights());
+			Icon senderIcon = getUser().getSettings().getRanks().forLevel(sender.getRights()).getIcon();
+			Icon recpIcon = getUser().getSettings().getRanks().forLevel(recipient.getRights()).getIcon();
 			try {
 				Style iconOnly = pmOutput.getStyledDocument().getStyle("iconOnly");
 				if (iconOnly == null)
