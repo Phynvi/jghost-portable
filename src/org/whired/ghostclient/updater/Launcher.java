@@ -26,6 +26,10 @@ public class Launcher implements Runnable {
 	 */
 	private static final String LOCAL_CODEBASE = System.getProperty("user.home") + "/.ghost/cache/";
 	/**
+	 * The entry point of the main application
+	 */
+	private final String ENTRY_POINT = "org.whired.ghostclient.Main";
+	/**
 	 * The GUI to display output on
 	 */
 	private final UpdaterForm form;
@@ -63,7 +67,7 @@ public class Launcher implements Runnable {
 			form.log("Hashes match, GHOST is up-to-date!");
 			form.log("Attempting to launch..");
 			try {
-				ProcessBuilder pb = new ProcessBuilder("java", "-classpath", LOCAL_CODEBASE + PACKAGE_NAME, "org.whired.ghostclient.Main");
+				ProcessBuilder pb = new ProcessBuilder("java", "-classpath", LOCAL_CODEBASE + PACKAGE_NAME, ENTRY_POINT);
 				pb.start();
 				form.log("Exiting..");
 				try {

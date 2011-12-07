@@ -23,9 +23,9 @@ public class Player implements Serializable {
 	 * @param name the name of the player
 	 * @param rights the rights of the player (-128 to 127)
 	 */
-	public Player(String name, Rank rank) {
+	public Player(String name, int rights) {
 		this.name = name;
-		this.rights = (byte)rank.getLevel();
+		this.rights = (byte)rights;//rank.getLevel();
 	}
 
 	/**

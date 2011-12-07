@@ -2,7 +2,7 @@ package org.whired.ghost.client.util;
 
 import org.whired.ghost.Vars;
 import org.whired.ghost.client.net.ClientConnection;
-import org.whired.ghost.client.ui.GhostFrame;
+import org.whired.ghost.net.model.GhostFrame;
 // TODO implement contents as Commands and deprecate this class
 public class CommandProcessor
 {

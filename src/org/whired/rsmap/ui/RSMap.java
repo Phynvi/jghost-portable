@@ -833,11 +833,11 @@ public class RSMap extends RSCanvas implements PaintObserver {
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		System.out.println(this.desiredZoomLevel);
 		if (e.getWheelRotation() > 0)
-			if (this.desiredZoomLevel - 0.1D > 1)
-				this.desiredZoomLevel -= 0.1D;
+			if (this.desiredZoomLevel - 0.5D > 1)
+				this.desiredZoomLevel -= 0.5D;
 			else
 				this.desiredZoomLevel = 1;
 		else
-			this.desiredZoomLevel += 0.1D;
+			this.desiredZoomLevel += 0.5D;
 	}
 }

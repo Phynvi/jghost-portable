@@ -1,25 +1,24 @@
-package org.whired.ghost.client.ui;
+package org.whired.ghost.net.model;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.whired.ghost.Vars;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.Receivable;
-import org.whired.ghost.net.reflection.PacketLoader;
 import org.whired.ghost.net.reflection.ReflectionPacketContainer;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
-import javax.swing.JFrame;
+import org.whired.ghost.client.ui.GhostUser;
+import org.whired.ghost.client.ui.ReflectionPacketBuilderManager;
+import org.whired.ghost.net.PacketHandler;
 import org.whired.ghost.net.SessionManager;
-import org.whired.ghost.net.model.player.MapPlayer;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.packet.PlayerMovementPacket;
 import org.whired.ghost.net.packet.PublicChatPacket;
 import org.whired.ghost.net.reflection.Accessor;
-import org.whired.rsmap.ui.RSMap;
+import org.whired.ghost.net.model.player.PlayerList;
+import org.whired.rsmap.ui.RSMap; // TODO remove
 
 /**
  * Provides the functionality and layout for a standard implementation of a JFrame that will utilize Ghost's core
@@ -27,7 +26,7 @@ import org.whired.rsmap.ui.RSMap;
  *
  * @author Whired
  */
-public abstract class GhostFrame extends JFrame implements Receivable, SessionManager {
+public abstract class GhostFrame implements Receivable, SessionManager {
 
 	/**
 	 * The connection used by this frame
@@ -45,19 +44,11 @@ public abstract class GhostFrame extends JFrame implements Receivable, SessionMa
 	 * The map for this frame
 	 */
 	protected RSMap map;
-	/*
-	 * Packets that have been registered to this frame
-	 */
-	private HashMap<Integer, GhostPacket> packets = new HashMap<Integer, GhostPacket>();
+	
+	public PacketHandler packetHandler = new PacketHandler();
 
-	/**
-	 * Registers a packet
-	 * @param packet the packet to register
-	 */
-	public void registerPacket(GhostPacket packet) {
-		packets.put(packet.getId(), packet);
-	}
-
+	protected PlayerList playerList;
+	
 	/**
 	 * Sets the user of this frame
 	 *
@@ -103,7 +94,8 @@ public abstract class GhostFrame extends JFrame implements Receivable, SessionMa
 	 * Requests that this frame closes
 	 */
 	public void requestExit() {
-		this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+		throw new RuntimeException("NOT IMPLEMENTED!");
+		//this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
 
 	/**
@@ -123,6 +115,8 @@ public abstract class GhostFrame extends JFrame implements Receivable, SessionMa
 	 */
 	public abstract void displayPrivateChat(Player sender, Player recipient, String message);
 
+	public abstract void displayDebug(Level level, String message);
+	
 	/**
 	 * Called when a packet is received; packets that should be handled
 	 * internally are handled here
@@ -167,7 +161,7 @@ public abstract class GhostFrame extends JFrame implements Receivable, SessionMa
 			default:
 				// Notify whatever higher listener that they are to handle this packet
 				//Vars.getLogger().fine("Pushing noninternal packet " + packetId + " to external listener " + this.getUser());
-				GhostPacket packet = packets.get(packetId);
+				GhostPacket packet = packetHandler.get(packetId);
 				if (packet != null)
 					packet.receive(connection);
 				else
@@ -182,25 +176,30 @@ public abstract class GhostFrame extends JFrame implements Receivable, SessionMa
 	 * the formation of a reflection packet
 	 */
 	protected void displayReflectionManager() {
-		if (this.getConnection() != null) {
-			reflectionPacketBuilderManager = new ReflectionPacketBuilderManager((JFrame) this.getOwner(), this.getConnection());
-			reflectionPacketBuilderManager.setPacketLoader(new PacketLoader() {
-				
-				@Override
-				public void loadPacket(final ReflectionPacketContainer container) {
-					bindPacket(container);
-				}
-			});
-			reflectionPacketBuilderManager.performReflection();
-		}
-		else
-			Vars.getLogger().warning("Cannot perform remote reflection - no connection to server.");
+		throw new UnsupportedOperationException("Momentarily disabled.");
+//		if (this.getConnection() != null) {
+//			reflectionPacketBuilderManager = new ReflectionPacketBuilderManager((JFrame) this.getOwner(), this.getConnection());
+//			reflectionPacketBuilderManager.setPacketLoader(new PacketLoader() {
+//				
+//				@Override
+//				public void loadPacket(final ReflectionPacketContainer container) {
+//					bindPacket(container);
+//				}
+//			});
+//			reflectionPacketBuilderManager.performReflection();
+//		}
+//		else
+//			Vars.getLogger().warning("Cannot perform remote reflection - no connection to server.");
 	}
-
+	
 	/**
-	 * Called when a reflection packet has been built
+	 * Invoked when a reflection packet has been built
 	 *
 	 * @param container holds information about the packet
 	 */
 	protected abstract void bindPacket(final ReflectionPacketContainer container);
+	
+	public PlayerList getPlayerList() {
+		return this.playerList;
+	}
 }

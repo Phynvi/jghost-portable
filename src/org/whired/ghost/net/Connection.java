@@ -1,8 +1,10 @@
 package org.whired.ghost.net;
 
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.whired.ghost.Vars;
+import org.whired.ghost.net.event.ConnectionStateListener;
 import org.whired.ghost.net.packet.GhostAuthenticationPacket;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.packet.UnhandledPacket;
@@ -13,7 +15,7 @@ import org.whired.ghost.net.packet.UnhandledPacket;
  * A friendly middle layer between the connection protocols and the stream wrappers. Keeps as much of the more
  * advanced code as hidden as possible.
  */
-public class Connection implements SessionManager {
+public abstract class Connection implements SessionManager {
 
 	/**
 	 * The WrappedInputStream to be utilized.
@@ -65,6 +67,26 @@ public class Connection implements SessionManager {
 		this.inputStream.setManager(this);
 	}
 
+	private HashSet<ConnectionStateListener> stateListeners;
+	
+	public void addStateListener(ConnectionStateListener listener) {
+		stateListeners.add(listener);
+	}
+	
+	public void removeStateListener(ConnectionStateListener listener) {
+		stateListeners.remove(listener);
+	}
+	
+	private void notifyConnected() {
+		for(ConnectionStateListener l : stateListeners)
+			l.connected();
+	}
+	
+	private void notifyDisconnected() {
+		for(ConnectionStateListener l : stateListeners)
+			l.disconnected();
+	}
+	
 	/**
 	 * Creates a new connection with the specified streams and listeners
 	 *
@@ -93,7 +115,6 @@ public class Connection implements SessionManager {
 					try {
 						inputStream.expectingNewPacket = true;
 						handlePacket(inputStream.readByte(), inputStream.readByte());
-						//handlePacket(inputStream.readUnsignedByte(), inputStream.readUnsignedByte());
 						inputStream.expectingNewPacket = false;
 					}
 					catch (Exception real) {
@@ -113,6 +134,7 @@ public class Connection implements SessionManager {
 				ap.receive(this);
 				if (ap.password.equals(password)) {
 					Vars.getLogger().fine("Password matched, client accepted.");
+					notifyConnected();
 					expectingPassword = false;
 				}
 				else
@@ -137,12 +159,13 @@ public class Connection implements SessionManager {
 				Vars.getLogger().fine("Notifying receivable that external packet " + packetId + " has been received.");
 				if (!receivable.handlePacket(packetId, length, this)) {
 					new UnhandledPacket(length).receive(this);
-					Vars.getLogger().fine("Flushed unhandled packet " + packetId);
+					Vars.getLogger().fine("Flushed unhandled packet " + packetId + " with length "+length);
 				}
 			}
 	}
 
 	/**
+	 * // TODO fix these messy comments
 	 * Sends a packet with the specified id and payload
 	 * <p>
 	 * An example usage of this method might look like this:
@@ -205,6 +228,7 @@ public class Connection implements SessionManager {
 	public void terminationRequested(String reason) {
 		if (!terminationRequested) {
 			sendPacket(4, "Terminating. Reason: " + reason);
+			notifyDisconnected();
 			Vars.getLogger().info("Termination requested [Reason: " + (reason != null ? reason + "]" : "unspecified]") + " - Target: " + this);
 			synchronized (this) {
 				Vars.getLogger().fine("Lock acquired.");
@@ -217,6 +241,7 @@ public class Connection implements SessionManager {
 				Vars.getLogger().fine("Notified");
 				if (manager != null)
 					manager.terminationRequested("Connection cleanup");
+				
 			}
 		}
 		else

@@ -2,7 +2,7 @@ package org.whired.ghost.client.util;
 
 import java.io.*;
 import org.whired.ghost.net.model.player.Player;
-import org.whired.ghost.net.model.player.RankDefinitions;
+import org.whired.ghost.net.model.player.RankHandler;
 
 public class SessionSettings implements Serializable {
 
@@ -12,11 +12,9 @@ public class SessionSettings implements Serializable {
 	public String[] defaultConnect = new String[3];
 	public boolean debugOn = false;
 	private final Player player;
-	private transient RankDefinitions ranks;
 	
-	public SessionSettings(Player player, RankDefinitions ranks) {
+	public SessionSettings(Player player) {
 		this.player = player;
-		this.ranks = ranks;
 	}
 
 	/**
@@ -24,11 +22,10 @@ public class SessionSettings implements Serializable {
 	 *
 	 * @return the settings that were initialized
 	 */
-	public static SessionSettings loadFromDisk(RankDefinitions ranks) throws IOException, ClassNotFoundException {
+	public static SessionSettings loadFromDisk() throws IOException, ClassNotFoundException {
 		SessionSettings settings;
 		ObjectInputStream obj = new ObjectInputStream(new FileInputStream(new File(System.getProperty("user.home") + "/.ghost/Settings.NS")));
 		settings = (SessionSettings) obj.readObject();
-		settings.setRanks(ranks);
 		obj.close();
 		return settings;
 	}
@@ -39,14 +36,6 @@ public class SessionSettings implements Serializable {
 			f.mkdirs();
 		ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(System.getProperty("user.home") + "/.ghost/Settings.NS"));
 		obj.writeObject(ds);
-	}
-
-	public RankDefinitions getRanks() {
-		return this.ranks;
-	}
-	
-	public void setRanks(RankDefinitions ranks) {
-		this.ranks = ranks;
 	}
 	
 	/**

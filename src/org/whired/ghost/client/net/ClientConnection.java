@@ -3,7 +3,7 @@ package org.whired.ghost.client.net;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import org.whired.ghost.client.ui.GhostFrame;
+import org.whired.ghost.net.model.GhostFrame;
 import org.whired.ghost.net.*;
 
 /**

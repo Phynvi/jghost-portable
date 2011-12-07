@@ -1,12 +1,12 @@
 package org.whired.ghostclient.ui;
 
 // TODO add descrip
-import org.whired.ghost.client.ui.GhostFrame;
+import org.whired.ghost.net.model.GhostFrame;
 import org.whired.ghost.client.ui.GhostUser;
 import org.whired.ghost.client.util.SessionSettings;
 
 public class GhostUserImpl implements GhostUser {
-
+	
 	/**
 	 * Provides access to the graphical client
 	 */
@@ -27,6 +27,10 @@ public class GhostUserImpl implements GhostUser {
 		this.settings = settings;
 	}
 
+	public GhostFrame getFrame() {
+		return this.frame;
+	}
+	
 	/**
 	 * Called when an external packet is received
 	 *

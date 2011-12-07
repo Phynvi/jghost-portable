@@ -104,7 +104,8 @@ public class WrappedOutputStream
 	*/
 	public void writeByte(int value) throws java.io.IOException
 	{
-		writeObject((byte)value);
+		//writeObject((byte)value);
+		os.write(value);
 	}
 	
 	/**

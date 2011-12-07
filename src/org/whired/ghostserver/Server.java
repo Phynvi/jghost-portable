@@ -9,8 +9,7 @@ import org.whired.ghost.Vars;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.Receivable;
 
-public class Server implements Runnable
-{
+public class Server implements Runnable {
 
 	private final int PORT_NUM;
 	private static final int MIN_THROTTLING_MS = 5000;
@@ -46,8 +45,7 @@ public class Server implements Runnable
 	 * @throws IOException if the server cannot be initialized
 	 * @throws IllegalArgumentException if {@code passPhrase} does not meet the specified criteria
 	 */
-	public Server(Receivable receivable, String passPhrase) throws IOException, IllegalArgumentException
-	{
+	public Server(Receivable receivable, String passPhrase) throws IOException, IllegalArgumentException {
 		this(43596, receivable, passPhrase);
 	}
 
@@ -79,44 +77,33 @@ public class Server implements Runnable
 	 * @throws IllegalArgumentException if {@code passPhrase} does not meet the specified criteria
 	 *
 	 */
-	public Server(int port, Receivable receivable, String passPhrase) throws IOException, IllegalArgumentException
-	{
-		// TODO Use regex
+	public Server(int port, Receivable receivable, String passPhrase) throws IOException, IllegalArgumentException {
 		boolean canBeShort = false;
-		for (char c : passPhrase.toCharArray())
-		{
-			if (!Character.isLetter(c))
-			{
+		for (char c : passPhrase.toCharArray()) {
+			if (!Character.isLetter(c)) {
 				canBeShort = true;
 				break;
 			}
 		}
-		if (((passPhrase.length() >= 6) && canBeShort) || (passPhrase.length() >= 12))
-		{
+		if (((passPhrase.length() >= 6) && canBeShort) || (passPhrase.length() >= 12)) {
 			this.PORT_NUM = port;
 			this.receivable = receivable;
 			this.passPhrase = passPhrase;
 			this.ssock = new ServerSocket(this.PORT_NUM);
 			new Thread(this, "ServerAccepter").start();
 		}
-		else
-		{
+		else {
 			throw new IllegalArgumentException("Password must be at least 6 characters with symbols/numerals or 12 characters without.");
 		}
 	}
 
-	public void run()
-	{
-		while (true)
-		{
-			try
-			{
+	public void run() {
+		while (true) {
+			try {
 				Socket s = this.ssock.accept();
 				SocketAddress address = s.getRemoteSocketAddress();
-				if (!isThrottling(address))
-				{
-					if (s.getInputStream().read() == 48)
-					{
+				if (!isThrottling(address)) {
+					if (s.getInputStream().read() == 48) {
 						Vars.getLogger().fine(address + " was not present in throttlers list.");
 						this.connection = new ServerConnection(s, this.receivable, this.passPhrase);
 						Vars.getLogger().severe("Connection is now " + this.connection);
@@ -125,20 +112,17 @@ public class Server implements Runnable
 						s.close();
 						Vars.getLogger().info("Dropped connection: Session ended");
 					}
-					else
-					{
+					else {
 						s.close();
 						Vars.getLogger().info("Dropped connection: Invalid opcode (expected 48)");
 					}
 				}
-				else
-				{
+				else {
 					s.close();
 					Vars.getLogger().info("Dropped connection: Client is throttling");
 				}
 			}
-			catch (IOException ioe)
-			{
+			catch (IOException ioe) {
 				Vars.getLogger().info("Dropped connection: " + ioe.getMessage());
 			}
 		}
@@ -148,16 +132,13 @@ public class Server implements Runnable
 	 * Gets the current connection to the client if one exists
 	 * @return the current connection if one exists, otherwise {@code null}
 	 */
-	public Connection getConnection()
-	{
+	public Connection getConnection() {
 		return this.connection;
 	}
 
-	private boolean isThrottling(SocketAddress remoteSocketAddress)
-	{
+	private boolean isThrottling(SocketAddress remoteSocketAddress) {
 		Long lastConnTime = (Long) this.throttlerList.get(remoteSocketAddress);
-		if ((lastConnTime == null) || (System.currentTimeMillis() - lastConnTime.longValue() > MIN_THROTTLING_MS))
-		{
+		if ((lastConnTime == null) || (System.currentTimeMillis() - lastConnTime.longValue() > MIN_THROTTLING_MS)) {
 			Vars.getLogger().fine("Adding " + remoteSocketAddress + " as a throttlng connection.");
 			this.throttlerList.put(remoteSocketAddress, Long.valueOf(System.currentTimeMillis()));
 			return false;

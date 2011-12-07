@@ -14,7 +14,7 @@ public class CommandHandler {
 	/**
 	 * Contains all the commands
 	 */
-	public static HashMap<String, Command> commands = new HashMap<String, Command>();
+	private HashMap<String, Command> commands = new HashMap<String, Command>();
 	private Logger log;
 
 	/**
@@ -109,11 +109,16 @@ public class CommandHandler {
 			e.printStackTrace();
 	}
 
-	public static void addCommand(Command command) {
+	public void registerCommand(Command command) {
 		System.out.println("Adding command: " + command);
 		commands.put(command.toString(), command);
 	}
 
+	public void registerCommands(Command[] commands) {
+		for(Command c : commands)
+			registerCommand(c);
+	}
+	
 	/**
 	 * @return the verbose
 	 */

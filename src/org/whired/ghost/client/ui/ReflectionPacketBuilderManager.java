@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.reflection.Accessor;
-import org.whired.ghost.net.reflection.Method;
 import org.whired.ghost.net.reflection.PacketLoader;
 import org.whired.ghost.net.reflection.ReflectionPacketContainer;
 
@@ -61,28 +60,29 @@ public class ReflectionPacketBuilderManager {
 	}
 
 	public ArrayList<Accessor> getAccessorChain(String title, String typeMatch, boolean staticOnly) {
-		ArrayList<Accessor> accessorChain = new ArrayList<Accessor>();
-		boolean finished = false;
-		while (!finished) {
-			focusedDialog = new ReflectionPacketBuilder(title, this.owner);
-			System.out.println("Sending packet 3 for " + typeMatch);
-			connection.sendPacket(3, typeMatch, staticOnly);
-			focusedDialog.setVisible(true);
-			finished = focusedDialog.fromDoneButton;
-			Accessor a = focusedDialog.getSelectedAccessor();
-			accessorChain.add(a);
-			if (a.isMethod()) {
-				Method meth = (Method) a;
-				if (meth.getParamTypeNames().length > 0)
-					for (String s : meth.getParamTypeNames())
-						meth.addArgument(getAccessorChain("Choose a value for argument (type '" + s + "')", JOptionPane.showInputDialog(owner, "Enter entry point of application\nExample: org.whired.app.Main", "Choose entry", JOptionPane.QUESTION_MESSAGE), true)); //TODO REMOVE HARDCODE
-				finished = finished || a.getType().equals("void");
-				//System.out.println("Finished?: "+finished);
-			}
-			typeMatch = a.getType();
-			staticOnly = false;
-		}
-		return accessorChain;
+		throw new RuntimeException("Needs reimplement"); // TODO reimplement
+//		ArrayList<Accessor> accessorChain = new ArrayList<Accessor>();
+//		boolean finished = false;
+//		while (!finished) {
+//			focusedDialog = new ReflectionPacketBuilder(title, this.owner);
+//			System.out.println("Sending packet 3 for " + typeMatch);
+//			connection.sendPacket(3, typeMatch, staticOnly);
+//			focusedDialog.setVisible(true);
+//			finished = focusedDialog.fromDoneButton;
+//			Accessor a = focusedDialog.getSelectedAccessor();
+//			accessorChain.add(a);
+//			if (a.isMethod()) {
+//				RMIMethod meth = (RMIMethod) a;
+//				if (meth.getParamTypeNames().length > 0)
+//					for (String s : meth.getParamTypeNames())
+//						meth.addArgument(getAccessorChain("Choose a value for argument (type '" + s + "')", JOptionPane.showInputDialog(owner, "Enter entry point of application\nExample: org.whired.app.Main", "Choose entry", JOptionPane.QUESTION_MESSAGE), true)); //TODO REMOVE HARDCODE
+//				finished = finished || a.getType().equals("void");
+//				//System.out.println("Finished?: "+finished);
+//			}
+//			typeMatch = a.getType();
+//			staticOnly = false;
+//		}
+//		return accessorChain;
 	}
 
 	public void setList(ArrayList<Accessor> list) {

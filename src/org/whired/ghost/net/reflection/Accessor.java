@@ -1,163 +1,167 @@
 package org.whired.ghost.net.reflection;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Stack;
 
 /**
-* Represents an Object; Used in conjunction with the reflection system.
-*
-* @author Whired
-*/
-public class Accessor implements java.io.Serializable
-{
-	/** The name of the accessor */
-	private final String name;
-
-	/** The name of the type of the accessor */
-	private final String typeName;
-
-	/** The class that contains this accessor */
-	private final String declaringClass;
-
-	/** Whether or not the accessor is static */
-	private final boolean isStatic;
-
-	/** The description of the Object this accessor represents */
-	private final String description;
-
-	public Accessor(String name, String typeName, String declaringClass, boolean isStatic, String description)
-	{
-		this.name = name;
-		this.typeName = typeName.equals("int") ? "java.lang.Integer" : typeName.equals("boolean") ? "java.lang.Boolean" : typeName; // TODO add all prims
-		this.declaringClass = declaringClass;
-		this.isStatic = isStatic;
-		this.description = description;
-	}
+ * Represents an Object; Used in conjunction with the reflection system.
+ * 
+ * @author Whired
+ */
+public abstract class Accessor implements java.io.Serializable {
 
 	/**
-	* Gets the name of this accessor
-	*
-	* @return the name of this accessor
-	*/
-	public String getName()
-	{
+	 * The name of the accessor
+	 */
+	private final String name;
+	/**
+	 * The class that contains this accessor
+	 */
+	protected String declaringClass;
+	/**
+	 * Whether or not the accessor is static
+	 */
+	private final boolean isStatic;
+
+	protected Accessor(String name, boolean isStatic) {
+		this.name = name;
+		this.isStatic = isStatic;
+	}
+	
+	public RMIField getField(String name) {
+		RMIField f = new RMIField(name, instruction.size() == 1);
+		f.declaringClass = this.name;
+		f.instruction.addAll(instruction);
+		f.instruction.add(f);
+		return f;
+	}
+	
+	public RMIMethod getMethod(String name, Object... params) {
+		RMIMethod m = new RMIMethod(name, instruction.size() == 1, params);
+		m.declaringClass = this.name;
+		m.instruction.addAll(instruction);
+		m.instruction.add(m);
+		return m;
+	}
+
+	public static RMIClass getClass(String name) {
+		RMIClass c = new RMIClass(name);
+		c.instruction.add(c);
+		return c;
+	}
+	
+	protected LinkedList<Accessor> instruction = new LinkedList<Accessor>();
+	
+	/**
+	 * Gets the name of this accessor
+	 *
+	 * @return the name of this accessor
+	 */
+	public String getName() {
 		return this.name;
 	}
 
 	/**
-	* Gets the declaring class for this accessor
-	*
-	 * @return the <code>Class</code> that contains this accessor
-	 * @throws ClassNotFoundException When this accessor cannot be cast to {@link org.whired.ghost.net.reflection.Accessor#getDeclaringClassName()}
-	*/
-	public Class getDeclaringClass() throws ClassNotFoundException
-	{
-		return Class.forName(this.declaringClass);
-	}
-
-	/**
-	* Gets the name of the declaring class for this Accessor
-	*
-	* @return the name of the class that contains this Accessor
-	*/
-	public String getDeclaringClassName()
-	{
+	 * Gets the name of the declaring class for this Accessor
+	 *
+	 * @return the name of the class that contains this Accessor
+	 */
+	public String getDeclaringClassName() {
 		return this.declaringClass;
 	}
 
 	/**
-	* Specifies whether or not this accessor is static
-	*
-	* @return {@code true} if this accessor is static, otherwise {@code false}
-	*/
-	public boolean isStatic()
-	{
+	 * Specifies whether or not this accessor is static
+	 *
+	 * @return {@code true} if this accessor is static, otherwise {@code false}
+	 */
+	public boolean isStatic() {
 		return this.isStatic;
 	}
 
+	public boolean isClass() {
+		return this instanceof RMIClass;
+	}
+	
+	public RMIClass asClass() {
+		if(this.isClass())
+			return (RMIClass)this;
+		else
+			throw new ClassCastException(this.getName() + " is not a "+RMIClass.class.getName());
+	}
+	
 	/**
-	* Checks to see if this accessor is a {@link org.whired.ghost.net.reflection.Field}
-	*
-	* @return {@code true} if the accessor is a {@code Field}, otherwise {@code false}
-	*/
-	public boolean isField()
-	{
-		return this instanceof org.whired.ghost.net.reflection.Field;
+	 * Checks to see if this accessor is a {@link org.whired.ghost.net.reflection.RMIField}
+	 *
+	 * @return {@code true} if the accessor is a {@code RMIField}, otherwise {@code false}
+	 */
+	public boolean isField() {
+		return this instanceof RMIField;
+	}
+
+	public RMIField asField() {
+		if (this.isField())
+			return (RMIField) this;
+		else
+			throw new ClassCastException(this.getName() + " is not a "+RMIField.class.getName());
 	}
 
 	/**
-	* Checks to see if this accessor is a {@link org.whired.ghost.net.reflection.Method}
-	*
-	* @return {@code true} if the accessor is a {@code Method}, otherwise {@code false}
-	*/
-	public boolean isMethod()
-	{
-		return this instanceof org.whired.ghost.net.reflection.Method;
+	 * Checks to see if this accessor is a {@link org.whired.ghost.net.reflection.RMIMethod}
+	 *
+	 * @return {@code true} if the accessor is a {@code RMIMethod}, otherwise {@code false}
+	 */
+	public boolean isMethod() {
+		return this instanceof org.whired.ghost.net.reflection.RMIMethod;
 	}
 
-	/**
-	* Gets the type of this accessor
-	*
-	* @return the name of the type this accessor represents
-	*/
-	public String getType()
-	{
-		return this.typeName;
+	public RMIMethod asMethod() {
+		if (this.isMethod())
+			return (org.whired.ghost.net.reflection.RMIMethod) this;
+		else
+			throw new ClassCastException(this.getName() + " is not a "+RMIMethod.class.getName());
 	}
-
 	/**
-	* Gets the String that represents this accessor
-	*
-	* @return the formatted String that represents this accessor
-	*/
+	 * Gets the String that represents this accessor
+	 *
+	 * @return the formatted String that represents this accessor
+	 */
 	@Override
-	public String toString()
-	{
-		return this.description;
+	public String toString() {
+		return this.name;
 	}
-
-	/**
-	* Gets a list of accessors within a given class
-	*
-	* @throws ClassNotFoundException if the given class could not be found
-	*
-	* @param top the name of the class to search in
-	* @param staticOnly whether or not to search only static accessors
-	*
-	* @return the list of accessors that were found
-	*/
-	public static ArrayList<Accessor> getAccessors(String top, boolean staticOnly) throws ClassNotFoundException
-	{
-		Class c = Class.forName(top);
-		ArrayList<Accessor> accessorList = new ArrayList<Accessor>();
-  		java.lang.reflect.Method[] methods = c.getMethods();
-  		java.lang.reflect.Field[] fields = c.getFields();
-  		for(java.lang.reflect.Field field : fields)
-  		{
-  			if(!staticOnly || java.lang.reflect.Modifier.isStatic(field.getModifiers()))
-  			{
-  				accessorList.add(new Field(field.getName(), field.getType().getName(), top, staticOnly, field.toString()));
-			}
-  		}
-  		for(java.lang.reflect.Method method : methods)
-  		{
-  			if(!staticOnly || java.lang.reflect.Modifier.isStatic(method.getModifiers()))
-  			{
-  				accessorList.add(new Method(method.getName(), method.getReturnType().getName(),top, staticOnly, method.toString(), method.getParameterTypes()));
+	
+	public Object invoke() throws InvocationTargetException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
+		Object curObj = null;
+		if (instruction.size() > 1) {
+			Class cls;
+			Accessor a = instruction.get(0);
+			if(a.isClass())
+				cls = a.asClass().getDeclaringClass();
+			else
+				throw new ClassCastException("First instruction must be a "+RMIClass.class.getName());
+			System.out.println(instruction.get(0).toString());
+			for (int i = 1; i < instruction.size(); i++) {
+				a = instruction.get(i);
+				if (a.isField()) {
+					Field f = cls.getField(a.name);
+					cls = f.getType();
+					curObj = f.get(curObj);
+				}
+				else {
+					Method m = cls.getMethod(a.name, a.asMethod().getParameters());
+					cls = m.getReturnType();
+					curObj = m.invoke(curObj, a.asMethod().getArgumentValues());
+				}
 			}
 		}
-  		return accessorList;
-	}
-
-	private Object currentObject = null;
-
-	public void setCurrentObject(Object currentObject)
-	{
-		this.currentObject = currentObject;
-	}
-
-	public Object getCurrentObject()
-	{
-		return this.currentObject;
+		else
+			throw new InvocationTargetException(new RuntimeException("Instructions not complete"));
+		return curObj;
 	}
 }
-
