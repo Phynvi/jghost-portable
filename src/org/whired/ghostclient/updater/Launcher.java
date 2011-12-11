@@ -51,7 +51,9 @@ public class Launcher implements Runnable {
 		try {
 			String remoteHash = getRemoteHash(REMOTE_CODEBASE + PACKAGE_NAME);
 			String localHash = getLocalHash(LOCAL_CODEBASE + PACKAGE_NAME);
-			boolean match = localHash != null && remoteHash.toLowerCase().equals(localHash.toLowerCase());
+			boolean match = remoteHash.toLowerCase().equals(localHash.toLowerCase());
+			form.log("Remote: " + remoteHash.substring(remoteHash.length()/2));
+			form.log("Local: " + localHash.substring(localHash.length()/2));
 			while (!match) {
 				form.log("Hash mismatch.");
 				form.log("Downloading new version..");
@@ -118,8 +120,7 @@ public class Launcher implements Runnable {
 		catch (Exception ex) {} // Swallow irrelevant exceptions
 		finally {
 			try {
-				if(bis != null)
-					bis.close();
+				bis.close();
 			}
 			catch (IOException ex) {}
 		}

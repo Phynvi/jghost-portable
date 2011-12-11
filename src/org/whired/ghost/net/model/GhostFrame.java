@@ -26,12 +26,12 @@ import org.whired.rsmap.ui.RSMap; // TODO remove
  *
  * @author Whired
  */
-public abstract class GhostFrame implements Receivable {
+public abstract class GhostFrame implements Receivable, SessionManager {
 
 	/**
-	 * The SessionManager for this frame
+	 * The connection used by this frame
 	 */
-	private final SessionManager sessionManager;
+	private Connection connection;
 	/**
 	 * The user of this frame
 	 */
@@ -48,21 +48,6 @@ public abstract class GhostFrame implements Receivable {
 	public PacketHandler packetHandler = new PacketHandler();
 
 	protected PlayerList playerList;
-	
-	/**
-	 * Creates a new ghost frame with the specified session manager
-	 * @param sessionManager the session manager to use
-	 */
-	public GhostFrame(SessionManager sessionManager) {
-		this.sessionManager = sessionManager;
-	}
-	
-	/**
-	 * Creates a new ghost frame with a default session manager
-	 */
-	public GhostFrame() {
-		this.sessionManager = new SessionManager();
-	}
 	
 	/**
 	 * Sets the user of this frame
@@ -83,11 +68,34 @@ public abstract class GhostFrame implements Receivable {
 	}
 
 	/**
-	 * Gets the session manager for this frame
-	 * @return the session manager
+	 * Sets the connection for this frame
+	 *
+	 * @param connection the connection to set
 	 */
-	public SessionManager getSessionManager() {
-		return this.sessionManager;
+	public void setConnection(Connection connection) {
+		this.connection = connection;
+	}
+
+	/**
+	 * Gets the connection for this frame
+	 *
+	 * @return the connection if one exists, otherwise {@code null}
+	 */
+	public Connection getConnection() {
+		return this.connection;
+	}
+	
+	@Override
+	public void terminationRequested(String reason) {
+		this.connection = null;
+	}
+
+	/**
+	 * Requests that this frame closes
+	 */
+	public void requestExit() {
+		throw new RuntimeException("NOT IMPLEMENTED!");
+		//this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
 
 	/**
@@ -154,10 +162,8 @@ public abstract class GhostFrame implements Receivable {
 				// Notify whatever higher listener that they are to handle this packet
 				//Vars.getLogger().fine("Pushing noninternal packet " + packetId + " to external listener " + this.getUser());
 				GhostPacket packet = packetHandler.get(packetId);
-				if (packet != null) {
+				if (packet != null)
 					packet.receive(connection);
-					packet.notifyReceived();
-				}
 				else
 					return false;
 			//return this.getUser().handlePacket(packetId, packetLength, connection);

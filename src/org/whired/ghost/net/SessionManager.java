@@ -1,68 +1,23 @@
 package org.whired.ghost.net;
 
-import java.util.HashSet;
-import org.whired.ghost.net.event.SessionEventListener;
-
 /**
- * A session between a client and a server
+ * Used to notify managers of session events
  * @author Whired
  */
-public class SessionManager {
-	private Connection connection;
-	private HashSet<SessionEventListener> listeners = new HashSet<SessionEventListener>();
-	
+public interface SessionManager
+{
+
 	/**
-	 * Adds an event listener to this session manager
-	 * @param listener the listener to add
+	 * Occurs when termination is requested
+	 *
+	 * @param reason the reason the session was terminated
 	 */
-	public void addEventListener(SessionEventListener listener) {
-		listeners.add(listener);
-	}
-	
+	public void terminationRequested(String reason);
+
 	/**
-	 * Removes an event listener from this session manager
-	 * @param listener the listener to remove
+	 * Requests a termination for the specified reason
+	 *
+	 * @param reason the reason for terminating the session
 	 */
-	public void removeEventListener(SessionEventListener listener) {
-		listeners.remove(listener);
-	}
-	
-	/**
-	 * Determines whether or not this session is open
-	 * @return {@code true} if there is currently a connection, otherwise {@code false}
-	 */
-	public boolean sessionIsOpen() {
-		return this.connection != null;
-	}
-	
-	/**
-	 * Removes the current connection
-	 * @param reason the reason the connection is being removed
-	 */
-	public void removeConnection(String reason) {
-		this.connection = null;
-		for(SessionEventListener l : listeners)
-			l.sessionClosed(reason);
-	}
-	
-	/**
-	 * Sets the connection for this session
-	 * @param connection the connection to set
-	 */
-	public void setConnection(Connection connection) {
-		if(sessionIsOpen()) 
-			throw new IllegalStateException("Connection already exists");
-		this.connection = connection;
-		for(SessionEventListener l : listeners)
-			l.sessionOpened();
-	}
-	
-	/**
-	 * Gets the current connection if one exists
-	 * @return the current {@link org.whired.ghost.net.Connection} if one
-	 * exists, otherwise {@code null}
-	 */
-	public Connection getConnection() {
-		return this.connection;
-	}
+	//public void requestTermination(String reason);
 }

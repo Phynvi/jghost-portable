@@ -9,8 +9,12 @@ import javax.swing.JOptionPane;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import org.whired.ghost.Vars;
+import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.model.player.Player;
+import org.whired.ghost.net.packet.GhostPacket;
+import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.packet.PrivateChatPacket;
+import org.whired.ghost.net.reflection.Accessor;
 import org.whired.ghost.net.reflection.ReflectionPacketContainer;
 
 /**
@@ -19,6 +23,92 @@ import org.whired.ghost.net.reflection.ReflectionPacketContainer;
  * @author Whired
  */
 public class GhostFrameImpl extends ClientGhostFrame {
+	
+	public GhostFrameImpl() {
+		
+	}
+	/*
+	public GhostFrameImpl() {
+		//initCommands();
+		registerPacket(new GhostPacket(PacketType.INVOKE_ACCESSOR) {
+
+			@Override
+			public boolean receive(Connection connection) {
+				try {
+					Accessor a = (Accessor) connection.getInputStream().readObject();
+					System.out.println(a.invoke());
+				}
+				catch (Exception ex) {
+					Vars.getLogger().warning("Unable to invoke accessor: "+ex);
+					ex.printStackTrace();
+				}
+				return true;
+			}
+			
+		});
+	}*/
+//
+//	/**
+//	 * Creates a new ghost frame with the specified set of commands
+//	 * @param commands the commands to registerRank
+//	 */
+//	public GhostFrameImpl(Command[] commands) {
+//		commandHandler.registerCommands(commands);
+//	}
+//	
+//	/**
+//	 * Creates a new ghost frame with the specified set of modules
+//	 * @param modules the modules to registerRank
+//	 */
+//	public GhostFrameImpl(Module[] modules) {
+//		
+//	}
+//	
+//	/**
+//	 * Creates a new ghost frame with the specified set of packets
+//	 * @param packets the packets to registerRank
+//	 */
+//	public GhostFrameImpl(GhostPacket[] packets) {
+//		packetHandler.registerPackets(packets);
+//	}
+//	
+//	/**
+//	 * Creates a new ghost frame with the specified set of commands and modules
+//	 * @param commands the commands to registerRank
+//	 * @param modules the modules to registerRank
+//	 */
+//	public GhostFrameImpl(Command[] commands, Module[] modules) {
+//		commandHandler.registerCommands(commands);
+//	}
+//	
+//	/**
+//	 * Creates a new ghost frame with the specified set of commands and packets
+//	 * @param commands the commands to registerRank
+//	 * @param packets the packets to registerRank
+//	 */
+//	public GhostFrameImpl(Command[] commands, GhostPacket[] packets) {
+//		commandHandler.registerCommands(commands);
+//		packetHandler.registerPackets(packets);
+//	}
+//	
+//	/**
+//	 * Creates a new ghost frame with the specified set of modules and packets
+//	 * @param modules the modules to registerRank
+//	 * @param packets the packets to registerRank
+//	 */
+//	public GhostFrameImpl(Module[] modules, GhostPacket[] packets) {
+//		
+//	}
+//	
+//	/**
+//	 * Creates a new ghost frame with the specified set of commands, modules, and packets
+//	 * @param commands the commands to registerRank
+//	 * @param modules the modules to registerRank
+//	 * @param packets the packets to registerRank
+//	 */
+//	public GhostFrameImpl(Command[] commands, Module[] modules, GhostPacket[] packets) {
+//		
+//	}
 	
 	/**
 	 * Initializes the commands that this frame will utilize
@@ -43,7 +133,7 @@ public class GhostFrameImpl extends ClientGhostFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				ReflectionPacketContainer.invoke(packet, getSessionManager().getConnection());
+				ReflectionPacketContainer.invoke(packet, getConnection());
 			}
 		});
 		boundPacketPanel.add(button);
@@ -51,7 +141,7 @@ public class GhostFrameImpl extends ClientGhostFrame {
 	
 	@Override
 	public void restartButActionPerformed(ActionEvent evt) {
-		getSessionManager().getConnection().sendPacket(88);
+		getConnection().sendPacket(88);
 		//playerList.addElement(new MapPlayer("whired", curRight--, 2000, 2000, map)); // TODO actual implementation
 	}
 
@@ -82,7 +172,7 @@ public class GhostFrameImpl extends ClientGhostFrame {
 
 	@Override
 	public void displayPrivateChat(Player sender, Player recipient, String message) {
-		if (new PrivateChatPacket().send(getSessionManager().getConnection(), sender, recipient, message)) {
+		if (new PrivateChatPacket().send(getConnection(), sender, recipient, message)) {
 			Icon senderIcon = rankHandler.rankForLevel(sender.getRights()).getIcon();
 			Icon recpIcon = rankHandler.rankForLevel(recipient.getRights()).getIcon();
 			try {

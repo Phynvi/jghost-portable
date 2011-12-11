@@ -1,5 +1,6 @@
 package org.whired.ghost.net.model.player;
 
+import java.util.TreeMap;
 import javax.swing.Icon;
 
 /**
