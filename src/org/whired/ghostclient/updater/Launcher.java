@@ -51,20 +51,18 @@ public class Launcher implements Runnable {
 		try {
 			String remoteHash = getRemoteHash(REMOTE_CODEBASE + PACKAGE_NAME);
 			String localHash = getLocalHash(LOCAL_CODEBASE + PACKAGE_NAME);
-			boolean match = remoteHash.toLowerCase().equals(localHash.toLowerCase());
-			form.log("Remote: " + remoteHash.substring(remoteHash.length()/2));
-			form.log("Local: " + localHash.substring(localHash.length()/2));
+			boolean match = localHash != null && remoteHash.toLowerCase().equals(localHash.toLowerCase());
 			while (!match) {
 				form.log("Hash mismatch.");
 				form.log("Downloading new version..");
 				HttpClient.saveToDisk(LOCAL_CODEBASE + PACKAGE_NAME, REMOTE_CODEBASE + PACKAGE_NAME);
-				localHash = getLocalHash(LOCAL_CODEBASE + PACKAGE_NAME);
 				form.log("Newest version downloaded.");
 				form.log("Checking sanity..");
+				localHash = getLocalHash(LOCAL_CODEBASE + PACKAGE_NAME);
 				match = remoteHash.toLowerCase().equals(localHash.toLowerCase());
 				break;
 			}
-			form.log("Hashes match, GHOST is up-to-date!");
+			form.log("Hashes match, GHOST is up to date!");
 			form.log("Attempting to launch..");
 			try {
 				ProcessBuilder pb = new ProcessBuilder("java", "-classpath", LOCAL_CODEBASE + PACKAGE_NAME, ENTRY_POINT);
@@ -120,7 +118,8 @@ public class Launcher implements Runnable {
 		catch (Exception ex) {} // Swallow irrelevant exceptions
 		finally {
 			try {
-				bis.close();
+				if(bis != null)
+					bis.close();
 			}
 			catch (IOException ex) {}
 		}

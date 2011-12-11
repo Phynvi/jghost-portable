@@ -1,6 +1,9 @@
 package org.whired.ghostclient;
 
+import java.awt.Component;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import org.whired.ghost.Vars;
 import org.whired.ghost.client.net.ClientConnection;
 import org.whired.ghost.client.util.Command;
@@ -8,11 +11,14 @@ import org.whired.ghost.client.util.SessionSettings;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.model.player.Rank;
+import org.whired.ghost.net.packet.GhostChatPacket;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.reflection.Accessor;
+import org.whired.ghostclient.ui.ClientGhostFrame;
 import org.whired.ghostclient.ui.GhostFrameImpl;
 import org.whired.ghostclient.ui.GhostUserImpl;
+import org.whired.ghostclient.ui.Module;
 
 public class Main {
 
@@ -33,9 +39,9 @@ public class Main {
 			   new Command("disconnect", 0) {
 
 				   public boolean handle(String[] args) {
-					   Connection c = impl.getConnection();
+					   Connection c = impl.getSessionManager().getConnection();
 					   if (c != null) {
-						   c.terminationRequested("User requested.");
+						   impl.getSessionManager().removeConnection("User requested.");
 						   return true;
 					   }
 					   else {
@@ -110,7 +116,7 @@ public class Main {
 							   return false;
 						   }
 						   try {
-							   impl.setConnection(ClientConnection.connect(con[0], Integer.parseInt(con[1]), con[2], impl));
+							   impl.getSessionManager().setConnection(ClientConnection.connect(con[0], Integer.parseInt(con[1]), con[2], impl));
 							   return true;
 						   }
 						   catch (Exception e) {
@@ -131,7 +137,7 @@ public class Main {
 									   return false;
 								   }
 								   try {
-									   impl.setConnection(ClientConnection.connect(args[0], port, args[2], impl));
+									   impl.getSessionManager().setConnection(ClientConnection.connect(args[0], port, args[2], impl));
 									   Vars.getLogger().info("Successfully connected to " + args[0] + ":" + port);
 									   Vars.getLogger().info("Use /connect to quickly connect to this IP in the future.");
 									   impl.getUser().getSettings().defaultConnect[0] = args[0];
@@ -185,6 +191,94 @@ public class Main {
 			}
 			
 		});
+		final Module testModule = new Module() {
+
+			@Override
+			public String getModuleName() {
+				return "Longmodulename";
+			}
+			
+			private final JLabel label = new JLabel("Hello, this is a test module!");
+			private ClientGhostFrame frame = null;
+			@Override
+			public Component getComponent() {
+				return label;
+			}
+
+			@Override
+			public void moduleActivated() {
+				throw new UnsupportedOperationException("Not supported yet.");
+			}
+
+			@Override
+			public void moduleDeactivated() {
+				throw new UnsupportedOperationException("Not supported yet.");
+			}
+
+			@Override
+			public void setFrame(ClientGhostFrame frame) {
+				this.frame = frame;
+				System.out.println("Current list is: "+ frame.getPlayerList());
+				frame.getPlayerList().addPlayer(new Player("Test", 2));
+			}
+
+			@Override
+			public void packetReceived(GhostPacket packet) {
+				System.out.println("Packet "+packet.getId()+" received.");
+				if(packet instanceof GhostChatPacket) {
+					GhostChatPacket p = (GhostChatPacket) packet;
+					p.sender.setName("tits");
+					frame.getUser().getSettings().getPlayer().setName(p.sender.getName());
+				}
+			}
+
+			@Override
+			public boolean listensFor(int id) {
+				return true;
+			}
+		};
+		
+		final Module testModule2 = new Module() {
+
+			@Override
+			public String getModuleName() {
+				return "another module";
+			}
+			final JButton but = new JButton("A button");
+			@Override
+			public Component getComponent() {
+				return but;
+			}
+
+			@Override
+			public void moduleActivated() {
+				
+			}
+
+			@Override
+			public void moduleDeactivated() {
+				
+			}
+
+			@Override
+			public void setFrame(ClientGhostFrame frame) {
+				
+			}
+
+			@Override
+			public void packetReceived(GhostPacket packet) {
+				
+			}
+
+			@Override
+			public boolean listensFor(int id) {
+				return false;
+			}
+			
+		};
+		impl.packetHandler.get(PacketType.INVOKE_ACCESSOR).addReceiveListener(testModule);
+		impl.addModule(testModule);
+		impl.addModule(testModule2);
 		
 		SessionSettings settings;
 		try {
@@ -192,7 +286,7 @@ public class Main {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			settings = new SessionSettings(new Player("Admin", 5));
+			settings = new SessionSettings(new Player("Admin", 6));
 		}
 		instance = new GhostUserImpl(impl, settings);
 	}

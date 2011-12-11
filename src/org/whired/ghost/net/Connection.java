@@ -1,10 +1,8 @@
 package org.whired.ghost.net;
 
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.whired.ghost.Vars;
-import org.whired.ghost.net.event.ConnectionStateListener;
 import org.whired.ghost.net.packet.GhostAuthenticationPacket;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.packet.UnhandledPacket;
@@ -15,7 +13,7 @@ import org.whired.ghost.net.packet.UnhandledPacket;
  * A friendly middle layer between the connection protocols and the stream wrappers. Keeps as much of the more
  * advanced code as hidden as possible.
  */
-public abstract class Connection implements SessionManager {
+public abstract class Connection {
 
 	/**
 	 * The WrappedInputStream to be utilized.
@@ -59,32 +57,18 @@ public abstract class Connection implements SessionManager {
 		this.outputStream = outputStream;
 		this.receivable = receivable;
 		this.manager = manager;
-		setInternalManager();
+		this.inputStream.setDisconnectCallback(new DisconnectCallback() {
+			@Override
+			public void disconnected(String reason) {
+				endSession(reason);
+			}
+			
+		});
 		Vars.getLogger().fine("Running");
 	}
 
-	private void setInternalManager() {
-		this.inputStream.setManager(this);
-	}
-
-	private HashSet<ConnectionStateListener> stateListeners;
-	
-	public void addStateListener(ConnectionStateListener listener) {
-		stateListeners.add(listener);
-	}
-	
-	public void removeStateListener(ConnectionStateListener listener) {
-		stateListeners.remove(listener);
-	}
-	
-	private void notifyConnected() {
-		for(ConnectionStateListener l : stateListeners)
-			l.connected();
-	}
-	
-	private void notifyDisconnected() {
-		for(ConnectionStateListener l : stateListeners)
-			l.disconnected();
+	protected interface DisconnectCallback {
+		public void disconnected(String reason);
 	}
 	
 	/**
@@ -103,7 +87,7 @@ public abstract class Connection implements SessionManager {
 	private Thread listenerThread = null;
 
 	/**
-	 * Listens for and handles all incoming packets
+	 * Starts listening for and handling all incoming packets
 	 */
 	protected void startReceiving() {
 		Vars.getLogger().fine("Initiating new thread for packet listening..");
@@ -117,8 +101,7 @@ public abstract class Connection implements SessionManager {
 						handlePacket(inputStream.readByte(), inputStream.readByte());
 						inputStream.expectingNewPacket = false;
 					}
-					catch (Exception real) {
-						terminationRequested("Connection reset");
+					catch (Exception e) {
 						break;
 					}
 				Vars.getLogger().fine("Thread " + Thread.currentThread().getName() + " is exiting.");
@@ -134,14 +117,13 @@ public abstract class Connection implements SessionManager {
 				ap.receive(this);
 				if (ap.password.equals(password)) {
 					Vars.getLogger().fine("Password matched, client accepted.");
-					notifyConnected();
 					expectingPassword = false;
 				}
 				else
-					terminationRequested("Password incorrect"); //expectingPassword = false;
+					endSession("Password incorrect"); //expectingPassword = false;
 			}
 			else
-				terminationRequested("Password expected, but not received"); //expectingPassword = false;
+				endSession("Password expected, but not received"); //expectingPassword = false;
 		else
 			if (packetId == 4)
 				try {
@@ -194,7 +176,7 @@ public abstract class Connection implements SessionManager {
 	}
 
 	/**
-	 * Closes and destructs the OutputStream
+	 * Closes and releases the output stream
 	 */
 	private void removeOutputStream() {
 		Vars.getLogger().fine("Removing outputStream. Thread: " + Thread.currentThread().getName());
@@ -202,7 +184,7 @@ public abstract class Connection implements SessionManager {
 	}
 
 	/**
-	 * Closes and destructs the InputStream
+	 * Closes and releases the input stream
 	 */
 	private void removeInputStream() {
 		Vars.getLogger().fine("Removing inputStream. Thread: " + Thread.currentThread().getName());
@@ -210,9 +192,7 @@ public abstract class Connection implements SessionManager {
 	}
 
 	/**
-	 * Notifies the Connection that the specified password must be received in order for the
-	 * session to continue.
-	 *
+	 * Sets a password that must be received in order for the session to continue
 	 * @param newPass the password that must be matched
 	 */
 	protected void setPassword(String newPass) {
@@ -223,13 +203,14 @@ public abstract class Connection implements SessionManager {
 	private boolean terminationRequested = false;
 
 	/**
-	 * Called then the session must be terminated.
+	 * Called then the session must be terminated
 	 */
-	public void terminationRequested(String reason) {
-		if (!terminationRequested) {
-			sendPacket(4, "Terminating. Reason: " + reason);
-			notifyDisconnected();
+	protected void endSession(String reason) {
+		if (!terminationRequested) { // TODO find out why this fires multiple times
+			//sendPacket(4, "Terminating. Reason: " + reason);
 			Vars.getLogger().info("Termination requested [Reason: " + (reason != null ? reason + "]" : "unspecified]") + " - Target: " + this);
+			if(this.manager != null)
+				this.manager.sessionEnded(reason);
 			synchronized (this) {
 				Vars.getLogger().fine("Lock acquired.");
 				removeOutputStream();
@@ -239,9 +220,7 @@ public abstract class Connection implements SessionManager {
 				Vars.getLogger().fine("Notifying");
 				notify();
 				Vars.getLogger().fine("Notified");
-				if (manager != null)
-					manager.terminationRequested("Connection cleanup");
-				
+				System.out.println("Connection reset: "+reason);
 			}
 		}
 		else
@@ -253,8 +232,7 @@ public abstract class Connection implements SessionManager {
 	}
 
 	/**
-	 * Gets the <code>WrappedInputStream</code> associated with this connection
-	 *
+	 * Gets the input stream associated with this connection
 	 * @return the stream to read data from
 	 */
 	public WrappedInputStream getInputStream() {
@@ -262,8 +240,7 @@ public abstract class Connection implements SessionManager {
 	}
 
 	/**
-	 * Gets the <code>WrappedOutputStream</code> associated with this connection
-	 *
+	 * Gets the output stream associated with this connection
 	 * @return the stream to send data to
 	 */
 	public WrappedOutputStream getOutputStream() {

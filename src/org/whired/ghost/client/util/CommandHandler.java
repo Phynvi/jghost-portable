@@ -5,7 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Handles commands? TODO This might actually go in Command itself
+ * Handles commands
  *
  * @author Whired
  */
@@ -15,21 +15,7 @@ public class CommandHandler {
 	 * Contains all the commands
 	 */
 	private HashMap<String, Command> commands = new HashMap<String, Command>();
-	private Logger log;
-
-	/**
-	 * Creates a new command handler with the specified logger
-	 * @param log the logger to use
-	 */
-	public CommandHandler(Logger log) {
-		this.log = log;
-	}
-
-	/**
-	 * Creates a new command handler
-	 */
-	public CommandHandler() {
-	}
+	private static final Logger log = Logger.getLogger(CommandHandler.class.getName());
 
 	/**
 	 * Parses and handles command from specified input string

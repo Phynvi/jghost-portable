@@ -13,10 +13,10 @@ public class ServerConnection extends Connection
 
 	private final Socket ssock;
 
-	public ServerConnection(Socket sock, Receivable r, String passPhrase)
+	public ServerConnection(Socket sock, Receivable receivable, String passPhrase)
 		   throws IOException
 	{
-		super(new WrappedInputStream(sock.getInputStream()), new WrappedOutputStream(sock.getOutputStream()), r);
+		super(new WrappedInputStream(sock.getInputStream()), new WrappedOutputStream(sock.getOutputStream()), receivable);
 		setPassword(passPhrase);
 		this.ssock = sock;
 	}

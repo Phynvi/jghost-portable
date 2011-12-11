@@ -58,10 +58,10 @@ public class Vars
 				{
 					logger = Logger.getLogger("org.whired.ghost");
 					logger.setLevel(Level.ALL);
-					ConsoleHandler ch = new ConsoleHandler();
-					ch.setLevel(Level.ALL);
-					ch.setFormatter(new GhostFormatter());
-					logger.addHandler(ch);
+					//ConsoleHandler ch = new ConsoleHandler();
+					//ch.setLevel(Level.ALL);
+					//ch.setFormatter(new GhostFormatter());
+					//logger.addHandler(ch);
 					logger.setUseParentHandlers(false);
 				}
 			}
