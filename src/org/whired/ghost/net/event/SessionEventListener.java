@@ -4,14 +4,14 @@ package org.whired.ghost.net.event;
  * Listens for events pertaining to connection states
  * @author Whired
  */
-public interface ConnectionStateListener {
+public interface SessionEventListener {
 	/**
 	 * Invoked when a connection has been established
 	 */
-	void connected();
+	public void sessionOpened();
 	
 	/**
 	 * Invoked when a connection has been broken
 	 */
-	void disconnected();
+	public void sessionClosed(String reason);
 }

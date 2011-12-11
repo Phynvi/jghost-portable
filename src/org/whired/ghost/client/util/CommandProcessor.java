@@ -241,7 +241,7 @@ public class CommandProcessor
 			{
 				if (command.equals("exit") || command.equals("quit") || command.equals("q"))
 				{
-					ghost.requestExit();
+					throw new RuntimeException("Not yet implemented");
 				}
 				else
 				{
@@ -264,7 +264,7 @@ public class CommandProcessor
 							{
 								try
 								{
-									ghost.setConnection(ClientConnection.connect(ghost.getUser().getSettings().defaultConnect[0], Integer.parseInt(ghost.getUser().getSettings().defaultConnect[1]), ghost.getUser().getSettings().defaultConnect[2], ghost));
+									ghost.getSessionManager().setConnection(ClientConnection.connect(ghost.getUser().getSettings().defaultConnect[0], Integer.parseInt(ghost.getUser().getSettings().defaultConnect[1]), ghost.getUser().getSettings().defaultConnect[2], ghost));
 								}
 								catch (Exception e)
 								{

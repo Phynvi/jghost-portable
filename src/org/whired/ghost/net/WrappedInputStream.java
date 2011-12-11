@@ -2,6 +2,7 @@ package org.whired.ghost.net;
 
 import java.io.IOException;
 import org.whired.ghost.Vars;
+import org.whired.ghost.net.Connection.DisconnectCallback;
 
 /**
  * An easy wrapper to read data from an InputStream.
@@ -122,11 +123,11 @@ public class WrappedInputStream {
 			return object;
 		}
 		catch (java.io.IOException e) {
-			this.manager.terminationRequested(e.toString());
+			disconnectCallback.disconnected(e.toString());
 			throw e;
 		}
 		catch (ClassNotFoundException e) {
-			this.manager.terminationRequested(e.toString());
+			disconnectCallback.disconnected(e.toString());
 			throw e;
 		}
 	}
@@ -134,7 +135,6 @@ public class WrappedInputStream {
 	public int readByte() throws java.io.IOException, ClassNotFoundException {
 		System.out.print("ReadByte: ");
 		return is.read();
-		//return ((Byte) readObject()).intValue();
 	}
 
 	/**
@@ -150,16 +150,17 @@ public class WrappedInputStream {
 			System.out.println("Successfully disposed " + skipped + "/" + length + " bytes of unusable data.");
 		}
 		catch (Exception ni) {
-			//Complete failure here, as the stream becomes corrupt.
-			manager.terminationRequested("Stream malformed");
+			disconnectCallback.disconnected("Stream malformed");
 		}
 	}
 
+	private DisconnectCallback disconnectCallback;
+	
 	/**
 	 * Sets the SessionManager for this stream
 	 */
-	public void setManager(SessionManager sm) {
-		this.manager = sm;
+	protected void setDisconnectCallback(DisconnectCallback c) {
+		this.disconnectCallback = c;
 	}
 
 	/**

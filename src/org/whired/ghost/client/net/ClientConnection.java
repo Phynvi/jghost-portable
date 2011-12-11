@@ -23,10 +23,10 @@ public class ClientConnection extends Connection
 
 	public static Connection connect(String IP, int port, String password, GhostFrame frame) throws UnknownHostException, IOException, InvalidStateException
 	{
-		if (frame.getConnection() == null)
+		if (!frame.getSessionManager().sessionIsOpen())
 		{
 			Socket s = new Socket(IP, port);
-			ClientConnection ccon = new ClientConnection(s, frame, frame, password);
+			ClientConnection ccon = new ClientConnection(s, frame, frame.getSessionManager(), password);
 			return ccon;
 		}
 		else

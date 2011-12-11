@@ -1,7 +1,9 @@
 package org.whired.ghost.net.packet;
 
+import java.util.HashSet;
 import org.whired.ghost.Vars;
 import org.whired.ghost.net.Connection;
+import org.whired.ghostclient.ui.Module;
 
 /**
  * The layout a standard packet
@@ -14,7 +16,11 @@ public abstract class GhostPacket {
 	 * The ID of this packet
 	 */
 	protected final int id;
-
+	private HashSet<Module> receiveListeners = new HashSet<Module>();
+	
+	public void addReceiveListener(Module module) {
+		receiveListeners.add(module);
+	}
 	/**
 	 * Creates a new packet on the specified connection with the specified id
 	 *
@@ -66,6 +72,12 @@ public abstract class GhostPacket {
 		}
 	}
 
+	public void notifyReceived() {
+		for(Module m : receiveListeners)
+			if(m.listensFor(id))
+				m.packetReceived(this);
+	}
+	
 	/**
 	 * Called upon instantiation in order to receive and marshal the packet
 	 * @return {@code true} if the packet was successfully received,
