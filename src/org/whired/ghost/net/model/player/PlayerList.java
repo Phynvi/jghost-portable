@@ -49,6 +49,8 @@ public abstract class PlayerList implements PlayerListEventListener {
 	@Override
 	public abstract void playerRemoved(Player player);
 
+	public abstract Player[] getPlayers();
+	
 	/**
 	 * Gets the frame that contains this list
 	 * @return the frame

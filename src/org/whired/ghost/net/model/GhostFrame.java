@@ -7,7 +7,7 @@ import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.Receivable;
 import org.whired.ghost.net.reflection.ReflectionPacketContainer;
 import java.util.ArrayList;
-import org.whired.ghost.client.ui.GhostUser;
+import org.whired.ghostclient.client.user.GhostUser;
 import org.whired.ghost.client.ui.ReflectionPacketBuilderManager;
 import org.whired.ghost.net.PacketHandler;
 import org.whired.ghost.net.SessionManager;
@@ -26,7 +26,7 @@ import org.whired.rsmap.ui.RSMap; // TODO remove
  *
  * @author Whired
  */
-public abstract class GhostFrame implements Receivable {
+public abstract class GhostFrame implements Receivable, AbstractClient {
 
 	/**
 	 * The SessionManager for this frame
@@ -41,13 +41,17 @@ public abstract class GhostFrame implements Receivable {
 	 */
 	private ReflectionPacketBuilderManager reflectionPacketBuilderManager;
 	/**
-	 * The map for this frame
+	 * The map for this frame TODO move to client/modularize
 	 */
 	protected RSMap map;
 	
-	public PacketHandler packetHandler = new PacketHandler();
-
-	protected PlayerList playerList;
+	private PacketHandler packetHandler = new PacketHandler();
+	
+	/**
+	 * Gets the list of players for this frame
+	 * @return the list
+	 */
+	public abstract PlayerList getPlayerList();
 	
 	/**
 	 * Creates a new ghost frame with the specified session manager
@@ -61,7 +65,7 @@ public abstract class GhostFrame implements Receivable {
 	 * Creates a new ghost frame with a default session manager
 	 */
 	public GhostFrame() {
-		this.sessionManager = new SessionManager();
+		this(new SessionManager());
 	}
 	
 	/**
@@ -89,25 +93,6 @@ public abstract class GhostFrame implements Receivable {
 	public SessionManager getSessionManager() {
 		return this.sessionManager;
 	}
-
-	/**
-	 * Called when a normal chat message is received
-	 *
-	 * @param sender the player who sent the message
-	 * @param message the message that was received
-	 */
-	public abstract void displayPublicChat(Player sender, String message);
-
-	/**
-	 * Called when a private chat message is received
-	 *
-	 * @param sender the player who sent the message
-	 * @param recipient the player who received the message
-	 * @param message the message that was transferred
-	 */
-	public abstract void displayPrivateChat(Player sender, Player recipient, String message);
-
-	public abstract void displayDebug(Level level, String message);
 	
 	/**
 	 * Called when a packet is received; packets that should be handled
@@ -121,8 +106,10 @@ public abstract class GhostFrame implements Receivable {
 		switch (packetId) {
 			case PacketType.PUBLIC_CHAT: // Receive public chat
 				PublicChatPacket pc = new PublicChatPacket();
-				if (pc.receive(connection))
+				if (pc.receive(connection)) {
 					displayPublicChat(pc.sender, pc.message);
+					packetReceived(pc);
+				}
 				break;
 			case 2: // Response to a request to list accessors
 				try {
@@ -153,18 +140,25 @@ public abstract class GhostFrame implements Receivable {
 			default:
 				// Notify whatever higher listener that they are to handle this packet
 				//Vars.getLogger().fine("Pushing noninternal packet " + packetId + " to external listener " + this.getUser());
-				GhostPacket packet = packetHandler.get(packetId);
-				if (packet != null) {
-					packet.receive(connection);
-					packet.notifyReceived();
-				}
+				GhostPacket packet = getPacketHandler().get(packetId);
+				if (packet != null) 
+					if(packet.receive(connection))
+						packetReceived(packet);
 				else
 					return false;
 			//return this.getUser().handlePacket(packetId, packetLength, connection);
 		}
 		return true;
 	}
+	
+	/**
+	 * Invoked when a packet has been received
+	 * @param packet the packet that was received
+	 */
+	public void packetReceived(GhostPacket packet) {
 
+	}
+	
 	/**
 	 * Displays the window that allows the user to select a chain of accessors that will result in
 	 * the formation of a reflection packet
@@ -192,8 +186,18 @@ public abstract class GhostFrame implements Receivable {
 	 * @param container holds information about the packet
 	 */
 	protected abstract void bindPacket(final ReflectionPacketContainer container);
-	
-	public PlayerList getPlayerList() {
-		return this.playerList;
+
+	/**
+	 * @return the packetHandler
+	 */
+	public PacketHandler getPacketHandler() {
+		return packetHandler;
+	}
+
+	/**
+	 * @param packetHandler the packetHandler to set
+	 */
+	public void setPacketHandler(PacketHandler packetHandler) {
+		this.packetHandler = packetHandler;
 	}
 }
