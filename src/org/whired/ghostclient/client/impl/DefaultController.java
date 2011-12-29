@@ -9,10 +9,11 @@ import org.whired.ghostclient.client.ClientGhostFrame;
  */
 public class DefaultController {
 	
-	final DefaultClientGhostFrame c = new DefaultClientGhostFrame();
+	final DefaultClientGhostFrame c;
 	final DefaultClientGhostView v = new DefaultClientGhostView();
 	
 	public DefaultController() {
+		c = new DefaultClientGhostFrame(v);
 		c.setView(v);
 		v.setController(c);
 	}
@@ -20,8 +21,4 @@ public class DefaultController {
 	public ClientGhostFrame getModel() {
 		return c;
 	}
-	
-	//public DefaultClientGhostView getView() {
-	//	return v;
-	//}
 }

@@ -1,9 +1,7 @@
 package org.whired.ghost.net.packet;
 
-import java.util.HashSet;
 import org.whired.ghost.Vars;
 import org.whired.ghost.net.Connection;
-import org.whired.ghostclient.client.module.Module;
 
 /**
  * The layout a standard packet
@@ -16,7 +14,7 @@ public abstract class GhostPacket {
 	 * The ID of this packet
 	 */
 	protected final int id;
-
+	
 	/**
 	 * Creates a new packet on the specified connection with the specified id
 	 *

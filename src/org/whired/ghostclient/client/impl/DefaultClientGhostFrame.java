@@ -6,6 +6,7 @@ import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.model.player.Rank;
 import org.whired.ghost.net.reflection.ReflectionPacketContainer;
 import org.whired.ghostclient.client.ClientGhostFrame;
+import org.whired.ghostclient.client.GhostClientView;
 import org.whired.ghostclient.client.user.SessionSettings;
 
 /**
@@ -14,6 +15,10 @@ import org.whired.ghostclient.client.user.SessionSettings;
  */
 public class DefaultClientGhostFrame extends ClientGhostFrame {
 
+	public DefaultClientGhostFrame(GhostClientView v) {
+		super(v);
+	}
+	
 	@Override
 	protected void bindPacket(ReflectionPacketContainer container) {
 		throw new UnsupportedOperationException("Not supported yet.");
@@ -63,7 +68,7 @@ public class DefaultClientGhostFrame extends ClientGhostFrame {
 
 	@Override
 	public void restartServer() {
-		throw new UnsupportedOperationException("Not supported yet.");
+		//addModule(new PublicChatModule(this));
 	}
 
 	@Override

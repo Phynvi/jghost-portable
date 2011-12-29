@@ -7,8 +7,8 @@ import java.util.logging.Logger;
  *
  * @author Whired
  */
-public abstract class Command
-{
+public abstract class Command {
+
 	/** The identifier for this {@code Command} */
 	private final String command;
 	private final int minArgs;
@@ -18,8 +18,7 @@ public abstract class Command
 	 *
 	 * @param command the identifier for this command
 	 */
-	public Command(String command, int minArgs)
-	{
+	public Command(String command, int minArgs) {
 		this.command = command;
 		this.minArgs = minArgs;
 	}
@@ -32,19 +31,16 @@ public abstract class Command
 	 */
 	public abstract boolean handle(String[] args);
 
-	public void printFailure(Logger log, String reason)
-	{
-		log.warning("Command failed: "+reason);
+	public void printFailure(Logger log, String reason) {
+		log.warning("Command failed: " + reason);
 	}
 
-	public int getMinArgs()
-	{
+	public int getMinArgs() {
 		return this.minArgs;
 	}
-	
+
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return command;
 	}
 }

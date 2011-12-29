@@ -71,17 +71,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	private JLabel thpLabel;
 	private JScrollPane packetPanelContainer;
 	private JTabbedPane jTabbedPane1;
-
 	private GhostClient controller;
-
-	
-	/**
-	 * Invoked when the restart button is pressed
-	 * @param evt
-	 */
-	protected void restartButActionPerformed(ActionEvent evt) {
-		controller.restartServer();
-	}
 
 	/**
 	 * Invoked when a menu item has been selected
@@ -106,8 +96,8 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 				break;
 			case 4:
 				throw new UnsupportedOperationException("Momentarily disabled.");
-				//controller.displayReflectionManager();
-				//break;
+			//controller.displayReflectionManager();
+			//break;
 		}
 	}
 
@@ -189,7 +179,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 
 			public void run() {
 				try {
-					redirectSystemStreams();
+					//redirectSystemStreams();
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -246,29 +236,35 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	}
 
 	/**
+	 * Updates a tab's notifications if the tab is not selected
+	 */
+	private void setNotification(int tabIndex) {
+		if (jTabbedPane1.getSelectedIndex() != tabIndex && jTabbedPane1.getForegroundAt(tabIndex) != Color.red) {
+			jTabbedPane1.setForegroundAt(tabIndex, Color.red);
+		}
+	}
+
+	/**
 	 * Sets up the handlers that control the tab font color;
 	 * Used for notifying the user of changes happening elsewhere.
 	 * @param box the JTextArea to set up the handler for
 	 * @param tabIndex the corresponding index for the tab in which "box" lies
 	 */
-	private void createTabHandler(JTextComponent box, int tabIndex) {
-		final int ti = tabIndex;
+	private void createTabHandler(JTextComponent box, final int tabIndex) {
 		box.getDocument().addDocumentListener(new DocumentListener() {
 
 			public void insertUpdate(DocumentEvent e) {
-				if (jTabbedPane1.getSelectedIndex() != ti && jTabbedPane1.getForegroundAt(ti) != Color.red) {
-					jTabbedPane1.setForegroundAt(ti, Color.red);
-				}
 			}
 
 			public void removeUpdate(DocumentEvent e) {
 			}
 
 			public void changedUpdate(DocumentEvent e) {
+				setNotification(tabIndex);
 			}
 		});
 	}
-	
+
 	/**
 	 * Used for hooking debugOutput to System.out/err
 	 */
@@ -521,30 +517,29 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		chatOutput.addLinkEventListener(l);
 		pmOutput.addLinkEventListener(l);
 		jScrollPane1.setViewportView(chatOutput);
-		jTabbedPane1.addTab("Chat", jScrollPane1);
+		//jTabbedPane1.addTab("Chat", jScrollPane1);
 		pmOutput.setEditable(false);
 		jScrollPane2.setViewportView(pmOutput);
-		jTabbedPane1.addTab("PM", jScrollPane2);
+		//jTabbedPane1.addTab("PM", jScrollPane2);
 		debugOutput.setColumns(20);
 		debugOutput.setRows(5);
 		debugOutput.setEditable(false);
 		debugOutput.setLineWrap(true);
 		jScrollPane3.setViewportView(debugOutput);
-		jTabbedPane1.addTab("Debug", jScrollPane3);
+		//jTabbedPane1.addTab("Debug", jScrollPane3);
 		//map = new RSMap(737, 318);
 		jTabbedPane1.addChangeListener(new ChangeListener() {
 
 			public void stateChanged(ChangeEvent evt) {
-				if (jTabbedPane1.getForegroundAt(jTabbedPane1.getSelectedIndex()) == Color.red) {
-					jTabbedPane1.setForegroundAt(jTabbedPane1.getSelectedIndex(), Color.black);
-				}
+				jTabbedPane1.setForegroundAt(jTabbedPane1.getSelectedIndex(), Color.black);
 			}
 		});
 		pkpDisp.setHorizontalAlignment(SwingConstants.CENTER);
 		pkpDisp.setText("n/a");
 		addWindowListener(new WindowAdapter() {
+
 			@Override
-			public void windowClosing(WindowEvent e) { 
+			public void windowClosing(WindowEvent e) {
 				controller.saveSettings();
 				System.exit(0);
 			}
@@ -613,7 +608,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		packetPanelContainer.setBorder(border2);
 		packetPanelContainer.setBounds(390, 48, 481, 190);
 		jPanel1.add(packetPanelContainer);
-		chatInput.setBounds(164, 319, 496, 15);
+		chatInput.setBounds(3, 319, 657, 15);
 		layeredPane.add(chatInput, 0);
 		layeredPane.add(lblState);
 		jPanel1.add(layeredPane);
@@ -634,7 +629,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		restartBut.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent evt) {
-				restartButActionPerformed(evt);
+				controller.restartServer();
 			}
 		});
 		hpLabel.setText("Hitpoints: ");
@@ -741,16 +736,12 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 
 	@Override
 	public void moduleAdded(final Module module) {
-		SwingUtilities.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				jTabbedPane1.addTab(module.getModuleName(), module.getComponent());
-				int offs = jTabbedPane1.getBoundsAt(jTabbedPane1.getTabCount() - 1).width;
-				chatInput.setSize(chatInput.getWidth() - offs, chatInput.getHeight());
-				chatInput.setLocation(chatInput.getLocation().x + offs, chatInput.getLocation().y);
-			}
-		});
+		Vars.getLogger().info(module.getModuleName());
+		jTabbedPane1.addTab(module.getModuleName(), module.getComponent());
+		// Module size changes here
+		int offs = jTabbedPane1.getBoundsAt(jTabbedPane1.getTabCount() - 1).width;
+		chatInput.setSize(chatInput.getWidth() - offs, chatInput.getHeight());
+		chatInput.setLocation(chatInput.getLocation().x + offs, chatInput.getLocation().y);
 	}
 
 	@Override
@@ -788,5 +779,10 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 				DefaultClientGhostView.this.repaint();
 			}
 		});
+	}
+
+	@Override
+	public void displayModuleNotification(Module module) {
+		setNotification(jTabbedPane1.indexOfComponent(module.getComponent()));
 	}
 }

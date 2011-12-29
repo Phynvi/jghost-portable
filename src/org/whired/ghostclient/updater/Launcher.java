@@ -3,6 +3,7 @@ package org.whired.ghostclient.updater;
 import java.io.*;
 import java.security.MessageDigest;
 import javax.swing.SwingUtilities;
+import org.whired.ghost.Vars;
 import org.whired.ghostclient.updater.io.HttpClient;
 import org.whired.ghostclient.updater.ui.UpdaterForm;
 
@@ -24,7 +25,7 @@ public class Launcher implements Runnable {
 	/**
 	 * Where the packages are saved
 	 */
-	private static final String LOCAL_CODEBASE = System.getProperty("user.home") + "/.ghost/cache/";
+	private static final String LOCAL_CODEBASE = Vars.LOCAL_CODEBASE;
 	/**
 	 * The entry point of the main application
 	 */

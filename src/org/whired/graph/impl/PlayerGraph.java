@@ -32,22 +32,17 @@ public class PlayerGraph extends LineGraph implements Module {
 	}
 
 	@Override
-	public void moduleActivated() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public void moduleDeactivated() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
 	public void setFrame(ClientGhostFrame frame) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
 	public GhostEventAdapter getEventListener() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void load(String resourceDir) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

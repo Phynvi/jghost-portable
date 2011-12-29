@@ -1,4 +1,4 @@
-package org.whired.ghostclient.client.impl.module;
+package org.whired.ghostclient.client.module.impl;
 
 import java.awt.Component;
 import java.util.logging.Level;
@@ -20,7 +20,15 @@ import org.whired.ghostclient.client.module.Module;
 public class PublicChatModule extends LinkingJTextPane implements Module {
 
 	private ClientGhostFrame frame;
-	private final GhostEventAdapter listener = new GhostEventAdapter() {
+	private final String name = "Chat";
+	private final LinkEventListener linkListener = new LinkEventListener() {
+
+		@Override
+		public void linkClicked(String linkText) {
+			frame.getView().setInputText("/pm " + linkText + " ");
+		}
+	};
+	private final GhostEventAdapter ghostEventListener = new GhostEventAdapter() {
 
 		@Override
 		public void publicMessageLogged(Player from, String message) {
@@ -35,6 +43,7 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 				StyleConstants.setBold(getInputAttributes(), true);
 				getStyledDocument().insertString(getStyledDocument().getLength(), from.getName(), getInputAttributes());
 				getStyledDocument().insertString(getStyledDocument().getLength(), ": " + message + "\n", null);
+				frame.getView().displayModuleNotification(PublicChatModule.this);
 			}
 			catch (Exception e) {
 				Logger.getLogger(Module.class.getName()).log(Level.SEVERE, "Unable to display chat:", e);
@@ -42,33 +51,15 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 		}
 	};
 
-	public PublicChatModule(final ClientGhostFrame frame) {
+	public PublicChatModule() {
 		super(false);
-		setEditable(false);
-		this.frame = frame;
-		LinkEventListener l = new LinkEventListener() {
-
-			@Override
-			public void linkClicked(String linkText) {
-
-				frame.getView().setInputText("/pm " + linkText + " ");
-			}
-		};
+		this.setEditable(false);
+		this.addLinkEventListener(linkListener);
 	}
 
 	@Override
 	public Component getComponent() {
 		return this;
-	}
-
-	@Override
-	public void moduleActivated() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	public void moduleDeactivated() {
-		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
@@ -78,11 +69,15 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 
 	@Override
 	public GhostEventAdapter getEventListener() {
-		return listener;
+		return ghostEventListener;
 	}
 
 	@Override
 	public String getModuleName() {
-		return "newchat";
+		return this.name;
+	}
+
+	@Override
+	public void load() {
 	}
 }

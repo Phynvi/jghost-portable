@@ -1,13 +1,9 @@
 package org.whired.ghostclient;
 
-import java.awt.Component;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import org.whired.ghost.Vars;
 import org.whired.ghost.client.net.ClientConnection;
 import org.whired.ghostclient.client.command.Command;
-import org.whired.ghostclient.client.event.GhostEventAdapter;
 import org.whired.ghostclient.client.user.SessionSettings;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.model.player.Player;
@@ -15,12 +11,8 @@ import org.whired.ghost.net.model.player.Rank;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.reflection.Accessor;
-import org.whired.ghostclient.client.ClientGhostFrame;
-import org.whired.ghostclient.client.GhostController;
 import org.whired.ghostclient.client.impl.DefaultController;
-import org.whired.ghostclient.client.impl.module.PublicChatModule;
 import org.whired.ghostclient.client.user.GhostUserImpl;
-import org.whired.ghostclient.client.module.Module;
 
 public class Main {
 
@@ -90,7 +82,7 @@ public class Main {
 						}
 						}
 						}*/
-						client.getModel().displayPrivateChat(client.getModel().getUser().getSettings().getPlayer(), new Player(args[0], rights), message);
+						client.getModel().displayPrivateChat(client.getModel().getUser().getSettings().getPlayer(), new Player(args[0], rights, -1, -1), message);
 						return true;
 					}
 				},
@@ -199,14 +191,13 @@ public class Main {
 				return true;
 			}
 		});
-		client.getModel().addModule(new PublicChatModule(client.getModel()));
 		SessionSettings settings;
 		try {
 			settings = SessionSettings.loadFromDisk();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			settings = new SessionSettings(new Player("Admin", 6));
+			settings = new SessionSettings(new Player("Admin", 6, -1, -1));
 		}
 		instance = new GhostUserImpl(client.getModel(), settings);
 	}

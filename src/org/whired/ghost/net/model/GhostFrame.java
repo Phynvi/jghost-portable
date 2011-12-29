@@ -11,14 +11,11 @@ import org.whired.ghostclient.client.user.GhostUser;
 import org.whired.ghost.client.ui.ReflectionPacketBuilderManager;
 import org.whired.ghost.net.PacketHandler;
 import org.whired.ghost.net.SessionManager;
-import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketType;
-import org.whired.ghost.net.packet.PlayerMovementPacket;
 import org.whired.ghost.net.packet.PublicChatPacket;
 import org.whired.ghost.net.reflection.Accessor;
 import org.whired.ghost.net.model.player.PlayerList;
-import org.whired.rsmap.ui.RSMap; // TODO remove
 
 /**
  * Provides the functionality and layout for a standard implementation of a JFrame that will utilize Ghost's core
@@ -40,10 +37,6 @@ public abstract class GhostFrame implements Receivable, AbstractClient {
 	 * The dialog that builds reflection packets
 	 */
 	private ReflectionPacketBuilderManager reflectionPacketBuilderManager;
-	/**
-	 * The map for this frame TODO move to client/modularize
-	 */
-	protected RSMap map;
 	
 	private PacketHandler packetHandler = new PacketHandler();
 	
@@ -120,26 +113,9 @@ public abstract class GhostFrame implements Receivable, AbstractClient {
 					Logger.getLogger(GhostFrame.class.getName()).log(Level.SEVERE, null, ex);
 				}
 				break;
-			//TODO reimplement when ready
-			case PacketType.PLAYER_MOVEMENT:
-				try {
-					PlayerMovementPacket pm = new PlayerMovementPacket();
-					if (pm.receive(connection))
-						map.uberSprite.location = new java.awt.Point(pm.newAbsX, pm.newAbsY); //						MapPlayer mp = map.getPlayer(pm.playerName);
-					//						if(mp == null)
-					//						{
-					//							mp = new MapPlayer(pm.playerName, 3, pm.newAbsX, pm.newAbsY, map);
-					//							DrawingArea.putPlayer(mp);
-					//						}
-					//mp.moveTo(pm.newAbsX, pm.newAbsY);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-				break;
 			default:
 				// Notify whatever higher listener that they are to handle this packet
-				//Vars.getLogger().fine("Pushing noninternal packet " + packetId + " to external listener " + this.getUser());
+				Vars.getLogger().fine("Pushing noninternal packet " + packetId + " to external listener " + this.getUser());
 				GhostPacket packet = getPacketHandler().get(packetId);
 				if (packet != null) 
 					if(packet.receive(connection))
