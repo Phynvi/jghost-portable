@@ -22,11 +22,11 @@ public class OverviewArea
 		int j1 = areaWidth;
 		int k1 = canvas.getWidth() - j1;
 		int l1 = 0;
-		if (y < canvas.topY)
+		if (y < canvas.startY)
 		{
-			int i2 = canvas.topY - y;
+			int i2 = canvas.startY - y;
 			i1 -= i2;
-			y = canvas.topY;
+			y = canvas.startY;
 			l += i2 * j1;
 			k += i2 * canvas.getWidth();
 		}

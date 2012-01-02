@@ -138,11 +138,11 @@ public class TextRenderer
 		int k1 = canvas.getWidth() - k;
 		int l1 = 0;
 		int i2 = 0;
-		if (j < canvas.topY)
+		if (j < canvas.startY)
 		{
-			int j2 = canvas.topY - j;
+			int j2 = canvas.startY - j;
 			l -= j2;
-			j = canvas.topY;
+			j = canvas.startY;
 			i2 += j2 * k;
 			j1 += j2 * canvas.getWidth();
 		}

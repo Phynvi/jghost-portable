@@ -38,11 +38,11 @@ public class StaticSprite extends Sprite
 		int k1 = getWidth();
 		int l1 = area.getWidth() - k1;
 		int i2 = 0;
-		if (y < area.topY)
+		if (y < area.startY)
 		{
-			int j2 = area.topY - y;
+			int j2 = area.startY - y;
 			j1 -= j2;
-			y = area.topY;
+			y = area.startY;
 			i1 += j2 * k1;
 			l += j2 * area.getWidth();
 		}
@@ -135,5 +135,15 @@ public class StaticSprite extends Sprite
 			k += j1;
 			j += k1;
 		}
+	}
+
+	@Override
+	public int getWidth() {
+		return width;
+	}
+
+	@Override
+	public int getHeight() {
+		return height;
 	}
 }

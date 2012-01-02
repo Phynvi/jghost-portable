@@ -1,6 +1,7 @@
 package org.whired.ghostclient.client.module.impl;
 
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.whired.ghost.Vars;
@@ -39,7 +40,7 @@ public class ExternalMapModule extends PlayerRSMap implements Module {
 				Player p = getPlayer(pmp.playerName);
 				if(p != null) {
 					p.setLocation(pmp.newAbsX, pmp.newAbsY);
-					playerMoved();
+					playerMoved(p);
 				}
 			}
 		}
@@ -70,15 +71,27 @@ public class ExternalMapModule extends PlayerRSMap implements Module {
 		Vars.getLogger().log(Level.INFO, "Loading map from {0}", resourceDir+System.getProperty("file.separator")+"worldmap.dat");
 		//loadMap(resourceDir+System.getProperty("file.separator")+"worldmap.dat");
 		loadMap();
-		final Player player = new Player("Whired", 3, 2460, 3090);
-		addPlayer(player);
+		final ArrayList<Player> lplayers = new ArrayList<Player>();
+		for(int i = 0; i < 5; i++)
+			lplayers.add(addPlayer(new Player("Player-"+i, 3, 2460, 3090)));
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
 				while(true) {
-					player.setLocation(player.getLocation().x+1, player.getLocation().y);
-					playerMoved();
+					for(Player player : lplayers) {
+					int randX = (int)(Math.random()*4);
+					int randY = (int)(Math.random()*4);
+					int neg = (int)(Math.random() * 2);
+					if(neg == 0) {
+						randX *= -1;
+						randY *= -1;
+					}
+					player.setLocation(player.getLocation().x+randX, player.getLocation().y+randY);
+					playerMoved(player);
+					
+					}
+					repaint();
 					try {
 						Thread.sleep(1000);
 					}

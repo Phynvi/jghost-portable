@@ -23,6 +23,7 @@ import java.awt.image.DirectColorModel;
 import java.awt.image.ImageConsumer;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
+import org.whired.rsmap.graphics.sprites.TextSprite;
 import org.whired.rsmap.ui.MapButton;
 
 public abstract class RSCanvas extends Component implements MouseWheelListener, ImageProducer, ImageObserver {
@@ -95,11 +96,12 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 			public void keyReleased(KeyEvent keyevent) {
 			}
 		});
-		System.out.println("RSCanvas constructed.");
 	}
+
 	public abstract void mouseDragged(int oldX, int oldY, int newX, int newY);
+
 	public abstract void keyPressed(int keyCode);
-	
+
 	public void loadMap(String resourceDir) {
 		pixels = new int[getWidth() * getHeight()];
 		image = createImage(RSCanvas.this);
@@ -157,14 +159,85 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 	}
 
 	/**
-	 * Draws a horizontal line
+	 * Renders a line on this canvas
+	 * @param x1 the starting x-coordinate
+	 * @param y1 the starting y-coordinate
+	 * @param x2 the ending x-coordinate
+	 * @param y2 the ending y-coordinate
+	 * @param hexRGB the color of the line
+	 */
+	public void renderLine(int x1, int y1, int x2, int y2, int hexRGB) {
+		int w = x2 - x1;
+		int h = y2 - y1;
+		int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0;
+		if (w < 0) {
+			dx1 = -1;
+		}
+		else if (w > 0) {
+			dx1 = 1;
+		}
+		if (h < 0) {
+			dy1 = -1;
+		}
+		else if (h > 0) {
+			dy1 = 1;
+		}
+		if (w < 0) {
+			dx2 = -1;
+		}
+		else if (w > 0) {
+			dx2 = 1;
+		}
+		int longest = Math.abs(w);
+		int shortest = Math.abs(h);
+		if (!(longest > shortest)) {
+			longest = Math.abs(h);
+			shortest = Math.abs(w);
+			if (h < 0) {
+				dy2 = -1;
+			}
+			else if (h > 0) {
+				dy2 = 1;
+			}
+			dx2 = 0;
+		}
+		int numerator = longest >> 1;
+		for (int i = 0; i <= longest; i++) {
+			renderPoint(x1, y1, hexRGB);
+			numerator += shortest;
+			if (!(numerator < longest)) {
+				numerator -= longest;
+				x1 += dx1;
+				y1 += dy1;
+			}
+			else {
+				x1 += dx2;
+				y1 += dy2;
+			}
+		}
+	}
+
+	/**
+	 * Renders a point on this canvas
+	 * @param x the x-coordinate of the point
+	 * @param y the y-coordinate of the point
+	 * @param hexRGB the color of the point
+	 */
+	public void renderPoint(int x, int y, int hexRGB) {
+		if (x > startX && y > startY && x < endX && y < endY) {
+			pixels[x + y * getWidth()] = hexRGB;
+		}
+	}
+
+	/**
+	 * Renders a horizontal line on this canvas
 	 * @param lineX the starting x-coordinate of the line
 	 * @param lineY the starting y-coordinate of the line
 	 * @param lineLength the length of the line
 	 * @param hexRGB the color of the line
 	 */
-	public void drawHorizontalLine(int lineX, int lineY, int lineLength, int hexRGB) {
-		if (lineY < topY || lineY >= endY) {
+	public void renderHorizontalLine(int lineX, int lineY, int lineLength, int hexRGB) {
+		if (lineY < startY || lineY >= endY) {
 			return;
 		}
 		if (lineX < startX) {
@@ -182,25 +255,25 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 	}
 
 	/**
-	 * Draws a vertical line
+	 * Renders a vertical line on this canvas
 	 * @param lineX the starting x-coordinate of the line
 	 * @param lineY the starting y-coordinate of the line
 	 * @param lineLength the length of the line
 	 * @param hexRGB the color of the line
 	 */
-	public void drawVerticalLine(int lineX, int lineY, int lineWidth, int hexRGB) {
+	public void renderVerticalLine(int lineX, int lineY, int lineLength, int hexRGB) {
 		if (lineX < startX || lineX >= endX) {
 			return;
 		}
-		if (lineY < topY) {
-			lineWidth -= topY - lineY;
-			lineY = topY;
+		if (lineY < startY) {
+			lineLength -= startY - lineY;
+			lineY = startY;
 		}
-		if (lineY + lineWidth > endY) {
-			lineWidth = endY - lineY;
+		if (lineY + lineLength > endY) {
+			lineLength = endY - lineY;
 		}
 		int i1 = lineX + lineY * getWidth();
-		for (int j1 = 0; j1 < lineWidth; j1++) {
+		for (int j1 = 0; j1 < lineLength; j1++) {
 			pixels[i1 + j1 * getWidth()] = hexRGB;
 		}
 	}
@@ -219,14 +292,13 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 			l = getHeight();
 		}
 		startX = i;
-		topY = j;
+		startY = j;
 		endX = k;
 		endY = l;
 		centerX = endX - 1;
 		centerY = endX / 2;
 	}
 
-	// TODO give Button a foreground (text) color
 	/**
 	 * Draws the given button
 	 * @param button the button to draw
@@ -234,9 +306,15 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 	public void drawButton(MapButton button) {
 		fillColor(pixels, new Dimension(getWidth(), getHeight()), button.getX(), button.getY(), button.getWidth(), button.getHeight(), button.getBackgroundColor());
 		drawRect(button.getX(), button.getY(), button.getWidth(), button.getHeight(), button.getBorderColor());
-		drawRect(button.getX() + 1, button.getY() + 1, button.getWidth() - 2, button.getHeight() - 2, button.getBorderColor());
-		textRenderer.renderText(button.getText(), button.getX() + button.getWidth() / 2 + 1, button.getY() + button.getHeight() / 2 + 1 + 4, 0);
-		textRenderer.renderText(button.getText(), button.getX() + button.getWidth() / 2, button.getY() + button.getHeight() / 2 + 4, 0xffffff);
+		TextSprite ts = button.getTextSprite();
+		if (ts != null) {
+			ts.setText(button.getText());
+			ts.drawSprite(button.getX() + button.getWidth() / 2 - ts.getWidth() / 2, button.getY() + button.getHeight() / 2, this);
+		}
+		else {
+			textRenderer.renderText(button.getText(), button.getX() + button.getWidth() / 2 + 1, button.getY() + button.getHeight() / 2 + 1 + 4, 0);
+			textRenderer.renderText(button.getText(), button.getX() + button.getWidth() / 2, button.getY() + button.getHeight() / 2 + 4, 0xffffff);
+		}
 	}
 
 	/**
@@ -261,7 +339,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Something to do with antialiasing..?
 	 * @param pixel
@@ -872,7 +950,6 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 //		g2.setColor(Color.BLACK);
 //		g2.drawString(text, (getWidth() - fontmetrics.stringWidth(text)) / 2, yPaint + (loadAreaHeight / 2) + 5);
 //	}
-
 	/**
 	 * Paints a rectangle at the specified coordinates
 	 * @param rectX the x-coordinate (absolute to this canvas)
@@ -888,9 +965,9 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 			rectWidth -= startX - rectX;
 			rectX = startX;
 		}
-		if (rectY < topY) {
-			rectHeight -= topY - rectY;
-			rectY = topY;
+		if (rectY < startY) {
+			rectHeight -= startY - rectY;
+			rectY = startY;
 		}
 		if (rectX + rectWidth > endX) {
 			rectWidth = endX - rectX;
@@ -922,10 +999,10 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	// This actually draws a rectangle..
 	public void drawRect(int rectX, int rectY, int rectWidth, int rectHeight, int hexRGB) {
-		drawHorizontalLine(rectX, rectY, rectWidth, hexRGB);
-		drawHorizontalLine(rectX, (rectY + rectHeight) - 1, rectWidth, hexRGB);
-		drawVerticalLine(rectX, rectY, rectHeight, hexRGB);
-		drawVerticalLine((rectX + rectWidth) - 1, rectY, rectHeight, hexRGB);
+		renderHorizontalLine(rectX, rectY, rectWidth, hexRGB);
+		renderHorizontalLine(rectX, (rectY + rectHeight) - 1, rectWidth, hexRGB);
+		renderVerticalLine(rectX, rectY, rectHeight, hexRGB);
+		renderVerticalLine((rectX + rectWidth) - 1, rectY, rectHeight, hexRGB);
 	}
 
 	private void setAllPixelsToZero() {
@@ -936,7 +1013,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	}
 	public int pixels[];
-	public int topY = 0;
+	public int startY = 0;
 	public int endY = 0;
 	public int startX = 0;
 	public int endX = 0;
@@ -959,9 +1036,9 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 			width -= startX - x;
 			x = startX;
 		}
-		if (y < topY) {
-			height -= topY - y;
-			y = topY;
+		if (y < startY) {
+			height -= startY - y;
+			y = startY;
 		}
 		if (x + width > endX) {
 			width = endX - x;

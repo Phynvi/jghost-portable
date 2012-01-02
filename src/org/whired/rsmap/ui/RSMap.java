@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import org.whired.rsmap.graphics.sprites.Sprite;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import javax.swing.SwingUtilities;
 import org.whired.rsmap.graphics.RSCanvas;
 import org.whired.rsmap.graphics.sprites.StaticSprite;
@@ -28,11 +29,11 @@ public class RSMap extends RSCanvas {
 	public synchronized void addSprite(Sprite s) {
 		mapSprites.add(s);
 	}
-	
-	public final void loadMap() {
+
+	public void loadMap() {
 		loadMap(this.getClass().getResource("/org/whired/rsmap/io/worldmap.dat").getPath());
 	}
-	
+
 	/**
 	 * Loads a custom map located at the given path
 	 * @param cachePath the path of the map to load
@@ -40,41 +41,33 @@ public class RSMap extends RSCanvas {
 	@Override
 	public final void loadMap(String cachePath) {
 		super.loadMap(cachePath);
-		SwingUtilities.invokeLater(new Runnable() {
+		addButton(new MapButton("Minimap", 5, RSMap.super.getHeight() - 18 - 5, 100, 18, 0xBEC7E8, 0xFF00FF)//0xBEC7E8, 0xA3ACD1)
+		{
 
-			public void run() {
-				synchronized (RSMap.this) {
-					buttons.add(new MapButton("Minimap", 5, RSMap.super.getHeight() - 18 - 5, 100, 18, 0xBEC7E8, 0xFF00FF)//0xBEC7E8, 0xA3ACD1)
-					{
+			@Override
+			public void draw() {
+				drawButton(this);
+			}
 
-						@Override
-						public void draw() {
-							drawButton(this);
-						}
-
-						@Override
-						public void clicked() {
-							showOverview = !showOverview;
-							repaint();
-						}
-					});
-					buttons.add(new MapButton("Test", 110, RSMap.super.getHeight() - 20 - 5, 100, 20, Color.MAGENTA, Color.PINK) {
-
-						@Override
-						public void draw() {
-							drawButton(this);
-						}
-
-						@Override
-						public void clicked() {
-							System.out.println("Test clicked");
-						}
-					});
-				}
-				showOverview = true;
-				currentZoomLevel = 3D;
+			@Override
+			public void clicked() {
+				showOverview = !showOverview;
+				repaint();
 			}
 		});
+		addButton(new MapButton("Test", 110, RSMap.super.getHeight() - 20 - 5, 100, 20, Color.MAGENTA, Color.PINK) {
+
+			@Override
+			public void draw() {
+				drawButton(this);
+			}
+
+			@Override
+			public void clicked() {
+				System.out.println("Test clicked");
+			}
+		});
+		showOverview = true;
 
 
 		CacheLoader cacheLoader;
@@ -133,7 +126,7 @@ public class RSMap extends RSCanvas {
 			Sprite uberSprite = new StaticSprite(new URL("http://icons.iconarchive.com/icons/google/chrome/16/Google-Chrome-icon.png"));
 			uberSprite.location = new Point(2460, 3090);
 			uberSprite.isRelativeToMap = true;
-			addSprite(uberSprite);
+			//addSprite(uberSprite);
 		}
 		catch (Exception ex) {
 			Logger.getLogger(RSMap.class.getName()).log(Level.SEVERE, null, ex);
@@ -494,53 +487,53 @@ public class RSMap extends RSCanvas {
 								i12 -= 4;
 							}
 							if (i12 == 1) {
-								drawVerticalLine(k4, i10, k11, i14);
+								renderVerticalLine(k4, i10, k11, i14);
 							}
 							else if (i12 == 2) {
-								drawHorizontalLine(k4, i10, i6, i14);
+								renderHorizontalLine(k4, i10, i6, i14);
 							}
 							else if (i12 == 3) {
-								drawVerticalLine(k12, i10, k11, i14);
+								renderVerticalLine(k12, i10, k11, i14);
 							}
 							else if (i12 == 4) {
-								drawHorizontalLine(k4, j13, i6, i14);
+								renderHorizontalLine(k4, j13, i6, i14);
 							}
 							else if (i12 == 9) {
-								drawVerticalLine(k4, i10, k11, 0xffffff);
-								drawHorizontalLine(k4, i10, i6, i14);
+								renderVerticalLine(k4, i10, k11, 0xffffff);
+								renderHorizontalLine(k4, i10, i6, i14);
 							}
 							else if (i12 == 10) {
-								drawVerticalLine(k12, i10, k11, 0xffffff);
-								drawHorizontalLine(k4, i10, i6, i14);
+								renderVerticalLine(k12, i10, k11, 0xffffff);
+								renderHorizontalLine(k4, i10, i6, i14);
 							}
 							else if (i12 == 11) {
-								drawVerticalLine(k12, i10, k11, 0xffffff);
-								drawHorizontalLine(k4, j13, i6, i14);
+								renderVerticalLine(k12, i10, k11, 0xffffff);
+								renderHorizontalLine(k4, j13, i6, i14);
 							}
 							else if (i12 == 12) {
-								drawVerticalLine(k4, i10, k11, 0xffffff);
-								drawHorizontalLine(k4, j13, i6, i14);
+								renderVerticalLine(k4, i10, k11, 0xffffff);
+								renderHorizontalLine(k4, j13, i6, i14);
 							}
 							else if (i12 == 17) {
-								drawHorizontalLine(k4, i10, 1, i14);
+								renderHorizontalLine(k4, i10, 1, i14);
 							}
 							else if (i12 == 18) {
-								drawHorizontalLine(k12, i10, 1, i14);
+								renderHorizontalLine(k12, i10, 1, i14);
 							}
 							else if (i12 == 19) {
-								drawHorizontalLine(k12, j13, 1, i14);
+								renderHorizontalLine(k12, j13, 1, i14);
 							}
 							else if (i12 == 20) {
-								drawHorizontalLine(k4, j13, 1, i14);
+								renderHorizontalLine(k4, j13, 1, i14);
 							}
 							else if (i12 == 25) {
 								for (int j14 = 0; j14 < k11; j14++) {
-									drawHorizontalLine(k4 + j14, j13 - j14, 1, i14);
+									renderHorizontalLine(k4 + j14, j13 - j14, 1, i14);
 								}
 							}
 							else if (i12 == 26) {
 								for (int k14 = 0; k14 < k11; k14++) {
-									drawHorizontalLine(k4 + k14, i10 + k14, 1, i14);
+									renderHorizontalLine(k4 + k14, i10 + k14, 1, i14);
 								}
 							}
 						}
@@ -572,6 +565,54 @@ public class RSMap extends RSCanvas {
 	}
 
 	/**
+	 * Gets the distance between two points
+	 * @param p1 the first point
+	 * @param p2 the second point
+	 * @return the distance
+	 */
+	public double getDistance(Point p1, Point p2) {
+		double dx = p1.x - p2.x;
+		double dy = p1.y - p2.y;
+		return Math.sqrt(dx * dx + dy * dy);
+	}
+
+	/**
+	 * Translates a map coordinate into a pixel coordinate
+	 * @param mapCoord the point to translate
+	 * @return the pixel coordinate
+	 */
+	public Point mapToPixel(Point mapCoord) {
+		int i = overviewCenterX - (int) ((double) super.getWidth() / currentZoomLevel);
+		int j = overviewCenterY - (int) ((double) super.getHeight() / currentZoomLevel);
+		int k = overviewCenterX + (int) ((double) super.getWidth() / currentZoomLevel);
+		int l = overviewCenterY + (int) ((double) super.getHeight() / currentZoomLevel);
+		int px = (mapCoord.x - mapStartX);
+		int py = ((mapStartY + mapHeight) - mapCoord.y);
+		py -= (currentZoomLevel < 8D ? 4 : 2);
+		int j6;
+		int l6;
+		j6 = px;
+		l6 = py;
+		int adjustedX = ((getWidth()) * (j6 - i)) / (k - i);
+		int adjustedY = ((getHeight()) * (l6 - j)) / (l - j);
+		return new Point(adjustedX, adjustedY);
+
+	}
+
+	/**
+	 * Translates a component coordinate into a map coordinate
+	 * @param componentCoord the point to translate
+	 * @return the map coordinate
+	 */
+	public Point componentToMap(Point componentCoord) {
+		int localX = (int) ((componentCoord.x * 2D) / currentZoomLevel) - (int) (getWidth() / currentZoomLevel);
+		int localY = (int) ((componentCoord.y * 2D) / currentZoomLevel) - (int) (getHeight() / currentZoomLevel);
+		int mapCoordX = mapStartX + overviewCenterX + localX;
+		int mapCoordY = mapStartY + mapHeight - localY - overviewCenterY;
+		return new Point(mapCoordX, mapCoordY);
+	}
+
+	/**
 	 * Gets a cache loader for the cache file at the specified path
 	 * @param cachePath the path of the cache to get a loader for
 	 * @return
@@ -596,7 +637,25 @@ public class RSMap extends RSCanvas {
 			return false;
 		}
 	}
-	private ArrayList<MapButton> buttons = new ArrayList<MapButton>();
+	private HashSet<MapButton> buttons = new HashSet<MapButton>();
+
+	/**
+	 * Adds a button to this map
+	 * @param button the button to add
+	 */
+	public synchronized void addButton(MapButton button) {
+		buttons.add(button);
+		repaint();
+	}
+
+	/**
+	 * Removes a button from this map
+	 * @param button the button to remove
+	 */
+	public synchronized void removeButton(MapButton button) {
+		buttons.remove(button);
+		repaint();
+	}
 	public int mapStartX;
 	public int mapStartY;
 	public int mapWidth;
@@ -620,7 +679,7 @@ public class RSMap extends RSCanvas {
 	public int firstClickY;
 	public int dragStartX;
 	public int dragStartY;
-	public double currentZoomLevel;
+	public double currentZoomLevel = 3D;
 	public int overviewCenterX;
 	public int overviewCenterY;
 
@@ -653,7 +712,7 @@ public class RSMap extends RSCanvas {
 		adjustOverview();
 		repaint();
 	}
-	
+
 	private void adjustOverview() {
 		int l = overviewCenterX - (int) ((double) super.getWidth() / currentZoomLevel);
 		int l1 = overviewCenterY - (int) ((double) super.getHeight() / currentZoomLevel);
@@ -681,7 +740,7 @@ public class RSMap extends RSCanvas {
 
 	@Override
 	public void keyPressed(int keyCode) {
-		switch(keyCode) {
+		switch (keyCode) {
 			case 38: // UP
 				overviewCenterY = (int) ((double) overviewCenterY - 16D / currentZoomLevel);
 				break;
