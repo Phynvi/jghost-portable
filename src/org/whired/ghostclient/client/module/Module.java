@@ -35,9 +35,15 @@ public interface Module extends Serializable {
 	public GhostEventAdapter getEventListener();
 
 	/**
-	 * Invoked after the module is added to a view
-	 * @param resourceDir the directory that this module was loaded from --
-	 * resources can be loaded by using this directory
+	 * Invoked after the module is initialized to set the location of 
+	 *	this module on the disk. This value should be saved if remote 
+	 *	resources need to be loaded.
+	 * @param path the path to save
 	 */
-	public void load(String resourceDir);
+	public void setResourcePath(String path);
+	
+	/**
+	 * Invoked from the EDT after the module is added to a view
+	 */
+	public void load();
 }

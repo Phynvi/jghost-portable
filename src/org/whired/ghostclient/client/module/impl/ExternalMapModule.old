@@ -20,7 +20,8 @@ import org.whired.rsmap.impl.PlayerRSMap;
  */
 public class ExternalMapModule extends PlayerRSMap implements Module {
 	private ClientGhostFrame frame;
-
+	private String resourcePath;
+	
 	private final GhostEventAdapter adapter = new GhostEventAdapter(){
 		
 		@Override
@@ -67,10 +68,8 @@ public class ExternalMapModule extends PlayerRSMap implements Module {
 	}
 
 	@Override
-	public void load(String resourceDir) {
-		Vars.getLogger().log(Level.INFO, "Loading map from {0}", resourceDir+System.getProperty("file.separator")+"worldmap.dat");
-		//loadMap(resourceDir+System.getProperty("file.separator")+"worldmap.dat");
-		loadMap();
+	public void load() {
+		loadMap(resourcePath+System.getProperty("file.separator")+"worldmap.dat");
 		final ArrayList<Player> lplayers = new ArrayList<Player>();
 		for(int i = 0; i < 5; i++)
 			lplayers.add(addPlayer(new Player("Player-"+i, 3, 2460, 3090)));
@@ -101,5 +100,10 @@ public class ExternalMapModule extends PlayerRSMap implements Module {
 				}
 			}
 		}).start();
+	}
+
+	@Override
+	public void setResourcePath(String path) {
+		resourcePath = path;
 	}
 }

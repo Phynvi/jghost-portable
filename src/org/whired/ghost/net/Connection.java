@@ -1,5 +1,7 @@
 package org.whired.ghost.net;
 
+import java.io.IOException;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.whired.ghost.Vars;
@@ -36,10 +38,6 @@ public abstract class Connection {
 	 */
 	private boolean expectingPassword = false;
 	/**
-	 * Specifies whether or not the session is still valid
-	 */
-	protected boolean sessionCorrupt = false;
-	/**
 	 * The session manager for this connection
 	 */
 	protected final SessionManager manager;
@@ -58,11 +56,11 @@ public abstract class Connection {
 		this.receivable = receivable;
 		this.manager = manager;
 		this.inputStream.setDisconnectCallback(new DisconnectCallback() {
+
 			@Override
 			public void disconnected(String reason) {
 				endSession(reason);
 			}
-			
 		});
 		Vars.getLogger().fine("Running");
 	}
@@ -70,7 +68,7 @@ public abstract class Connection {
 	protected interface DisconnectCallback {
 		public void disconnected(String reason);
 	}
-	
+
 	/**
 	 * Creates a new connection with the specified streams and listeners
 	 *
@@ -94,16 +92,24 @@ public abstract class Connection {
 		listenerThread = new Thread(new Runnable() {
 
 			public void run() {
-				Vars.getLogger().fine("Listening for incoming packets on " + Thread.currentThread().getName());
-				while (true)
+				Vars.getLogger().log(Level.FINE, "Listening for incoming packets on {0}", Thread.currentThread().getName());
+				while (true) {
 					try {
 						inputStream.expectingNewPacket = true;
 						handlePacket(inputStream.readByte(), inputStream.readByte());
 						inputStream.expectingNewPacket = false;
 					}
-					catch (Exception e) {
+					catch (SocketException e) {
+						endSession("Stream corrupt");
 						break;
 					}
+					catch (IOException ioe) {
+						break;
+					}
+					catch (ClassNotFoundException cnfe) {
+						endSession("RMI error");
+					}
+				}
 				Vars.getLogger().fine("Thread " + Thread.currentThread().getName() + " is exiting.");
 			}
 		}, "Packet Receiver");
@@ -111,7 +117,7 @@ public abstract class Connection {
 	}
 
 	private void handlePacket(int packetId, int length) {
-		if (expectingPassword)
+		if (expectingPassword) {
 			if (packetId == PacketType.AUTHENTICATION) {
 				GhostAuthenticationPacket ap = new GhostAuthenticationPacket();
 				ap.receive(this);
@@ -119,31 +125,34 @@ public abstract class Connection {
 					Vars.getLogger().fine("Password matched, client accepted.");
 					expectingPassword = false;
 				}
-				else
+				else {
 					endSession("Password incorrect"); //expectingPassword = false;
+				}
 			}
-			else
-				endSession("Password expected, but not received"); //expectingPassword = false;
-		else
-			if (packetId == 4)
-				try {
-					System.out.println((String) inputStream.readObject());
-					Exception e;
-					if ((e = (Exception) inputStream.readObject()) != null) {
-						Vars.getLogger().warning(e.toString());
-						e.printStackTrace();
-					}
-				}
-				catch (Exception ex) {
-					Logger.getLogger(Connection.class.getName()).log(Level.WARNING, null, ex);
-				}
 			else {
-				Vars.getLogger().fine("Notifying receivable that external packet " + packetId + " has been received.");
-				if (!receivable.handlePacket(packetId, length, this)) {
-					new UnhandledPacket(length).receive(this);
-					Vars.getLogger().fine("Flushed unhandled packet " + packetId + " with length "+length);
+				endSession("Password expected, but not received"); //expectingPassword = false;
+			}
+		}
+		else if (packetId == 4) {
+			try {
+				System.out.println((String) inputStream.readObject());
+				Exception e;
+				if ((e = (Exception) inputStream.readObject()) != null) {
+					Vars.getLogger().warning(e.toString());
+					e.printStackTrace();
 				}
 			}
+			catch (Exception ex) {
+				Logger.getLogger(Connection.class.getName()).log(Level.WARNING, null, ex);
+			}
+		}
+		else {
+			Vars.getLogger().fine("Notifying receivable that external packet " + packetId + " has been received.");
+			if (!receivable.handlePacket(packetId, length, this)) {
+				new UnhandledPacket(length).receive(this);
+				Vars.getLogger().fine("Flushed unhandled packet " + packetId + " with length " + length);
+			}
+		}
 	}
 
 	/**
@@ -167,8 +176,9 @@ public abstract class Connection {
 			Vars.getLogger().fine("Sending packet " + packetId + ", which consists of " + data.length + " objects.");
 			outputStream.writeByte(packetId);
 			outputStream.writeByte(data.length);
-			for (Object obj : data)
+			for (Object obj : data) {
 				outputStream.writeObject(obj);
+			}
 		}
 		catch (Exception e) {
 			Vars.getLogger().warning("Unable to send packet " + packetId + ": " + e.toString());
@@ -200,31 +210,24 @@ public abstract class Connection {
 		this.expectingPassword = true;
 		Vars.getLogger().info("Password request acknowledged. Password is now expected.");
 	}
-	private boolean terminationRequested = false;
 
 	/**
 	 * Called then the session must be terminated
 	 */
 	protected void endSession(String reason) {
-		if (!terminationRequested) { // TODO find out why this fires multiple times
-			//sendPacket(4, "Terminating. Reason: " + reason);
-			Vars.getLogger().info("Termination requested [Reason: " + (reason != null ? reason + "]" : "unspecified]") + " - Target: " + this);
-			if(this.manager != null)
-				this.manager.sessionEnded(reason);
-			synchronized (this) {
-				Vars.getLogger().fine("Lock acquired.");
-				removeOutputStream();
-				removeInputStream();
-				terminationRequested = true;
-				sessionCorrupt = true;
-				Vars.getLogger().fine("Notifying");
-				notify();
-				Vars.getLogger().fine("Notified");
-				System.out.println("Connection reset: "+reason);
-			}
+		Vars.getLogger().log(Level.INFO, "Termination requested [Reason: {0} - Target: {1}", new Object[]{reason != null ? reason + "]" : "unspecified]", this});
+		if (this.manager != null) {
+			this.manager.sessionEnded(reason);
 		}
-		else
-			Vars.getLogger().fine("Termination request received, but termination is already occurring.");
+		synchronized (this) {
+			Vars.getLogger().fine("Lock acquired.");
+			removeOutputStream();
+			removeInputStream();
+			Vars.getLogger().fine("Notifying");
+			notify();
+			Vars.getLogger().fine("Notified");
+			System.out.println("Connection reset: " + reason);
+		}
 	}
 
 	public void setEnforceTimeout(boolean b) {

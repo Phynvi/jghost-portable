@@ -19,29 +19,40 @@ public class Player implements Serializable {
 	 */
 	private byte rights;
 	private int x, y;
-	
+
+	/**
+	 * Creates a new player with the specified name, rights, and location
+	 * @param name the name of the player
+	 * @param rights the rights of the player (-128 to 127)
+	 * @param x the x-coordinate of this player
+	 * @param y the y-coordinate of this player
+	 */
+	public Player(String name, int rights, int x, int y) {
+		this.name = name;
+		this.rights = (byte) rights;
+		this.x = x;
+		this.y = y;
+	}
+
 	/**
 	 * Creates a new player with the specified name and rights
 	 * @param name the name of the player
 	 * @param rights the rights of the player (-128 to 127)
 	 */
-	public Player(String name, int rights, int x, int y) {
+	public Player(String name, int rights) {
 		this.name = name;
-		this.rights = (byte)rights;
-		this.x = x;
-		this.y = y;
+		this.rights = (byte) rights;
 	}
 
-	public Point getLocation()
-	{
+	public Point getLocation() {
 		return new Point(x, y);
 	}
-	
+
 	public void setLocation(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	/**
 	 * Gets the long that represents this player's name
 	 * @return the converted long
@@ -51,15 +62,19 @@ public class Player implements Serializable {
 		for (int i = 0; i < getName().length() && i < 12; i++) {
 			char c = getName().charAt(i);
 			l *= 37L;
-			if (c >= 'A' && c <= 'Z')
+			if (c >= 'A' && c <= 'Z') {
 				l += (1 + c) - 65;
-			else if (c >= 'a' && c <= 'z')
+			}
+			else if (c >= 'a' && c <= 'z') {
 				l += (1 + c) - 97;
-			else if (c >= '0' && c <= '9')
+			}
+			else if (c >= '0' && c <= '9') {
 				l += (27 + c) - 48;
+			}
 		}
-		while (l % 37L == 0L && l != 0L)
+		while (l % 37L == 0L && l != 0L) {
 			l /= 37L;
+		}
 		return l;
 	}
 
@@ -86,15 +101,18 @@ public class Player implements Serializable {
 	public int getRights() {
 		return rights;
 	}
+
 	/**
 	 * Sets the rights of this player
 	 * @param rights the rights to set (-128 to 127)
 	 */
 	public void setRights(int rights) {
-		if (rights > 127)
+		if (rights > 127) {
 			rights = 127;
-		if (rights < 0)
+		}
+		if (rights < 0) {
 			rights = 0;
+		}
 		this.rights = (byte) rights;
 	}
 

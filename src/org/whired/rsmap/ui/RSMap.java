@@ -2,6 +2,7 @@ package org.whired.rsmap.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.MouseWheelEvent;
 import org.whired.rsmap.io.FileOperations;
 import org.whired.rsmap.graphics.TextRenderer;
@@ -12,36 +13,56 @@ import java.awt.Point;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.whired.rsmap.graphics.sprites.Sprite;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
-import javax.swing.SwingUtilities;
+import org.whired.ghost.Vars;
 import org.whired.rsmap.graphics.RSCanvas;
 import org.whired.rsmap.graphics.sprites.StaticSprite;
+import org.whired.rsmap.graphics.sprites.TextSprite;
 
-public class RSMap extends RSCanvas {
+public abstract class RSMap extends RSCanvas {
 
+	private int mapStartX;
+	private int mapStartY;
+	private int mapWidth;
+	private int mapHeight;
+	private int anIntArray115[];
+	private int anIntArray116[];
+	private int anIntArrayArray117[][];
+	private int anIntArrayArray118[][];
+	private byte aByteArrayArray119[][];
+	private byte mapObjects[][];
+	private int minimapHeight;
+	private int minimapWidth;
+	private int minimapX;
+	private int minimapY;
+	private boolean showOverview = true;
+	private OverviewArea overviewArea;
+	private int dragStartX;
+	private int dragStartY;
+	private double currentZoomLevel = 3D;
+	private int overviewCenterX;
+	private int overviewCenterY;
 	private ArrayList<Sprite> mapSprites = new ArrayList<Sprite>();
-
+	private Font defaultFont = loadPackagedFont("ubuntu");
+	public TextSprite defaultTextSprite;
 	public synchronized void addSprite(Sprite s) {
 		mapSprites.add(s);
-	}
-
-	public void loadMap() {
-		loadMap(this.getClass().getResource("/org/whired/rsmap/io/worldmap.dat").getPath());
 	}
 
 	/**
 	 * Loads a custom map located at the given path
 	 * @param cachePath the path of the map to load
 	 */
-	@Override
-	public final void loadMap(String cachePath) {
-		super.loadMap(cachePath);
-		addButton(new MapButton("Minimap", 5, RSMap.super.getHeight() - 18 - 5, 100, 18, 0xBEC7E8, 0xFF00FF)//0xBEC7E8, 0xA3ACD1)
+	public void loadMap(String cachePath) {
+		super.loadMap();
+		defaultTextSprite = new TextSprite("ts", defaultFont, 0xFFFFFF, false, true, this);
+		MapButton mb1 = new MapButton("Minimap", 2, RSMap.super.getHeight() - 14 - 2, 40, 14, 0xBEC7E8, 0x6382BF)
 		{
 
 			@Override
@@ -54,37 +75,27 @@ public class RSMap extends RSCanvas {
 				showOverview = !showOverview;
 				repaint();
 			}
-		});
-		addButton(new MapButton("Test", 110, RSMap.super.getHeight() - 20 - 5, 100, 20, Color.MAGENTA, Color.PINK) {
+		};
+		mb1.setTextSprite(defaultTextSprite);
+		addButton(mb1);
 
-			@Override
-			public void draw() {
-				drawButton(this);
-			}
-
-			@Override
-			public void clicked() {
-				System.out.println("Test clicked");
-			}
-		});
-		showOverview = true;
-
-
+		Vars.getLogger().info("Loading map from disk..");
 		CacheLoader cacheLoader;
 		try {
-			cacheLoader = getMapLoader(cachePath);
+			cacheLoader = getMapLoader(new FileInputStream(cachePath));
 		}
-		catch (FileNotFoundException e) {
-			//drawLoadingText("Error: Map file not found");
+		catch (Throwable t) {
+		try {
+			Vars.getLogger().log(Level.WARNING, "External cache load fail, falling back to default: ", t);
+			cacheLoader = getMapLoader(this.getClass().getResourceAsStream("/org/whired/rsmap/resources/worldmap.dat"));
+		}
+		catch (Throwable t2) {
+			Vars.getLogger().log(Level.SEVERE, "Internal cache load fail, map not loaded", t2);
 			return;
 		}
-		catch (IOException e) {
-			//drawLoadingText("Error: Unable to read map");
-			return;
 		}
-		System.out.println("Rendering..");
-		//drawLoadingText("Rendering..");
 
+		Vars.getLogger().info("Map loaded. Rendering..");
 		ByteBuffer byteBuffer = new ByteBuffer(cacheLoader.loadNode("size.dat"));
 		mapStartX = byteBuffer.getShort();
 		mapStartY = byteBuffer.getShort();
@@ -565,18 +576,6 @@ public class RSMap extends RSCanvas {
 	}
 
 	/**
-	 * Gets the distance between two points
-	 * @param p1 the first point
-	 * @param p2 the second point
-	 * @return the distance
-	 */
-	public double getDistance(Point p1, Point p2) {
-		double dx = p1.x - p2.x;
-		double dy = p1.y - p2.y;
-		return Math.sqrt(dx * dx + dy * dy);
-	}
-
-	/**
 	 * Translates a map coordinate into a pixel coordinate
 	 * @param mapCoord the point to translate
 	 * @return the pixel coordinate
@@ -619,9 +618,9 @@ public class RSMap extends RSCanvas {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public CacheLoader getMapLoader(String cachePath) throws FileNotFoundException, IOException {
+	public CacheLoader getMapLoader(InputStream is) throws FileNotFoundException, IOException {
 		byte abyte0[] = null;
-		abyte0 = FileOperations.ReadFile(new FileInputStream(cachePath));
+		abyte0 = FileOperations.ReadFile(is);
 		return new CacheLoader(abyte0);
 	}
 
@@ -656,32 +655,6 @@ public class RSMap extends RSCanvas {
 		buttons.remove(button);
 		repaint();
 	}
-	public int mapStartX;
-	public int mapStartY;
-	public int mapWidth;
-	public int mapHeight;
-	public int anIntArray115[];
-	public int anIntArray116[];
-	public int anIntArrayArray117[][];
-	public int anIntArrayArray118[][];
-	public byte aByteArrayArray119[][];
-	/**
-	 * Contains locations of fences, doors, walls, etc.
-	 */
-	public byte mapObjects[][];
-	public int minimapHeight;
-	public int minimapWidth;
-	public int minimapX;
-	public int minimapY;
-	public boolean showOverview;
-	public OverviewArea overviewArea;
-	public int firstClickX;
-	public int firstClickY;
-	public int dragStartX;
-	public int dragStartY;
-	public double currentZoomLevel = 3D;
-	public int overviewCenterX;
-	public int overviewCenterY;
 
 	@Override
 	public void mouseDragged(int oldX, int oldY, int newX, int newY) {
@@ -758,5 +731,20 @@ public class RSMap extends RSCanvas {
 				break;
 		}
 		repaint();
+	}
+
+	private Font loadPackagedFont(String name) {
+		try {
+			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("/org/whired/rsmap/resources/"+name+".ttf")).deriveFont(9F);
+			Vars.getLogger().log(Level.INFO, "Loaded font: {0}", name);
+			return f;
+		}
+		catch (Throwable t) {
+			String safeFontName = "SansSerif";
+			Vars.getLogger().log(Level.WARNING, "Error loading font: " + name, t);
+			Font f = new Font(safeFontName, Font.PLAIN, 10);
+			Vars.getLogger().log(Level.INFO, "Loaded safe font: {0}", safeFontName);
+			return f;
+		}
 	}
 }

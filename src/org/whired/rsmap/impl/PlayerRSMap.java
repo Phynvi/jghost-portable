@@ -1,14 +1,12 @@
 package org.whired.rsmap.impl;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Point;
 import java.util.HashMap;
 import org.whired.ghost.net.model.player.Player;
-import org.whired.rsmap.graphics.sprites.TextSprite;
 import org.whired.rsmap.ui.MapButton;
 import org.whired.rsmap.ui.RSMap;
+import org.whired.ghost.math.GhostMath;
 
 /**
  *
@@ -19,9 +17,6 @@ public class PlayerRSMap extends RSMap {
 	private HashMap<String, MapPlayer> players = new HashMap<String, MapPlayer>();
 	private boolean showLocations = false;
 	private boolean showNames = false;
-	private final Font arial = new Font("Arial", Font.PLAIN, 9);
-	private TextSprite ts;
-	private boolean isSelecting = false;
 	private MapPlayer selectedPlayer = null;
 
 	public MapPlayer addPlayer(Player player) {
@@ -45,26 +40,7 @@ public class PlayerRSMap extends RSMap {
 	}
 
 	private void addButtons() {
-		MapButton mb1 = new MapButton("Select", 47, PlayerRSMap.this.getHeight() - 18 - 25, 40, 14, 0xBEC7E8, 0x6382BF) {
-
-			@Override
-			public void draw() {
-				drawButton(this);
-			}
-
-			@Override
-			public void clicked() {
-				isSelecting = !isSelecting;
-				if (isSelecting) {
-					setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				}
-				else {
-					selectedPlayer = null;
-					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				}
-			}
-		};
-		MapButton mb = new MapButton("Players", 5, PlayerRSMap.this.getHeight() - 18 - 25, 40, 14, 0xBEC7E8, 0x6382BF) {
+		MapButton mb = new MapButton("Players", 44, PlayerRSMap.super.getHeight() - 14 - 2, 40, 14, 0xBEC7E8, 0x6382BF) {
 
 			int mode = 0;
 
@@ -94,12 +70,11 @@ public class PlayerRSMap extends RSMap {
 					showLocations = true;
 					mode = -1;
 				}
+				repaint();
 			}
 		};
-		mb.setTextSprite(ts);
-		mb1.setTextSprite(ts);
+		mb.setTextSprite(defaultTextSprite);
 		addButton(mb);
-		addButton(mb1);
 	}
 
 	@Override
@@ -121,8 +96,8 @@ public class PlayerRSMap extends RSMap {
 			for (MapPlayer p : players.values()) {
 				Point loc = mapToPixel(p.getLocation());
 				if (showNames) {
-					ts.setText(p.getName());
-					ts.drawSprite(loc.x, loc.y, this);
+					defaultTextSprite.setText(p.getName());
+					defaultTextSprite.drawSprite(loc.x, loc.y, this);
 				}
 				loc = null;
 				if (showLocations) {
@@ -146,9 +121,7 @@ public class PlayerRSMap extends RSMap {
 		MapPlayer nearest = null;
 		for (MapPlayer pl : players.values()) {
 			if (nearest != null) {
-				int dist1 = (int) getDistance(pl.getLocation(), mapCoord);
-				int dist2 = (int) getDistance(nearest.getLocation(), mapCoord);
-				if (dist1 < dist2) {
+				if (GhostMath.getDistance(pl.getLocation(), mapCoord)< GhostMath.getDistance(nearest.getLocation(), mapCoord)) {
 					nearest = pl;
 				}
 			}
@@ -159,17 +132,14 @@ public class PlayerRSMap extends RSMap {
 		return nearest;
 	}
 
-	public boolean clicked(Point p) {
-		boolean b = super.clicked(p);
-		if (isSelecting && !b) {
-			selectedPlayer = findPlayerNearest(componentToMap(p));
-		}
-		return b;
+	@Override
+	public void mouseUp(int x, int y) {
+		selectedPlayer = findPlayerNearest(componentToMap(new Point(x, y)));
 	}
-
-	public void loadMap() {
-		super.loadMap();
-		ts = new TextSprite("ts", arial, 0xC0CFEB, false, true, PlayerRSMap.this);
+	
+	@Override
+	public void loadMap(String cacheDir) {
+		super.loadMap(cacheDir);
 		addButtons();
 	}
 }

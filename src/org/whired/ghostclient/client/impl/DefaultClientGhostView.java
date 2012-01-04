@@ -4,9 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.*;
@@ -207,7 +204,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			e.printStackTrace();
 		}
 		try {
-			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/arial.ttf")).deriveFont(9F);
+			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/ubuntu.ttf")).deriveFont(9F);
 			Font f2 = f.deriveFont(10F);
 			UIManager.put("ToolTip.font", f);
 			UIManager.put("OptionPane.messageFont", f);
@@ -290,7 +287,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		System.setOut(p);
 		System.setErr(p);
 		final GhostFormatter formatter = new GhostFormatter();
-		Vars.getLogger().addHandler(new Handler() {
+		/*Vars.getLogger().addHandler(new Handler() {
 
 			@Override
 			public void publish(LogRecord record) {
@@ -309,7 +306,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			public void close() throws SecurityException {
 				throw new UnsupportedOperationException("Not supported yet.");
 			}
-		});
+		});*/
 	}
 
 	/**
@@ -736,7 +733,6 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 
 	@Override
 	public void moduleAdded(final Module module) {
-		Vars.getLogger().info(module.getModuleName());
 		jTabbedPane1.addTab(module.getModuleName(), module.getComponent());
 		// Module size changes here
 		int offs = jTabbedPane1.getBoundsAt(jTabbedPane1.getTabCount() - 1).width;
@@ -784,5 +780,15 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	@Override
 	public void displayModuleNotification(Module module) {
 		setNotification(jTabbedPane1.indexOfComponent(module.getComponent()));
+	}
+
+	@Override
+	public void playerAdded(Player player) {
+		this.playerListModel.addElement(player);
+	}
+
+	@Override
+	public void playerRemoved(Player player) {
+		this.playerListModel.removeElement(player);
 	}
 }

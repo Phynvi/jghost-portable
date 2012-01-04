@@ -85,7 +85,7 @@
         </jar>
 
 	   <delete file="${client.jar}"/>
-        <jar destfile="${client.jar}" filesetmanifest="skip" update="true" basedir="build/classes" includes="org/whired/ghostclient/** org/whired/ghost/** org/whired/rsmap/** org/apache/xbean/finder/**" excludes="org/whired/ghostclient/updater/">
+        <jar destfile="${client.jar}" filesetmanifest="skip" update="true" basedir="build/classes" includes="org/whired/ghostclient/** org/whired/ghost/** org/whired/rsmap/**" excludes="org/whired/ghostclient/updater/">
 		   <manifest>
                 <attribute name="Main-Class" value="org.whired.ghostclient.Main"/>
             </manifest>

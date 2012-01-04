@@ -42,7 +42,12 @@ public class PlayerGraph extends LineGraph implements Module {
 	}
 
 	@Override
-	public void load(String resourceDir) {
+	public void load() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void setResourcePath(String path) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

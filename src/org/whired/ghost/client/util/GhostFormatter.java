@@ -34,17 +34,17 @@ public class GhostFormatter extends Formatter {
 	formatter.format(args, text, null);
 	sb.append(text);
 	sb.append(" ");
-	if (record.getSourceClassName() != null) {
-	    sb.append(record.getSourceClassName());
+	String cn = record.getSourceClassName();
+	if (cn != null) {
+	    sb.append(cn.substring(cn.lastIndexOf(".")+1, cn.length()));
 	} else {
 	    sb.append(record.getLoggerName());
 	}
 	if (record.getSourceMethodName() != null) {
-	    sb.append(" ");
+	    sb.append(".");
 	    sb.append(record.getSourceMethodName());
 	}
 	sb.append(": ");
-	//sb.append(lineSeparator);
 	String message = formatMessage(record);
 	sb.append(record.getLevel().getLocalizedName());
 	sb.append(": ");

@@ -22,7 +22,6 @@ public class Test {
 		graph.setLabels(Label.ALL ^ Label.POINT_X);
 		graph.addLine(line);
 		graph.addLine(line2);
-		//graph.setAutoScrolls(false);
 		graph.setFont(new Font("Arial", Font.PLAIN, 9));
 		graph.setBackground(Color.BLACK);
 		JFrame f = new JFrame("Players V Staff");

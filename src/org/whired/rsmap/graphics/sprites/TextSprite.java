@@ -23,7 +23,7 @@ public class TextSprite extends Sprite {
 	/** The values for acceptable chars */
 	private final int[] charValues;
 	/** The color of this sprite's text */
-	public int hexRGB = 0xFFFFFF;
+	public int hexRGB = 0x000000;
 	/** Whether or not this sprite's text should be horizontally centered */
 	public boolean isCentered;
 	/** Whether or not this sprite's text should display a drop-shadow */

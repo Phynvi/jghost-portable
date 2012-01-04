@@ -1,13 +1,7 @@
 package org.whired.ghostclient.client.module;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import org.whired.ghost.Vars;
 import org.whired.ghost.net.model.player.Player;
@@ -24,63 +18,38 @@ public class ModuleHandler extends GhostEventAdapter {
 	HashSet<Module> modules = new HashSet<Module>();
 	private final ClientGhostFrame frame;
 
-	public ModuleHandler(final ClientGhostFrame frame) {
+	public ModuleHandler(Module[] initialModules, final ClientGhostFrame frame) {
 		this.frame = frame;
-		try {
-			File dir = new File(Vars.LOCAL_CODEBASE + "modules/extmap");
-			if (dir.exists()) {
-				URL[] url = new URL[]{dir.toURI().toURL()};
-				ClassLoader cl = new URLClassLoader(url);
-				Logger.getLogger(ModuleHandler.class.getName()).log(Level.INFO, "Loading modules from {0}..", dir.getPath());
-				ArrayList<File> dirs = new ArrayList<File>();
-				dirs.add(dir);
-				for (File ff : dir.listFiles()) {
-					if (ff.isDirectory()) {
-						dirs.add(ff);
-					}
-				}
-				for (File f : dirs) {
-					for (String sdir : f.list()) {
-						Logger.getLogger(ModuleHandler.class.getName()).log(Level.INFO, "Found file: {0}", sdir);
-						if (sdir.toLowerCase().endsWith(".class") && !sdir.contains("$")) { // Don't load anonymous classes
-							Logger.getLogger(ModuleHandler.class.getName()).log(Level.INFO, "Found class: {0}", sdir);
-							try {
-								String classN = sdir.substring(0, sdir.toLowerCase().indexOf(".class"));
-								Class cls = cl.loadClass(classN);
-								registerModule((Module) cls.newInstance(), dir.getPath());
-								Logger.getLogger(ModuleHandler.class.getName()).log(Level.INFO, "Module registered: {0}", classN);
-							}
-							catch (Throwable ex) {
-								//Logger.getLogger(ModuleHandler.class.getName()).log(Level.SEVERE, "Unable to dynamically load module " + sdir, ex);
-								ex.printStackTrace();
-							}
-						}
-					}
-				}
-			}
-			else {
-				Logger.getLogger(ModuleHandler.class.getName()).log(Level.INFO, "No modules to load.", dir.getPath());
-			}
-		}
-		catch (MalformedURLException ex) {
-			Logger.getLogger(ModuleHandler.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		for(Module m : initialModules)
+			registerModule(m);
 	}
 
+	public ModuleHandler(final ClientGhostFrame frame) {
+		this.frame = frame;
+	}
+	
 	/**
 	 * Registers a module to this handler
 	 * @param module 
 	 */
-	public final void registerModule(final Module module, final String resourceDir) {
+	public final void registerModule(final Module module) {
 		module.setFrame(frame);
 		SwingUtilities.invokeLater(new Runnable(){
 			@Override
 			public void run() {
-				frame.getView().moduleAdded(module);
-				module.load(resourceDir);
+				try {
+					Vars.getLogger().log(Level.INFO, "Registering and initializing module {0}", module.getModuleName());
+					frame.getView().moduleAdded(module);
+					module.load();
+					
+				}
+				catch(Throwable t) {
+					Vars.getLogger().log(Level.WARNING, "Error while registering module: ", t);
+				}
 			}
 		});
 		modules.add(module);
+		System.out.println(modules.size());
 	}
 
 	/**

@@ -19,22 +19,22 @@ import javax.swing.UIManager;
  *
  * @author Whired
  */
-public class UpdaterForm extends JFrame
-{
+public class UpdaterForm extends JFrame {
+
+	private JTextArea output;
+	private JLabel iconLbl;
+	
 	/**
 	 * Creates a new updater form
 	 */
-	public UpdaterForm()
-	{
+	public UpdaterForm() {
 		UIManager.put("ScrollBar.width", 12);
 		Exception lafError = null;
-		try
-		{
-			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/arial.ttf")).deriveFont(9F);
+		try {
+			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/ubuntu.ttf")).deriveFont(9F);
 			UIManager.put("TextArea.font", f);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			lafError = e;
 		}
 
@@ -63,7 +63,7 @@ public class UpdaterForm extends JFrame
 
 		pane.setViewportView(output);
 		pane.getViewport().setOpaque(false);
-		
+
 		this.getContentPane().add(pane, 0);
 		this.getContentPane().add(iconLbl, 1);
 
@@ -71,35 +71,19 @@ public class UpdaterForm extends JFrame
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 
-		if(lafError != null)
-		{
-			log("Error while setting look and feel: "+lafError.toString());
+		if (lafError != null) {
+			log("Error while setting look and feel: " + lafError.toString());
 		}
-	}
-
-	private JTextArea output;
-	private JLabel iconLbl;
-	public static void main(String[] arg)
-	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				new UpdaterForm().setVisible(true);
-			}
-		});
 	}
 
 	/**
 	 * Logs a message to the primary output box
 	 * @param message the message to log
 	 */
-	public void log(final String message)
-	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
+	public void log(final String message) {
+		SwingUtilities.invokeLater(new Runnable() {
+
+			public void run() {
 				output.append(message + "\n");
 			}
 		});

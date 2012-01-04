@@ -3,14 +3,17 @@ package org.whired.ghostclient.client;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.whired.ghost.Vars;
 import org.whired.ghost.net.model.GhostFrame;
 import org.whired.ghost.net.model.player.Player;
+import org.whired.ghost.net.model.player.Rank;
 import org.whired.ghost.net.model.player.RankHandler;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghostclient.client.command.CommandHandler;
 import org.whired.ghostclient.client.command.CommandMalformedException;
 import org.whired.ghostclient.client.command.CommandNotFoundException;
 import org.whired.ghostclient.client.module.ModuleHandler;
+import org.whired.ghostclient.client.module.ModuleLoader;
 
 /**
  * A client ghost frame
@@ -20,7 +23,7 @@ public abstract class ClientGhostFrame extends GhostFrame implements GhostClient
 
 	private CommandHandler commandHandler = new CommandHandler();
 	private RankHandler rankHandler = new RankHandler();
-	private ModuleHandler moduleHandler;// = new ModuleHandler(this);
+	private ModuleHandler moduleHandler = new ModuleHandler(ModuleLoader.loadFromDisk(Vars.LOCAL_CODEBASE + "modules/"), this);
 	private GhostClientView view;
 	private ClientPlayerList playerList = new ClientPlayerList(this) {
 
@@ -29,13 +32,13 @@ public abstract class ClientGhostFrame extends GhostFrame implements GhostClient
 		@Override
 		public void playerAdded(Player player) {
 			players.add(player);
-			System.out.println("Notify controller");
+			view.playerAdded(player);
 		}
 
 		@Override
 		public void playerRemoved(Player player) {
 			players.remove(player);
-			System.out.println("Notify controller");
+			view.playerRemoved(player);
 		}
 
 		@Override
@@ -48,7 +51,6 @@ public abstract class ClientGhostFrame extends GhostFrame implements GhostClient
 	public ClientGhostFrame(GhostClientView view) {
 		this.view = view;
 		super.getSessionManager().addEventListener(this);
-		moduleHandler = new ModuleHandler(this);
 	}
 	
 	@Override
@@ -127,5 +129,10 @@ public abstract class ClientGhostFrame extends GhostFrame implements GhostClient
 		catch (CommandNotFoundException ex) {
 			Logger.getLogger(ClientGhostFrame.class.getName()).log(Level.SEVERE, null, ex);
 		}
+	}
+	
+	@Override
+	public Rank getRankForPlayer(Player player) {
+		return rankHandler.rankForLevel(player.getRights());
 	}
 }

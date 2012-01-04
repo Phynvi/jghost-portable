@@ -1,5 +1,8 @@
 package org.whired.ghost;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.IOException;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,8 +13,8 @@ import org.whired.ghost.client.util.GhostFormatter;
  *
  * @author Whired
  */
-public class Vars
-{
+public class Vars {
+
 	public final static String INCORRECTPASSWORD = "The password entered was incorrect.";
 	public final static String CONNECTED = "Connection successful.";
 	public final static String NORESPONSE = "Connection failed; no response from server.";
@@ -21,42 +24,46 @@ public class Vars
 	public final static String UPDATEOK = "Your version of jGHOST.Portable is up to date.";
 	public final static int VERSION = 0;
 	public final static String FS = System.getProperty("file.separator");
-	public final static String LOCAL_CODEBASE = System.getProperty("user.home") + FS + ".ghost"+FS+"cache"+FS;
-	
+	public final static String LOCAL_CODEBASE = System.getProperty("user.home") + FS + ".ghost" + FS + "cache" + FS;
+	private final static Logger logger = LoggerFactory.create();
+
+	private static final class LoggerFactory {
+
+		private final static Logger create() {
+			Logger logger = Logger.getLogger("org.whired.ghost");
+			logger.setLevel(Level.ALL);
+			ConsoleHandler ch = new ConsoleHandler();
+			ch.setLevel(Level.ALL);
+			ch.setFormatter(new GhostFormatter());
+			logger.addHandler(ch);
+			logger.setUseParentHandlers(false);
+			return logger;
+		}
+	}
+
 	/**
 	 * Specifies whether or not debugging messages are logged
 	 *
 	 * @param on whether or not to log all messages
 	 */
-	public static void setDebug(boolean on)
-	{
-		if(on)
-		{
-			getLogger().setLevel(Level.ALL);
-			getLogger().finest("finest");
-			getLogger().finer("finer");
-			getLogger().fine("fine");
-			getLogger().config("config");
-			getLogger().info("info");
-			getLogger().warning("warning");
-			getLogger().severe("severe");
+	public static void setDebug(boolean on) {
+		if (on) {
+			logger.setLevel(Level.ALL);
+			logger.finest("finest");
+			logger.finer("finer");
+			logger.fine("fine");
+			logger.config("config");
+			logger.info("info");
+			logger.warning("warning");
+			logger.severe("severe");
 		}
-		else
-		{
-			getLogger().setLevel(Level.INFO);
+		else {
+			logger.setLevel(Level.INFO);
 		}
-		getLogger().info("Logger level is now: " + getLogger().getLevel());
+		logger.info("Logger level is now: " + logger.getLevel());
 	}
 
-	public static Logger getLogger()
-	{
-		Logger logger = Logger.getLogger("org.whired.ghost");
-		logger.setLevel(Level.ALL);
-		ConsoleHandler ch = new ConsoleHandler();
-		ch.setLevel(Level.ALL);
-		ch.setFormatter(new GhostFormatter());
-		logger.addHandler(ch);
-		logger.setUseParentHandlers(false);
+	public static final Logger getLogger() {
 		return logger;
 	}
 }

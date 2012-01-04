@@ -3,6 +3,7 @@ package org.whired.ghostclient.client.command;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.whired.ghost.Vars;
 
 /**
  * Handles commands
@@ -15,7 +16,6 @@ public class CommandHandler {
 	 * Contains all the commands
 	 */
 	private HashMap<String, Command> commands = new HashMap<String, Command>();
-	private static final Logger log = Logger.getLogger(CommandHandler.class.getName());
 
 	/**
 	 * Parses and handles command from specified input string
@@ -64,58 +64,28 @@ public class CommandHandler {
 						if (args != null)
 							for (String arg : args)
 								message += ">" + arg;
-						log(Level.INFO, message);
+						Vars.getLogger().log(Level.INFO, message);
 					}
 					catch (Exception e) {
-						log(Level.WARNING, "Command failed: " + e.toString());
+						Vars.getLogger().log(Level.WARNING, "Command failed: {0}", e.toString());
 						if (e instanceof NullPointerException && args == null)
-							log(Level.INFO, "Are arguments required for this command?");
-						log(e);
+							Vars.getLogger().log(Level.INFO, "Are arguments required for this command?");
+						Vars.getLogger().log(Level.FINE, null, e);
 					}
 				else
-					log(Level.WARNING, "Command failed. Minimum arguments: " + command.getMinArgs());
+					Vars.getLogger().log(Level.WARNING, "Command failed. Minimum arguments: " + command.getMinArgs());
 		}
 		else
 			throw new CommandMalformedException("Input cannot be empty");
 	}
-	/**
-	 * Whether or not to display debugging output
-	 */
-	private boolean verbose = false;
-
-	private void log(Level level, String message) {
-		if (log == null)
-			System.out.println(level.getName() + ": " + message);
-		else
-			log.log(level, message);
-	}
-
-	private void log(Exception e) {
-		if (isVerbose())
-			e.printStackTrace();
-	}
 
 	public void registerCommand(Command command) {
-		System.out.println("Adding command: " + command);
+		Vars.getLogger().log(Level.INFO, "Adding command: {0}", command);
 		commands.put(command.toString(), command);
 	}
 
 	public void registerCommands(Command[] commands) {
 		for(Command c : commands)
 			registerCommand(c);
-	}
-	
-	/**
-	 * @return the verbose
-	 */
-	public boolean isVerbose() {
-		return verbose;
-	}
-
-	/**
-	 * @param verbose the verbose to set
-	 */
-	public void setVerbose(boolean verbose) {
-		this.verbose = verbose;
 	}
 }

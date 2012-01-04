@@ -1,23 +1,15 @@
 package org.whired.rsmap.graphics;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
 import java.awt.image.ImageConsumer;
@@ -28,13 +20,12 @@ import org.whired.rsmap.ui.MapButton;
 
 public abstract class RSCanvas extends Component implements MouseWheelListener, ImageProducer, ImageObserver {
 
-	public int xDragged = 0;
-	public int yDragged = 0;
-	public int xPressed = 0;
-	public int yPressed = 0;
-	public ColorModel colorModel = new DirectColorModel(32, 0xff0000, 0x00ff00, 0x0000ff);
-	public ImageConsumer imageConsumer;
-	public Image image;
+	private int xDragged, yDragged, xPressed, yPressed;
+	public int pixels[];
+	public int startY, endY, startX, endX;
+	private ColorModel colorModel = new DirectColorModel(32, 0xff0000, 0x00ff00, 0x0000ff);
+	private ImageConsumer imageConsumer;
+	private Image image;
 	public TextRenderer textRenderer;
 	private boolean ignoreDrag = false;
 
@@ -55,7 +46,9 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 				}
 			}
 
-			public void mouseReleased(MouseEvent mouseevent) {
+			public void mouseReleased(MouseEvent e) {
+				if(xDragged == xPressed && yDragged == yPressed && !ignoreDrag)
+					RSCanvas.this.mouseUp(xPressed, yPressed);
 				ignoreDrag = false;
 			}
 
@@ -102,7 +95,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	public abstract void keyPressed(int keyCode);
 
-	public void loadMap(String resourceDir) {
+	public void loadMap() {
 		pixels = new int[getWidth() * getHeight()];
 		image = createImage(RSCanvas.this);
 		prepareImage(image, RSCanvas.this);
@@ -114,48 +107,48 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 		setDrawingArea(0, 0, getWidth(), getHeight());
 	}
 
-	/**
-	 * Invoked when this canvas has been clicked
-	 * @param p the point at which the canvas was clicked
-	 */
-	public abstract boolean clicked(Point p);
-
+	@Override
 	public boolean imageUpdate(Image image, int i, int j, int k, int l, int i1) {
 		return true;
 	}
 
+	@Override
 	public void requestTopDownLeftRightResend(ImageConsumer imageconsumer) {
 		System.out.println("TDLR");
 	}
 
+	@Override
 	public synchronized boolean isConsumer(ImageConsumer imageconsumer) {
 		return imageConsumer == imageconsumer;
 	}
 
+	@Override
 	public synchronized void removeConsumer(ImageConsumer imageconsumer) {
 		if (imageConsumer == imageconsumer) {
 			imageConsumer = null;
 		}
 	}
 
-	public void drawGraphics(Graphics g, int i, int j) {
-		if (imageConsumer != null) {
-			imageConsumer.setPixels(0, 0, getWidth(), getHeight(), colorModel, pixels, 0, getWidth());
-			imageConsumer.imageComplete(ImageConsumer.SINGLEFRAMEDONE);
-		}
-		g.drawImage(image, i, j, this);
-	}
-
+	@Override
 	public void startProduction(ImageConsumer imageconsumer) {
 		addConsumer(imageconsumer);
 	}
 
+	@Override
 	public synchronized void addConsumer(ImageConsumer imageconsumer) {
 		imageConsumer = imageconsumer;
 		imageconsumer.setDimensions(getWidth(), getHeight());
 		imageconsumer.setProperties(null);
 		imageconsumer.setColorModel(colorModel);
 		imageconsumer.setHints(14);
+	}
+
+	private void drawGraphics(Graphics g, int i, int j) {
+		if (imageConsumer != null) {
+			imageConsumer.setPixels(0, 0, getWidth(), getHeight(), colorModel, pixels, 0, getWidth());
+			imageConsumer.imageComplete(ImageConsumer.SINGLEFRAMEDONE);
+		}
+		g.drawImage(image, i, j, this);
 	}
 
 	/**
@@ -295,8 +288,6 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 		startY = j;
 		endX = k;
 		endY = l;
-		centerX = endX - 1;
-		centerY = endX / 2;
 	}
 
 	/**
@@ -341,18 +332,18 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 	}
 
 	/**
-	 * Something to do with antialiasing..?
+	 * Blends corners
 	 * @param pixel
+	 * @param size
 	 * @param i
 	 * @param j
-	 * @param x2
-	 * @param y2
+	 * @param k
+	 * @param l
 	 * @param i1
 	 * @param j1
-	 * @param k1
+	 * @param k1 
 	 */
 	public void blendCorners(int pixel[], Dimension size, int i, int j, int k, int l, int i1, int j1, int k1) {
-		//if(true)return;
 		int l1 = size.width - l;
 		if (j1 == 9) {
 			j1 = 1;
@@ -909,47 +900,6 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 		}
 	}
 
-//	public void drawLoadingText(String text) {
-//		while (graphics == null) {
-//			System.out.println("Graphics are null..");
-//			//graphics = getGraphics(); // TODO Is this messing drawing up?
-//			System.out.println("getSize: " + getWidth() + ", " + getHeight());
-//			try {
-//				repaint();
-//			}
-//			catch (Exception exception) {
-//			}
-//			try {
-//				Thread.sleep(1000L);
-//			}
-//			catch (Exception exception1) {
-//			}
-//		}
-//		Font font = new Font("Lucida Sans", Font.PLAIN, 10);
-//		FontMetrics fontmetrics = getFontMetrics(font);
-//		Graphics2D g2 = (Graphics2D) graphics;
-//
-//		int xPaint = getWidth() / 2 - 150;
-//		int yPaint = getHeight() / 2 - 18;
-//		int loadAreaWidth = 300;
-//		int loadAreaHeight = 30;
-//
-//		// Clear loading area
-//		g2.setColor(Color.WHITE);
-//		g2.fillRect(xPaint, yPaint, loadAreaWidth, loadAreaHeight);
-//		g2.setColor(new Color(0, 0, 250, 20));
-//		g2.fillRect(xPaint, yPaint, loadAreaWidth, loadAreaHeight);
-//
-//		// Draw grad
-//		GradientPaint grad = new GradientPaint(xPaint, yPaint + loadAreaHeight, new Color(0, 0, 250, 20), xPaint, yPaint, new Color(0, 0, 250, 5));
-//		g2.setPaint(grad);
-//		g2.fill(new RoundRectangle2D.Double(xPaint, yPaint, loadAreaWidth, loadAreaHeight, 10, 10));
-//
-//		// Draw text
-//		g2.setFont(font);
-//		g2.setColor(Color.BLACK);
-//		g2.drawString(text, (getWidth() - fontmetrics.stringWidth(text)) / 2, yPaint + (loadAreaHeight / 2) + 5);
-//	}
 	/**
 	 * Paints a rectangle at the specified coordinates
 	 * @param rectX the x-coordinate (absolute to this canvas)
@@ -1012,13 +962,6 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 		}
 
 	}
-	public int pixels[];
-	public int startY = 0;
-	public int endY = 0;
-	public int startX = 0;
-	public int endX = 0;
-	public int centerX;
-	public int centerY;
 
 	/**
 	 * Fills a specified area with the specified color
@@ -1056,5 +999,23 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 		}
 	}
 
+	/**
+	 * Invoked when the left mouse button is pressed down
+	 * @param x the x-coordinate
+	 * @param y the y-coordinate
+	 */
 	public abstract void mouseDown(int x, int y);
+	
+	/**
+	 * Invoked when this canvas has been clicked
+	 * @param p the point at which the canvas was clicked
+	 */
+	public abstract boolean clicked(Point p);
+
+	/**
+	 * Invoked when the left mouse button is released
+	 * @param x the x-coordinate
+	 * @param y the y-coordinate
+	 */
+	public abstract void mouseUp(int x, int y);
 }

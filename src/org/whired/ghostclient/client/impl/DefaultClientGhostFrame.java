@@ -52,11 +52,6 @@ public class DefaultClientGhostFrame extends ClientGhostFrame {
 	}
 
 	@Override
-	public Rank getRankForPlayer(Player player) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
 	public void saveSettings() {
 		try {
 			SessionSettings.saveToDisk(getUser().getSettings());

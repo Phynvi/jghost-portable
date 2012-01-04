@@ -80,4 +80,8 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 	@Override
 	public void load() {
 	}
+
+	@Override
+	public void setResourcePath(String path) {
+	}
 }

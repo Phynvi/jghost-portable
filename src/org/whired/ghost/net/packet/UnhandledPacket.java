@@ -26,7 +26,7 @@ public class UnhandledPacket extends GhostPacket {
 			}
 			return true;
 		}
-		catch(Exception e)
+		catch(Throwable t)
 		{
 			return false;
 		}

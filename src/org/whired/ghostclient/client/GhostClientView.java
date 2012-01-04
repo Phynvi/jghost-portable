@@ -1,6 +1,7 @@
 package org.whired.ghostclient.client;
 
 import org.whired.ghost.net.event.SessionEventListener;
+import org.whired.ghost.net.model.player.Player;
 import org.whired.ghostclient.client.module.Module;
 
 /**
@@ -26,6 +27,18 @@ public interface GhostClientView extends SessionEventListener {
 	 * @param module the module to add
 	 */
 	public void moduleAdded(Module module);
+	
+	/**
+	 * Invoked when a player needs to be added to this view's graphical list
+	 * @param player the player to add
+	 */
+	public void playerAdded(Player player);
+	
+	/**
+	 * Invoked when a player needs to be removed from this view's graphical list
+	 * @param player the player to remove
+	 */
+	public void playerRemoved(Player player);
 	
 	/**
 	 * Notifies the view that some module activity requires the user's
