@@ -5,12 +5,10 @@ import org.whired.ghost.net.model.player.Player;
 
 public class SessionSettings implements Serializable {
 
-	public String chatLogDir = "";
-	public String commandLogDir = "";
-	public String pmLogDir = "";
 	public String[] defaultConnect = new String[3];
 	public boolean debugOn = false;
 	private final Player player;
+	private String[] tabOrder;
 	
 	public SessionSettings(Player player) {
 		this.player = player;
@@ -29,12 +27,12 @@ public class SessionSettings implements Serializable {
 		return settings;
 	}
 
-	public static void saveToDisk(SessionSettings ds) throws FileNotFoundException, IOException {
-		File f = new File(System.getProperty("user.home") + "/.ghost/");
+	public void saveToDisk(String path) throws FileNotFoundException, IOException {
+		File f = new File(path);
 		if (!f.exists())
 			f.mkdirs();
 		ObjectOutputStream obj = new ObjectOutputStream(new FileOutputStream(System.getProperty("user.home") + "/.ghost/Settings.NS"));
-		obj.writeObject(ds);
+		obj.writeObject(this);
 	}
 	
 	/**
@@ -43,5 +41,21 @@ public class SessionSettings implements Serializable {
 	 */
 	public Player getPlayer() {
 		return this.player;
+	}
+
+	/**
+	 * Sets the order of the tabs on the view
+	 * @param tabs the tabs, in order
+	 */
+	public void setTabOrder(String[] tabs) {
+		tabOrder = tabs;
+	}
+	
+	/**
+	 * Gets the names of tabs in their preferred order
+	 * @return the names of the tabs
+	 */
+	public String[] getTabOrder() {
+		return tabOrder;
 	}
 }

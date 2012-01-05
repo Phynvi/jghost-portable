@@ -67,7 +67,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	private JLabel thpDisp;
 	private JLabel thpLabel;
 	private JScrollPane packetPanelContainer;
-	private JTabbedPane jTabbedPane1;
+	private GhostTabbedPane jTabbedPane1;
 	private GhostClient controller;
 
 	/**
@@ -348,7 +348,15 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		defLabel = new JLabel();
 		thpDisp = new JLabel();
 		atkLabel = new JLabel();
-		jTabbedPane1 = new JTabbedPane();
+		jTabbedPane1 = new GhostTabbedPane();
+		jTabbedPane1.tabsReordered = new Runnable() {
+
+			@Override
+			public void run() {
+				String[] tabs = {""};
+				controller.getSettings().setTabOrder(tabs);
+			}
+		};
 		jScrollPane1 = new JScrollPane();
 		chatOutput = new LinkingJTextPane(false);
 		jScrollPane2 = new JScrollPane();
@@ -672,6 +680,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			public void contentsChanged(ListDataEvent e) {
 			}
 
+			// TODO reimpl
 			private void consumeEvent(DefaultListModel source, String item, boolean add) {
 				playerCount.setText("Players - " + source.getSize());
 				if (add) {

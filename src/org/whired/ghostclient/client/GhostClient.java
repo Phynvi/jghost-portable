@@ -3,6 +3,7 @@ package org.whired.ghostclient.client;
 import org.whired.ghost.net.model.AbstractClient;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.model.player.Rank;
+import org.whired.ghostclient.client.user.SessionSettings;
 
 /**
  * A collection of methods that a typical ghost client would utilize
@@ -16,4 +17,5 @@ public interface GhostClient extends AbstractClient {
 	public void restartServer();
 	public GhostClientView getView();
 	public void setView(GhostClientView view);
+	public SessionSettings getSettings();
 }

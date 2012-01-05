@@ -2,8 +2,8 @@ package org.whired.ghostclient.client.impl;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.whired.ghost.Vars;
 import org.whired.ghost.net.model.player.Player;
-import org.whired.ghost.net.model.player.Rank;
 import org.whired.ghost.net.reflection.ReflectionPacketContainer;
 import org.whired.ghostclient.client.ClientGhostFrame;
 import org.whired.ghostclient.client.GhostClientView;
@@ -54,7 +54,7 @@ public class DefaultClientGhostFrame extends ClientGhostFrame {
 	@Override
 	public void saveSettings() {
 		try {
-			SessionSettings.saveToDisk(getUser().getSettings());
+			getUser().getSettings().saveToDisk(Vars.LOCAL_CODEBASE);
 		}
 		catch (Exception ex) {
 			Logger.getLogger(DefaultClientGhostFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -63,12 +63,16 @@ public class DefaultClientGhostFrame extends ClientGhostFrame {
 
 	@Override
 	public void restartServer() {
-		//addModule(new PublicChatModule(this));
 	}
 
 	@Override
 	public Player getUserPlayer() {
 		return getUser().getSettings().getPlayer();
+	}
+
+	@Override
+	public SessionSettings getSettings() {
+		return getUser().getSettings();
 	}
 
 }

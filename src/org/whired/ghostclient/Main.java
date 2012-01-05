@@ -12,14 +12,13 @@ import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.reflection.Accessor;
 import org.whired.ghostclient.client.impl.DefaultController;
-import org.whired.ghostclient.client.user.GhostUserImpl;
+import org.whired.ghostclient.client.user.impl.DefaultUser;
 
 public class Main {
 
-	public static GhostUserImpl instance;
+	public static DefaultUser instance;
 
 	public static void main(String args[]) {
-
 		final DefaultController client = new DefaultController();
 		client.getModel().getCommandHandler().registerCommands(new Command[]{
 				new Command("setrights", 1) {
@@ -100,7 +99,7 @@ public class Main {
 							Vars.getLogger().info("Debug mode OFF");
 						}
 						else {
-							Vars.getLogger().info("Unknown state");
+							Vars.getLogger().info("Argument state invalid. Try on/off.");
 							return false;
 						}
 						return true;
@@ -199,6 +198,6 @@ public class Main {
 			e.printStackTrace();
 			settings = new SessionSettings(new Player("Admin", 6, -1, -1));
 		}
-		instance = new GhostUserImpl(client.getModel(), settings);
+		instance = new DefaultUser(client.getModel(), settings);
 	}
 }

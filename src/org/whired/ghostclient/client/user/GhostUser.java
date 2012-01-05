@@ -1,12 +1,10 @@
 package org.whired.ghostclient.client.user;
 
-import org.whired.ghost.net.Receivable;
-
 /**
- * The layout for any implements of {@code GhostUser}
+ * Represents the user (human) of ghost
  * @author Whired
  */
-public interface GhostUser extends Receivable {
+public interface GhostUser {
 
 	/**
 	 * Gets the settings for this user
