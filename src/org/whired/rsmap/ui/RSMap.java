@@ -51,19 +51,20 @@ public abstract class RSMap extends RSCanvas {
 	private ArrayList<Sprite> mapSprites = new ArrayList<Sprite>();
 	private Font defaultFont = loadPackagedFont("ubuntu");
 	public TextSprite defaultTextSprite;
+
 	public synchronized void addSprite(Sprite s) {
 		mapSprites.add(s);
 	}
 
 	/**
 	 * Loads a custom map located at the given path
+	 * 
 	 * @param cachePath the path of the map to load
 	 */
 	public void loadMap(String cachePath) {
 		super.loadMap();
 		defaultTextSprite = new TextSprite("ts", defaultFont, 0xFFFFFF, false, true, this);
-		MapButton mb1 = new MapButton("Minimap", 2, RSMap.super.getHeight() - 14 - 2, 40, 14, 0xBEC7E8, 0x6382BF)
-		{
+		MapButton mb1 = new MapButton("Minimap", 2, RSMap.super.getHeight() - 14 - 2, 40, 14, 0xBEC7E8, 0x6382BF) {
 
 			@Override
 			public void draw() {
@@ -85,14 +86,14 @@ public abstract class RSMap extends RSCanvas {
 			cacheLoader = getMapLoader(new FileInputStream(cachePath));
 		}
 		catch (Throwable t) {
-		try {
-			Vars.getLogger().log(Level.WARNING, "External cache load fail, falling back to default: ", t);
-			cacheLoader = getMapLoader(this.getClass().getResourceAsStream("/org/whired/rsmap/resources/worldmap.dat"));
-		}
-		catch (Throwable t2) {
-			Vars.getLogger().log(Level.SEVERE, "Internal cache load fail, map not loaded", t2);
-			return;
-		}
+			try {
+				Vars.getLogger().log(Level.WARNING, "External cache load fail, falling back to default: ", t);
+				cacheLoader = getMapLoader(this.getClass().getResourceAsStream("/org/whired/rsmap/resources/worldmap.dat"));
+			}
+			catch (Throwable t2) {
+				Vars.getLogger().log(Level.SEVERE, "Internal cache load fail, map not loaded", t2);
+				return;
+			}
 		}
 
 		Vars.getLogger().info("Map loaded. Rendering..");
@@ -137,7 +138,7 @@ public abstract class RSMap extends RSCanvas {
 			Sprite uberSprite = new StaticSprite(new URL("http://icons.iconarchive.com/icons/google/chrome/16/Google-Chrome-icon.png"));
 			uberSprite.location = new Point(2460, 3090);
 			uberSprite.isRelativeToMap = true;
-			//addSprite(uberSprite);
+			// addSprite(uberSprite);
 		}
 		catch (Exception ex) {
 			Logger.getLogger(RSMap.class.getName()).log(Level.SEVERE, null, ex);
@@ -247,6 +248,7 @@ public abstract class RSMap extends RSCanvas {
 
 	/**
 	 * Has something to do tile color
+	 * 
 	 * @param abyte0
 	 * @param ai
 	 */
@@ -280,6 +282,7 @@ public abstract class RSMap extends RSCanvas {
 
 	/**
 	 * Gets hex value for color
+	 * 
 	 * @param d
 	 * @param d1
 	 * @param d2
@@ -421,7 +424,6 @@ public abstract class RSMap extends RSCanvas {
 	public void renderMap(int[] pix, Dimension size, int x1, int y1, int x2, int y2) {
 		int localMapWidth = x2 - x1;
 		int localMapHeight = y2 - y1;
-
 
 		int k2 = (size.width << 16) / localMapWidth;
 		int l2 = (size.height << 16) / localMapHeight;
@@ -577,6 +579,7 @@ public abstract class RSMap extends RSCanvas {
 
 	/**
 	 * Translates a map coordinate into a pixel coordinate
+	 * 
 	 * @param mapCoord the point to translate
 	 * @return the pixel coordinate
 	 */
@@ -600,6 +603,7 @@ public abstract class RSMap extends RSCanvas {
 
 	/**
 	 * Translates a component coordinate into a map coordinate
+	 * 
 	 * @param componentCoord the point to translate
 	 * @return the map coordinate
 	 */
@@ -613,6 +617,7 @@ public abstract class RSMap extends RSCanvas {
 
 	/**
 	 * Gets a cache loader for the cache file at the specified path
+	 * 
 	 * @param cachePath the path of the cache to get a loader for
 	 * @return
 	 * @throws FileNotFoundException
@@ -636,10 +641,12 @@ public abstract class RSMap extends RSCanvas {
 			return false;
 		}
 	}
+
 	private HashSet<MapButton> buttons = new HashSet<MapButton>();
 
 	/**
 	 * Adds a button to this map
+	 * 
 	 * @param button the button to add
 	 */
 	public synchronized void addButton(MapButton button) {
@@ -649,6 +656,7 @@ public abstract class RSMap extends RSCanvas {
 
 	/**
 	 * Removes a button from this map
+	 * 
 	 * @param button the button to remove
 	 */
 	public synchronized void removeButton(MapButton button) {
@@ -714,28 +722,28 @@ public abstract class RSMap extends RSCanvas {
 	@Override
 	public void keyPressed(int keyCode) {
 		switch (keyCode) {
-			case 38: // UP
-				overviewCenterY = (int) ((double) overviewCenterY - 16D / currentZoomLevel);
-				break;
-			case 40: // DOWN
-				overviewCenterY = (int) ((double) overviewCenterY + 16D / currentZoomLevel);
-				break;
-			case 37: // LEFT
-				overviewCenterX = (int) ((double) overviewCenterX - 16D / currentZoomLevel);
-				break;
-			case 39: // RIGHT
-				overviewCenterX = (int) ((double) overviewCenterX + 16D / currentZoomLevel);
-				break;
-			case 77: // "M"
-				showOverview = !showOverview;
-				break;
+		case 38: // UP
+			overviewCenterY = (int) ((double) overviewCenterY - 16D / currentZoomLevel);
+		break;
+		case 40: // DOWN
+			overviewCenterY = (int) ((double) overviewCenterY + 16D / currentZoomLevel);
+		break;
+		case 37: // LEFT
+			overviewCenterX = (int) ((double) overviewCenterX - 16D / currentZoomLevel);
+		break;
+		case 39: // RIGHT
+			overviewCenterX = (int) ((double) overviewCenterX + 16D / currentZoomLevel);
+		break;
+		case 77: // "M"
+			showOverview = !showOverview;
+		break;
 		}
 		repaint();
 	}
 
 	private Font loadPackagedFont(String name) {
 		try {
-			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("/org/whired/rsmap/resources/"+name+".ttf")).deriveFont(9F);
+			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("/org/whired/rsmap/resources/" + name + ".ttf")).deriveFont(9F);
 			Vars.getLogger().log(Level.INFO, "Loaded font: {0}", name);
 			return f;
 		}

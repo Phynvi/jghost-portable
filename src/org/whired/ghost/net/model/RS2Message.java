@@ -4,18 +4,11 @@ import java.util.LinkedList;
 
 /**
  * Utility class for converting messages
+ * 
  * @author Whired
  */
 public class RS2Message {
-	private static final char[] XLATE_TABLE = {
-		' ', 'e', 't', 'a', 'o', 'i', 'h', 'n', 's', 'r',
-		'd', 'l', 'u', 'm', 'w', 'c', 'y', 'f', 'g', 'p',
-		'b', 'v', 'k', 'x', 'j', 'q', 'z', '0', '1', '2',
-		'3', '4', '5', '6', '7', '8', '9', ' ', '!', '?',
-		'.', ',', ':', ';', '(', ')', '-', '&', '*', '\\',
-		'\'', '@', '#', '+', '=', '\243', '$', '%', '"', '[',
-		']'
-	};
+	private static final char[] XLATE_TABLE = { ' ', 'e', 't', 'a', 'o', 'i', 'h', 'n', 's', 'r', 'd', 'l', 'u', 'm', 'w', 'c', 'y', 'f', 'g', 'p', 'b', 'v', 'k', 'x', 'j', 'q', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '!', '?', '.', ',', ':', ';', '(', ')', '-', '&', '*', '\\', '\'', '@', '#', '+', '=', '\243', '$', '%', '"', '[', ']' };
 
 	/**
 	 * Gets the message as a byte array
@@ -63,6 +56,7 @@ public class RS2Message {
 
 	/**
 	 * Unpacks and formats chat that was sent on the specified connection
+	 * 
 	 * @return the unpacked and formatted chat
 	 */
 	public static String unpackMessage(byte[] chatText, int chatSize) {

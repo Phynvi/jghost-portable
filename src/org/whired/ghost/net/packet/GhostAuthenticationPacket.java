@@ -4,7 +4,7 @@ import org.whired.ghost.net.Connection;
 
 /**
  * An authentication packet
- *
+ * 
  * @author Whired
  */
 public class GhostAuthenticationPacket extends GhostPacket {

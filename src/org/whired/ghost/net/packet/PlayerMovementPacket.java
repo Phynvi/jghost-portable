@@ -4,7 +4,7 @@ import org.whired.ghost.net.Connection;
 
 /**
  * An movement packet
- *
+ * 
  * @author Whired
  */
 public class PlayerMovementPacket extends GhostPacket {

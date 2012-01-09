@@ -3,12 +3,13 @@ package org.whired.ghost.math;
 import java.awt.Point;
 
 /**
- *
+ * 
  * @author Whired
  */
 public class GhostMath {
 	/**
 	 * Gets the distance between two points
+	 * 
 	 * @param p1 the first point
 	 * @param p2 the second point
 	 * @return the distance

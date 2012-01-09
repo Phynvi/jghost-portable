@@ -5,7 +5,9 @@ import java.awt.Point;
 import org.whired.rsmap.graphics.sprites.TextSprite;
 
 /**
- * Represents a button that can be added to the map. Contains basic button functionality.
+ * Represents a button that can be added to the map. Contains basic button
+ * functionality.
+ * 
  * @author Whired
  */
 public abstract class MapButton {
@@ -26,9 +28,10 @@ public abstract class MapButton {
 	private int height;
 	/** The preferred font for the button */
 	private TextSprite textSprite = null;
-	
+
 	/**
 	 * Creates a new button
+	 * 
 	 * @param text the text to display on this button
 	 * @param x the x-coordinate of this button
 	 * @param y the y-coordinate of this button
@@ -45,6 +48,7 @@ public abstract class MapButton {
 
 	/**
 	 * Creates a new button
+	 * 
 	 * @param text the text to display on this button
 	 * @param x the x-coordinate of this button
 	 * @param y the y-coordinate of this button
@@ -65,6 +69,7 @@ public abstract class MapButton {
 
 	/**
 	 * Creates a new button
+	 * 
 	 * @param text the text to display on this button
 	 * @param x the x-coordinate of this button
 	 * @param y the y-coordinate of this button
@@ -85,6 +90,7 @@ public abstract class MapButton {
 
 	/**
 	 * Sets the background color of this button
+	 * 
 	 * @param color the color to set
 	 */
 	public void setBackgroundColor(Color color) {
@@ -93,6 +99,7 @@ public abstract class MapButton {
 
 	/**
 	 * Sets the background color of this button
+	 * 
 	 * @param hexColor the color to set
 	 */
 	public void setBackgroundColor(int hexColor) {
@@ -101,6 +108,7 @@ public abstract class MapButton {
 
 	/**
 	 * Sets the border color of this button
+	 * 
 	 * @param color the color to set
 	 */
 	public void setBorderColor(Color color) {
@@ -109,6 +117,7 @@ public abstract class MapButton {
 
 	/**
 	 * Sets the border color of this button
+	 * 
 	 * @param hexColor the color to set
 	 */
 	public void setBorderColor(int hexColor) {
@@ -117,6 +126,7 @@ public abstract class MapButton {
 
 	/**
 	 * Gets the background color of this button
+	 * 
 	 * @return the color
 	 */
 	public int getBackgroundColor() {
@@ -125,6 +135,7 @@ public abstract class MapButton {
 
 	/**
 	 * Gets the border color of this button
+	 * 
 	 * @return the color
 	 */
 	public int getBorderColor() {
@@ -133,22 +144,25 @@ public abstract class MapButton {
 
 	/**
 	 * Sets the preferred text sprite for this button
+	 * 
 	 * @param ts the text sprite to set
 	 */
 	public void setTextSprite(TextSprite ts) {
 		this.textSprite = ts;
 	}
-	
+
 	/**
 	 * Gets the text sprite for this button
+	 * 
 	 * @return the sprite, or {@code null}
 	 */
 	public TextSprite getTextSprite() {
 		return this.textSprite;
 	}
-	
+
 	/**
 	 * Converts a {@code Color} to a hexadecimal integer
+	 * 
 	 * @param color the {@code Color} to convert
 	 * @return the {@code int} equivalent of the given {@code Color}
 	 */
@@ -230,8 +244,10 @@ public abstract class MapButton {
 
 	/**
 	 * Tests whether or not {@code point} lies within this button
+	 * 
 	 * @param point the point to test
-	 * @return {@code true} if {@code point} is within this button's bounds, otherwise {@code false}
+	 * @return {@code true} if {@code point} is within this button's bounds,
+	 * otherwise {@code false}
 	 */
 	public boolean contains(Point point) {
 		return point.getX() >= this.getX() && point.getX() <= (this.getWidth() + this.getX()) && point.getY() >= this.getY() && point.getY() <= (this.getHeight() + this.getY());

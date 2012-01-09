@@ -6,55 +6,56 @@ import javax.swing.SwingUtilities;
 import org.whired.ghost.Vars;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.packet.GhostPacket;
-import org.whired.ghostclient.client.ClientGhostFrame;
+import org.whired.ghostclient.client.GhostClientFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 
 /**
  * Handles modules
+ * 
  * @author Whired
  */
 public class ModuleHandler extends GhostEventAdapter {
 
 	HashSet<Module> modules = new HashSet<Module>();
-	private final ClientGhostFrame frame;
+	private final GhostClientFrame frame;
 
-	public ModuleHandler(Module[] initialModules, final ClientGhostFrame frame) {
+	public ModuleHandler(Module[] initialModules, final GhostClientFrame frame) {
 		this.frame = frame;
-		for(Module m : initialModules)
+		for (Module m : initialModules)
 			registerModule(m);
 	}
 
-	public ModuleHandler(final ClientGhostFrame frame) {
+	public ModuleHandler(final GhostClientFrame frame) {
 		this.frame = frame;
 	}
-	
+
 	/**
 	 * Registers a module to this handler
-	 * @param module 
+	 * 
+	 * @param module
 	 */
 	public final void registerModule(final Module module) {
 		module.setFrame(frame);
-		SwingUtilities.invokeLater(new Runnable(){
+		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					Vars.getLogger().log(Level.INFO, "Registering and initializing module {0}", module.getModuleName());
+					Vars.getLogger().log(Level.INFO, "Registering and initializing module "+module.getModuleName());
 					frame.getView().moduleAdded(module);
 					module.load();
-					
 				}
-				catch(Throwable t) {
+				catch (Throwable t) {
 					Vars.getLogger().log(Level.WARNING, "Error while registering module: ", t);
 				}
 			}
 		});
 		modules.add(module);
-		System.out.println(modules.size());
 	}
 
 	/**
 	 * Unregisters a module from this handler
-	 * @param module 
+	 * 
+	 * @param module
 	 */
 	protected void unregisterModule(Module module) {
 		modules.remove(module);
@@ -62,6 +63,7 @@ public class ModuleHandler extends GhostEventAdapter {
 
 	/**
 	 * Gets a module by its name
+	 * 
 	 * @param name the name of the module
 	 * @return the {@link org.whired.ghostclient.ui.module.Module} for the
 	 * specified name, or {@code null} if the name was not matched

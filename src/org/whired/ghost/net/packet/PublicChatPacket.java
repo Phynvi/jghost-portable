@@ -4,13 +4,14 @@ import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.model.player.Player;
 
 /**
- *
+ * 
  * @author Whired
  */
 public class PublicChatPacket extends GhostChatPacket {
 
 	/**
 	 * Creates a new public chat packet on the connection specified
+	 * 
 	 * @param connection the connection to transfer the packet
 	 */
 	public PublicChatPacket() {

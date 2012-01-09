@@ -47,7 +47,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 			}
 
 			public void mouseReleased(MouseEvent e) {
-				if(xDragged == xPressed && yDragged == yPressed && !ignoreDrag)
+				if (xDragged == xPressed && yDragged == yPressed && !ignoreDrag)
 					RSCanvas.this.mouseUp(xPressed, yPressed);
 				ignoreDrag = false;
 			}
@@ -57,7 +57,6 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 				yDragged = -1;
 			}
 		});
-
 
 		addMouseWheelListener(RSCanvas.this);
 
@@ -114,7 +113,6 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	@Override
 	public void requestTopDownLeftRightResend(ImageConsumer imageconsumer) {
-		System.out.println("TDLR");
 	}
 
 	@Override
@@ -153,6 +151,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	/**
 	 * Renders a line on this canvas
+	 * 
 	 * @param x1 the starting x-coordinate
 	 * @param y1 the starting y-coordinate
 	 * @param x2 the ending x-coordinate
@@ -212,6 +211,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	/**
 	 * Renders a point on this canvas
+	 * 
 	 * @param x the x-coordinate of the point
 	 * @param y the y-coordinate of the point
 	 * @param hexRGB the color of the point
@@ -224,6 +224,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	/**
 	 * Renders a horizontal line on this canvas
+	 * 
 	 * @param lineX the starting x-coordinate of the line
 	 * @param lineY the starting y-coordinate of the line
 	 * @param lineLength the length of the line
@@ -249,6 +250,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	/**
 	 * Renders a vertical line on this canvas
+	 * 
 	 * @param lineX the starting x-coordinate of the line
 	 * @param lineY the starting y-coordinate of the line
 	 * @param lineLength the length of the line
@@ -292,6 +294,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	/**
 	 * Draws the given button
+	 * 
 	 * @param button the button to draw
 	 */
 	public void drawButton(MapButton button) {
@@ -319,7 +322,6 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 			draw();
 		}
 		catch (NullPointerException e) {
-			System.out.println("Draw error: " + e.toString());
 		}
 		try {
 			if (g != null) {
@@ -333,6 +335,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	/**
 	 * Blends corners
+	 * 
 	 * @param pixel
 	 * @param size
 	 * @param i
@@ -341,7 +344,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 	 * @param l
 	 * @param i1
 	 * @param j1
-	 * @param k1 
+	 * @param k1
 	 */
 	public void blendCorners(int pixel[], Dimension size, int i, int j, int k, int l, int i1, int j1, int k1) {
 		int l1 = size.width - l;
@@ -902,6 +905,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	/**
 	 * Paints a rectangle at the specified coordinates
+	 * 
 	 * @param rectX the x-coordinate (absolute to this canvas)
 	 * @param rectY the y-coordinate (absolute to this canvas)
 	 * @param rectWidth the width of the rectangle
@@ -965,7 +969,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	/**
 	 * Fills a specified area with the specified color
-	 *
+	 * 
 	 * @param pix the pixels to manipulate
 	 * @param size the size of the area that the pixels cover
 	 * @param x the x-coordinate of the area to fill
@@ -1001,19 +1005,22 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	/**
 	 * Invoked when the left mouse button is pressed down
+	 * 
 	 * @param x the x-coordinate
 	 * @param y the y-coordinate
 	 */
 	public abstract void mouseDown(int x, int y);
-	
+
 	/**
 	 * Invoked when this canvas has been clicked
+	 * 
 	 * @param p the point at which the canvas was clicked
 	 */
 	public abstract boolean clicked(Point p);
 
 	/**
 	 * Invoked when the left mouse button is released
+	 * 
 	 * @param x the x-coordinate
 	 * @param y the y-coordinate
 	 */

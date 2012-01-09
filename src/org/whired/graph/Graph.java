@@ -7,7 +7,7 @@ import java.awt.Graphics;
 
 /**
  * Represents a graph
- *
+ * 
  * @author Whired
  */
 public abstract class Graph extends Component implements Plottable {
@@ -28,9 +28,10 @@ public abstract class Graph extends Component implements Plottable {
 	 * Whether or not this graph automatically scrolls when data is added
 	 */
 	private boolean autoScroll = true;
-	
+
 	/**
 	 * Creates a new graph with the specified width and height
+	 * 
 	 * @param width the width of this graph
 	 * @param height the height of this graph
 	 */
@@ -39,13 +40,14 @@ public abstract class Graph extends Component implements Plottable {
 		this.setSize(d);
 		this.setPreferredSize(d);
 	}
-	
+
 	public Graph() {
-		
+
 	}
 
 	/**
 	 * Sets the labels for this graph. Accepts bitwise operations.
+	 * 
 	 * @param labels the labels to set
 	 */
 	public void setLabels(int labels) {
@@ -54,6 +56,7 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Sets whether or not to show labels for the x axis
+	 * 
 	 * @param visible
 	 */
 	public void setShowAxisXLabel(boolean visible) {
@@ -62,6 +65,7 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Sets whether or not to show labels for the y axis
+	 * 
 	 * @param visible
 	 */
 	public void setShowAxisYLabel(boolean visible) {
@@ -70,6 +74,7 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Sets whether or not to display gridlines for the x axis
+	 * 
 	 * @param visible
 	 */
 	public void setShowGridLineX(boolean visible) {
@@ -78,6 +83,7 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Sets whether or not to display gridlines for the x axis
+	 * 
 	 * @param visible
 	 */
 	public void setShowGridlineY(boolean visible) {
@@ -86,6 +92,7 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Sets whether or not to show labels for points' x-coordinates
+	 * 
 	 * @param visible
 	 */
 	public void setShowPointXLabel(boolean visible) {
@@ -94,6 +101,7 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Sets whether or not to show labels for points' y-coordinates
+	 * 
 	 * @param visible
 	 */
 	public void setShowPointYLabel(boolean visible) {
@@ -102,6 +110,7 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Whether or not to show labels for the x axis
+	 * 
 	 * @return {@code true} if they are shown, otherwise {@code false}
 	 */
 	public boolean showAxisXLabel() {
@@ -110,6 +119,7 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Whether or not to show labels for the y axis
+	 * 
 	 * @return {@code true} if they are shown, otherwise {@code false}
 	 */
 	public boolean showAxisYLabel() {
@@ -118,6 +128,7 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Whether or not to display gridlines for the x axis
+	 * 
 	 * @return {@code true} if they are shown, otherwise {@code false}
 	 */
 	public boolean showGridLineX() {
@@ -126,6 +137,7 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Whether or not to display gridlines for the y axis
+	 * 
 	 * @return {@code true} if they are shown, otherwise {@code false}
 	 */
 	public boolean showGridLineY() {
@@ -134,6 +146,7 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Whether or not to show labels for points' x-coordinates
+	 * 
 	 * @return {@code true} if they are shown, otherwise {@code false}
 	 */
 	public boolean showPointXLabel() {
@@ -142,6 +155,7 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Whether or not to show labels for points' y-coordinates
+	 * 
 	 * @return {@code true} if they are shown, otherwise {@code false}
 	 */
 	public boolean showPointYLabel() {
@@ -191,7 +205,8 @@ public abstract class Graph extends Component implements Plottable {
 	}
 
 	/**
-	 * @param autoscrolls sets whether or not this graph autoscrolls when data is added
+	 * @param autoscrolls sets whether or not this graph autoscrolls when data
+	 * is added
 	 */
 	public void setAutoScrolls(boolean autoscrolls) {
 		this.autoScroll = autoscrolls;

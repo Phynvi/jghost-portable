@@ -8,12 +8,13 @@ import org.whired.ghost.net.reflection.Accessor;
 
 /**
  * A player list that provides access to the remote frame
+ * 
  * @author Whired
  */
 public class RemotePlayerList extends PlayerList {
-	
-	private final Accessor playerList = Accessor.getClass("org.whired.ghostclient.Main").getField("instance").getMethod("getFrame").getMethod("getPlayerList");
-	
+
+	private final Accessor playerList = Accessor.getClass("org.whired.ghostclient.Main").getField("client").getMethod("getModel").getMethod("getPlayerList");
+
 	public RemotePlayerList(GhostFrame frame) {
 		super(frame);
 	}
@@ -27,9 +28,10 @@ public class RemotePlayerList extends PlayerList {
 	public void playerRemoved(Player player) {
 		invoke(playerList.getMethod("removePlayer", player));
 	}
-	
+
 	/**
 	 * Invokes an accessor
+	 * 
 	 * @param accessor the accessor to invoke
 	 */
 	private void invoke(Accessor accessor) {

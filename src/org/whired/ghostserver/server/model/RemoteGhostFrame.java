@@ -12,19 +12,20 @@ import org.whired.ghost.net.reflection.ReflectionPacketContainer;
 
 /**
  * Provides access to the client from the server
+ * 
  * @author Whired
  */
 public class RemoteGhostFrame extends GhostFrame {
 
 	private final PlayerList playerList = new RemotePlayerList(this);
-	
+
 	public RemoteGhostFrame(Connection connection) {
 		getSessionManager().setConnection(connection);
 	}
-	
+
 	@Override
 	public void displayPublicChat(Player sender, String message) {
-		getSessionManager().getConnection().sendPacket(PacketType.INVOKE_ACCESSOR, Accessor.getClass("org.whired.ghostclient.Main").getField("instance").getMethod("getFrame").getMethod("displayPublicChat", sender, message));
+		getSessionManager().getConnection().sendPacket(PacketType.INVOKE_ACCESSOR, Accessor.getClass("org.whired.ghostclient.Main").getField("client").getMethod("getModel").getMethod("displayPublicChat", sender, message));
 	}
 
 	@Override
@@ -39,7 +40,7 @@ public class RemoteGhostFrame extends GhostFrame {
 
 	@Override
 	public void displayDebug(Level level, String message) {
-		getSessionManager().getConnection().sendPacket(PacketType.INVOKE_ACCESSOR, Accessor.getClass("org.whired.ghostclient.Main").getField("instance").getMethod("getFrame").getMethod("displayDebug", level, message));
+		getSessionManager().getConnection().sendPacket(PacketType.INVOKE_ACCESSOR, Accessor.getClass("org.whired.ghostclient.Main").getField("client").getMethod("getModel").getMethod("displayDebug", level, message));
 	}
 
 	@Override
@@ -50,12 +51,12 @@ public class RemoteGhostFrame extends GhostFrame {
 	@Override
 	public void sessionOpened() {
 		Logger.getLogger(RemoteGhostFrame.class.getName()).info("Session opened");
-		//throw new UnsupportedOperationException("Not supported yet.");
+		// throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
 	public void sessionClosed(String reason) {
 		Logger.getLogger(RemoteGhostFrame.class.getName()).info("Session closed");
-		//throw new UnsupportedOperationException("Not supported yet.");
+		// throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

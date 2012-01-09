@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 /**
  * Provides basic details about a player
- *
+ * 
  * @author Whired
  */
 public class Player implements Serializable {
@@ -22,6 +22,7 @@ public class Player implements Serializable {
 
 	/**
 	 * Creates a new player with the specified name, rights, and location
+	 * 
 	 * @param name the name of the player
 	 * @param rights the rights of the player (-128 to 127)
 	 * @param x the x-coordinate of this player
@@ -36,6 +37,7 @@ public class Player implements Serializable {
 
 	/**
 	 * Creates a new player with the specified name and rights
+	 * 
 	 * @param name the name of the player
 	 * @param rights the rights of the player (-128 to 127)
 	 */
@@ -55,6 +57,7 @@ public class Player implements Serializable {
 
 	/**
 	 * Gets the long that represents this player's name
+	 * 
 	 * @return the converted long
 	 */
 	public long nameToLong() {
@@ -80,6 +83,7 @@ public class Player implements Serializable {
 
 	/**
 	 * Gets the name of this player
+	 * 
 	 * @return the name of this player
 	 */
 	public String getName() {
@@ -88,6 +92,7 @@ public class Player implements Serializable {
 
 	/**
 	 * Sets the name of this player
+	 * 
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
@@ -96,6 +101,7 @@ public class Player implements Serializable {
 
 	/**
 	 * Gets the rights of this player
+	 * 
 	 * @return the rights
 	 */
 	public int getRights() {
@@ -104,6 +110,7 @@ public class Player implements Serializable {
 
 	/**
 	 * Sets the rights of this player
+	 * 
 	 * @param rights the rights to set (-128 to 127)
 	 */
 	public void setRights(int rights) {

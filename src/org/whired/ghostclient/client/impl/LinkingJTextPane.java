@@ -13,7 +13,7 @@ import javax.swing.text.*;
 
 /**
  * Adds basic link functionality to a {@code JTextPane}
- *
+ * 
  * @author Whired
  */
 public class LinkingJTextPane extends JTextPane {
@@ -52,6 +52,7 @@ public class LinkingJTextPane extends JTextPane {
 
 	/**
 	 * Adds a link event listener to this text pane
+	 * 
 	 * @param listener the listener to add
 	 */
 	public void addLinkEventListener(LinkEventListener listener) {
@@ -60,6 +61,7 @@ public class LinkingJTextPane extends JTextPane {
 
 	/**
 	 * Removes a link event listener from this text pane
+	 * 
 	 * @param listener the listener to remove
 	 */
 	public void removeLinkEventListener(LinkEventListener listener) {
@@ -68,6 +70,7 @@ public class LinkingJTextPane extends JTextPane {
 
 	/**
 	 * Notifies all listeners that a link was clicked
+	 * 
 	 * @param linkText the text of the link that was clicked
 	 */
 	private void fireLinkClicked(String linkText) {
@@ -112,6 +115,7 @@ public class LinkingJTextPane extends JTextPane {
 
 	/**
 	 * Adds an array of matches
+	 * 
 	 * @param matches the matches to add
 	 */
 	public void addMatches(String[] matches) {
@@ -119,9 +123,11 @@ public class LinkingJTextPane extends JTextPane {
 			matches = allToLower(matches);
 		this.matches.addAll(Arrays.asList(matches));
 	}
-	
+
 	/**
-	 * Converts all strings in a given array to lowercase to maintain case-insensitivity
+	 * Converts all strings in a given array to lowercase to maintain
+	 * case-insensitivity
+	 * 
 	 * @param sourceArr the array to convert
 	 * @return the converted array
 	 */
@@ -133,6 +139,7 @@ public class LinkingJTextPane extends JTextPane {
 
 	/**
 	 * Adds a list of matches
+	 * 
 	 * @param matches the matches to add
 	 */
 	public void addMatches(HashSet<String> matches) {
@@ -153,6 +160,7 @@ public class LinkingJTextPane extends JTextPane {
 
 	/**
 	 * Remove a single match
+	 * 
 	 * @param match the match to remove
 	 */
 	public void removeMatch(String match) {
@@ -161,6 +169,7 @@ public class LinkingJTextPane extends JTextPane {
 
 	/**
 	 * Add a single match
+	 * 
 	 * @param match the match to add
 	 */
 	public void addMatch(String match) {
@@ -169,6 +178,7 @@ public class LinkingJTextPane extends JTextPane {
 
 	/**
 	 * Finds a word in {@code chatOuput} at any given {@code Point}
+	 * 
 	 * @param p the point to inspect
 	 * @return the word if one met the criteria, otherwise null
 	 */
@@ -179,7 +189,7 @@ public class LinkingJTextPane extends JTextPane {
 			int firstOffs = Utilities.getWordStart(this, inOffs);
 			int lastOffs = Utilities.getWordEnd(this, firstOffs);
 			word = getStyledDocument().getText(firstOffs, lastOffs - firstOffs);
-			if(!caseSensitive)
+			if (!caseSensitive)
 				word = word.toLowerCase();
 			if (word.length() > 0 && this.matches.contains(word)) {
 				if (curOffs[0] != firstOffs || curOffs[1] != lastOffs) {

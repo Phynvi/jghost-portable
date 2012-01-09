@@ -6,7 +6,7 @@ import org.whired.ghost.net.model.player.Player;
 
 /**
  * Represents a private chat packet
- *
+ * 
  * @author Whired
  */
 public class PrivateChatPacket extends GhostChatPacket {
@@ -18,6 +18,7 @@ public class PrivateChatPacket extends GhostChatPacket {
 
 	/**
 	 * Creates a new private chat packet on the specified connection
+	 * 
 	 * @param connection the connection that will transfer the packet
 	 */
 	public PrivateChatPacket() {
@@ -26,8 +27,9 @@ public class PrivateChatPacket extends GhostChatPacket {
 
 	/**
 	 * Receives this packet
-	 * @return {@code true} if the packet was successfully received,
-	 *	otherwise {@code false}
+	 * 
+	 * @return {@code true} if the packet was successfully received, otherwise
+	 * {@code false}
 	 */
 	public boolean receive(Connection connection) {
 		try {

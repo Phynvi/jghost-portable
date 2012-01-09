@@ -6,7 +6,7 @@ import java.util.LinkedHashSet;
 
 /**
  * Represents a line to be added on a line graph
- *
+ * 
  * @author Whired
  */
 public class Line {
@@ -41,7 +41,7 @@ public class Line {
 
 	/**
 	 * Creates a new empty line with the specified color
-	 *
+	 * 
 	 * @param color the color of this line
 	 */
 	public Line(Color color) {
@@ -50,7 +50,7 @@ public class Line {
 
 	/**
 	 * Creates a new line with the specified color and points
-	 *
+	 * 
 	 * @param color the color of this line
 	 * @param points the points that make up this line
 	 */
@@ -63,7 +63,7 @@ public class Line {
 
 	/**
 	 * Creates a new line with the specified points
-	 *
+	 * 
 	 * @param points the points that will make up this line
 	 */
 	public Line(Point[] points) {
@@ -74,7 +74,7 @@ public class Line {
 
 	/**
 	 * Gets the count of points that make up this line
-	 *
+	 * 
 	 * @return the count
 	 */
 	public int getPointCount() {
@@ -83,6 +83,7 @@ public class Line {
 
 	/**
 	 * Gets the points that make up this line
+	 * 
 	 * @return the points
 	 */
 	public synchronized Point[] getPoints() {
@@ -91,7 +92,7 @@ public class Line {
 
 	/**
 	 * Adds a point to this line TODO sort
-	 *
+	 * 
 	 * @param point the point to add
 	 */
 	public synchronized void addPoint(Point point) {
@@ -109,7 +110,9 @@ public class Line {
 	}
 
 	/**
-	 * Adds a point at the next maximum x-coordinate with the given y-coordinate
+	 * Adds a point at the next maximum x-coordinate with the given
+	 * y-coordinate
+	 * 
 	 * @param y the y-coordinate of the new point
 	 * @return the point that was plotted
 	 */
@@ -121,7 +124,7 @@ public class Line {
 
 	/**
 	 * Removes a point from this line TODO sort
-	 *
+	 * 
 	 * @param point the point to remove
 	 */
 	public void removePoint(Point point) {
@@ -153,7 +156,7 @@ public class Line {
 
 	/**
 	 * Sets the color of this line
-	 *
+	 * 
 	 * @param color the color to set
 	 */
 	public void setColor(Color color) {
@@ -163,7 +166,7 @@ public class Line {
 
 	/**
 	 * Gets the color of this line
-	 *
+	 * 
 	 * @return the color of this line
 	 */
 	public Color getColor() {
@@ -172,7 +175,7 @@ public class Line {
 
 	/**
 	 * Gets the maximum X-coordinate of this line
-	 *
+	 * 
 	 * @return the maximum X-coordinate
 	 */
 	public int getMaxX() {
@@ -185,12 +188,13 @@ public class Line {
 
 	/**
 	 * Gets the maximum Y-coordinate of this line
-	 *
+	 * 
 	 * @return the maximum Y-coordinate
 	 */
 	public int getMaxY() {
 		return this.maxY;
 	}
+
 	/**
 	 * Used for redrawing when visual changes are made
 	 */
@@ -198,6 +202,7 @@ public class Line {
 
 	/**
 	 * Sets the owner of this line
+	 * 
 	 * @param c the graph that owns this line
 	 */
 	protected void setOwner(Graph c) {

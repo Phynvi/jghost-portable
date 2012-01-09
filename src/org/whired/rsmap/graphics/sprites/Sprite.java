@@ -8,7 +8,7 @@ import org.whired.rsmap.graphics.RSCanvas;
 
 /**
  * Represents an image to be drawn
- *
+ * 
  * @author Whired
  */
 public abstract class Sprite {
@@ -30,6 +30,7 @@ public abstract class Sprite {
 
 	/**
 	 * Adds a mouse listener to this sprite
+	 * 
 	 * @param listener the listener to add
 	 */
 	public void addMouseListener(MouseListener listener) {
@@ -38,6 +39,7 @@ public abstract class Sprite {
 
 	/**
 	 * Removes a mouse listener from this sprite
+	 * 
 	 * @param listener the listener to add
 	 */
 	public void removeMouseListener(MouseListener listener) {
@@ -46,32 +48,34 @@ public abstract class Sprite {
 
 	/**
 	 * Notifies all listeners of a mouse event
+	 * 
 	 * @param eventType the type of event to fire
 	 * @param event the event to fire
 	 */
 	private void fireMouseEvent(int eventType, MouseEvent event) {
 		for (MouseListener ml : listeners)
 			switch (eventType) {
-				case MouseEvent.MOUSE_CLICKED:
-					ml.mouseClicked(event);
-					break;
-				case MouseEvent.MOUSE_ENTERED:
-					ml.mouseEntered(event);
-					break;
-				case MouseEvent.MOUSE_EXITED:
-					ml.mouseExited(event);
-					break;
-				case MouseEvent.MOUSE_PRESSED:
-					ml.mousePressed(event);
-					break;
-				case MouseEvent.MOUSE_RELEASED:
-					ml.mouseReleased(event);
-					break;
+			case MouseEvent.MOUSE_CLICKED:
+				ml.mouseClicked(event);
+			break;
+			case MouseEvent.MOUSE_ENTERED:
+				ml.mouseEntered(event);
+			break;
+			case MouseEvent.MOUSE_EXITED:
+				ml.mouseExited(event);
+			break;
+			case MouseEvent.MOUSE_PRESSED:
+				ml.mousePressed(event);
+			break;
+			case MouseEvent.MOUSE_RELEASED:
+				ml.mouseReleased(event);
+			break;
 			}
 	}
 
 	/**
 	 * Draws this sprite
+	 * 
 	 * @param x the x coordinate to start drawing at
 	 * @param y the y coordinate to start drawing at
 	 * @param area the area to draw on
@@ -85,12 +89,14 @@ public abstract class Sprite {
 
 	/**
 	 * Gets the width of this sprite
+	 * 
 	 * @return the width
 	 */
 	public abstract int getWidth();
-	
+
 	/**
 	 * Gets the height of this sprite
+	 * 
 	 * @return the height
 	 */
 	public abstract int getHeight();

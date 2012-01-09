@@ -2,9 +2,11 @@ package org.whired.ghostclient.client.command;
 
 import java.util.logging.Logger;
 
+import org.whired.ghost.Vars;
+
 /**
  * Defines the layout of a command
- *
+ * 
  * @author Whired
  */
 public abstract class Command {
@@ -15,8 +17,9 @@ public abstract class Command {
 
 	/**
 	 * Constructs a new {@code Command} with the specified command string
-	 *
+	 * 
 	 * @param command the identifier for this command
+	 * @param minArgs the minimum amount of arguments this command will require
 	 */
 	public Command(String command, int minArgs) {
 		this.command = command;
@@ -24,16 +27,22 @@ public abstract class Command {
 	}
 
 	/**
+	 * Constructs a new {@code Command} with the specified command string and no parameters
+	 * 
+	 * @param command the identifier for this command
+	 */
+	public Command(String command) {
+		this(command, 0);
+	}
+	
+	/**
 	 * Invoked when a command must be handled
-	 *
-	 * @param args the arguments for the command. If no arguments are parsed, this is {@code null}.
-	 *	Otherwise, each argument is guaranteed to have a {@code length} greater than zero.
+	 * 
+	 * @param args the arguments for the command. If no arguments are parsed,
+	 * this is {@code null}. Otherwise, each argument is guaranteed to have a
+	 * {@code length} greater than zero.
 	 */
 	public abstract boolean handle(String[] args);
-
-	public void printFailure(Logger log, String reason) {
-		log.warning("Command failed: " + reason);
-	}
 
 	public int getMinArgs() {
 		return this.minArgs;

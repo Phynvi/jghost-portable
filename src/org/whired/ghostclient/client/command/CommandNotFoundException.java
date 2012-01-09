@@ -5,10 +5,8 @@ package org.whired.ghostclient.client.command;
  * 
  * @author Whired
  */
-public class CommandNotFoundException extends Exception
-{
-	public CommandNotFoundException(String message)
-	{
+public class CommandNotFoundException extends Exception {
+	public CommandNotFoundException(String message) {
 		super(message);
 	}
 }

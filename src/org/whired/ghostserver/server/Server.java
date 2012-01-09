@@ -14,7 +14,7 @@ public class Server implements Runnable {
 
 	private final int PORT_NUM;
 	private static final int MIN_THROTTLING_MS = 5000;
-	private final HashMap<SocketAddress, Long> throttlerList = new HashMap();
+	private final HashMap<SocketAddress, Long> throttlerList = new HashMap<SocketAddress, Long>();
 	private ServerSocket ssock;
 	private final Receivable receivable;
 	private final String passPhrase;
@@ -23,28 +23,36 @@ public class Server implements Runnable {
 	/**
 	 * Creates a new ghost server on the default port of {@code 43596}
 	 * <p>
-	 * The server initializes its own self-contained thread that will not tie up outside code.
-	 * Any action initiated by the server is asynchronous.
-	 * The recommended method of initializing a server is as follows:
+	 * The server initializes its own self-contained thread that will not tie
+	 * up outside code. Any action initiated by the server is asynchronous. The
+	 * recommended method of initializing a server is as follows:
 	 * </p>
-	 * <pre><code>
+	 * 
+	 * <pre>
+	 * <code>
 	 * org.whired.ghostserver.Server ghostServer = new org.whired.ghostserver.Server(new org.whired.ghost.net.Receivable()
 	 * {
-	 *	public boolean handlePacket(int id, int length, org.whired.ghost.net.Connection connection)
-	 *	{
-	 *		// Packet handling logic
-	 *	}
+	 * public boolean handlePacket(int id, int length, org.whired.ghost.net.Connection connection)
+	 * {
+	 * 	// Packet handling logic
+	 * }
 	 * }, "mylongpassphrase");
-	 * </code></pre>
-	 * The above code would be close to the entry point of a server application, where the
-	 * RSPS server is initialized.
-	 *
-	 * For information on how to send a packet using {@link org.whired.ghostserver.Server#getConnection()}, see {@link org.whired.ghost.net.Connection#sendPacket(int, java.lang.Object[])}
+	 * </code>
+	 * </pre>
+	 * 
+	 * The above code would be close to the entry point of a server
+	 * application, where the RSPS server is initialized.
+	 * 
+	 * For information on how to send a packet using
+	 * {@link org.whired.ghostserver.Server#getConnection()}, see
+	 * {@link org.whired.ghost.net.Connection#sendPacket(int, java.lang.Object[])}
+	 * 
 	 * @param receivable the receivable that will handle incoming packets
-	 * @param passPhrase required by any connecting ghost clients. Must
-	 *	be at least 6 characters with symbols/numerals or 12 characters without
+	 * @param passPhrase required by any connecting ghost clients. Must be at
+	 * least 6 characters with symbols/numerals or 12 characters without
 	 * @throws IOException if the server cannot be initialized
-	 * @throws IllegalArgumentException if {@code passPhrase} does not meet the specified criteria
+	 * @throws IllegalArgumentException if {@code passPhrase} does not meet the
+	 * specified criteria
 	 */
 	public Server(Receivable receivable, String passPhrase) throws IOException, IllegalArgumentException {
 		this(43596, receivable, passPhrase);
@@ -53,30 +61,38 @@ public class Server implements Runnable {
 	/**
 	 * Creates a new ghost server on the port specified
 	 * <p>
-	 * The server initializes its own self-contained thread that will not tie up outside code.
-	 * Any action initiated by the server is asynchronous.
-	 * The recommended method of initializing a server is as follows:
+	 * The server initializes its own self-contained thread that will not tie
+	 * up outside code. Any action initiated by the server is asynchronous. The
+	 * recommended method of initializing a server is as follows:
 	 * </p>
-	 * <pre><code>
+	 * 
+	 * <pre>
+	 * <code>
 	 * org.whired.ghostserver.Server ghostServer = new org.whired.ghostserver.Server(new org.whired.ghost.net.Receivable()
 	 * {
-	 *	public boolean handlePacket(int id, int length, org.whired.ghost.net.Connection connection)
-	 *	{
-	 *		// Packet handling logic
-	 *	}
+	 * public boolean handlePacket(int id, int length, org.whired.ghost.net.Connection connection)
+	 * {
+	 * 	// Packet handling logic
+	 * }
 	 * }, "mylongpassphrase");
-	 * </code></pre>
-	 * The above code would be close to the entry point of a server application, where the
-	 * RSPS server is initialized.
-	 *
-	 * For information on how to send a packet using {@link org.whired.ghostserver.Server#getConnection()}, see {@link org.whired.ghost.net.Connection#sendPacket(int, java.lang.Object[])}
+	 * </code>
+	 * </pre>
+	 * 
+	 * The above code would be close to the entry point of a server
+	 * application, where the RSPS server is initialized.
+	 * 
+	 * For information on how to send a packet using
+	 * {@link org.whired.ghostserver.Server#getConnection()}, see
+	 * {@link org.whired.ghost.net.Connection#sendPacket(int, java.lang.Object[])}
+	 * 
 	 * @param port the port the server will listen on
 	 * @param receivable the receivable that will handle incoming packets
-	 * @param passPhrase required by any connecting ghost clients. Must
-	 *	be at least 6 characters with symbols/numerals or 12 characters without
+	 * @param passPhrase required by any connecting ghost clients. Must be at
+	 * least 6 characters with symbols/numerals or 12 characters without
 	 * @throws IOException if the server cannot be initialized
-	 * @throws IllegalArgumentException if {@code passPhrase} does not meet the specified criteria
-	 *
+	 * @throws IllegalArgumentException if {@code passPhrase} does not meet the
+	 * specified criteria
+	 * 
 	 */
 	public Server(int port, Receivable receivable, String passPhrase) throws IOException, IllegalArgumentException {
 		boolean canBeShort = false;
@@ -131,6 +147,7 @@ public class Server implements Runnable {
 
 	/**
 	 * Gets the current connection to the client if one exists
+	 * 
 	 * @return the current connection if one exists, otherwise {@code null}
 	 */
 	public Connection getConnection() {

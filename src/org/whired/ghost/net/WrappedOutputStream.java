@@ -5,8 +5,9 @@ import java.util.logging.Level;
 import org.whired.ghost.Vars;
 
 /**
- * An easy-to-use OutputStream wrapper that
- * provides methods to write to a stream.
+ * An easy-to-use OutputStream wrapper that provides methods to write to a
+ * stream.
+ * 
  * @author Whired
  */
 public class WrappedOutputStream {
@@ -15,6 +16,7 @@ public class WrappedOutputStream {
 
 	/**
 	 * Constructs the OutputStream wrapper
+	 * 
 	 * @param os_ the OutputStream to wrap
 	 */
 	public WrappedOutputStream(java.io.OutputStream os_) {
@@ -23,6 +25,7 @@ public class WrappedOutputStream {
 
 	/**
 	 * Writes a byte[] to the stream
+	 * 
 	 * @param b the byte array to write
 	 */
 	public void writeBytes(byte[] b) throws IOException {
@@ -31,6 +34,7 @@ public class WrappedOutputStream {
 
 	/**
 	 * Writes a file to the stream.
+	 * 
 	 * @param theFile the file to attempt to write.
 	 */
 	public void writeFile(String theFile) throws IOException {
@@ -67,6 +71,7 @@ public class WrappedOutputStream {
 
 	/**
 	 * Writes a boolean to the stream.
+	 * 
 	 * @param bool the boolean to write.
 	 */
 	public void writeBoolean(boolean bool) throws java.io.IOException {
@@ -75,6 +80,7 @@ public class WrappedOutputStream {
 
 	/**
 	 * Writes any Object to the stream.
+	 * 
 	 * @param obj the object to write.
 	 */
 	public void writeObject(Object obj) throws java.io.IOException {
@@ -85,17 +91,20 @@ public class WrappedOutputStream {
 
 	/**
 	 * Writes a byte to the stream.
+	 * 
 	 * @param value the value of the byte to write.
-	 * @throws java.lang.IllegalArgumentException if the value is out of bounds.
+	 * @throws java.lang.IllegalArgumentException if the value is out of
+	 * bounds.
 	 * @throws java.io.IOException if the stream is invalid.
 	 */
 	public void writeByte(int value) throws java.io.IOException {
-		//writeObject((byte)value);
+		// writeObject((byte)value);
 		os.write(value);
 	}
 
 	/**
 	 * Writes a plain text String to the stream.
+	 * 
 	 * @param str the String to write.
 	 */
 	public void writeString(String str) throws java.io.IOException {
@@ -104,6 +113,7 @@ public class WrappedOutputStream {
 
 	/**
 	 * Writes an int to the stream.
+	 * 
 	 * @param i the int to write.
 	 */
 	public void writeInt(int i) throws java.io.IOException {

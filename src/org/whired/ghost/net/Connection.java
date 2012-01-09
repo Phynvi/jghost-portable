@@ -11,9 +11,9 @@ import org.whired.ghost.net.packet.UnhandledPacket;
 
 /**
  * @author Whired
- *
- * A friendly middle layer between the connection protocols and the stream wrappers. Keeps as much of the more
- * advanced code as hidden as possible.
+ * 
+ * A friendly middle layer between the connection protocols and the stream
+ * wrappers. Keeps as much of the more advanced code as hidden as possible.
  */
 public abstract class Connection {
 
@@ -44,7 +44,7 @@ public abstract class Connection {
 
 	/**
 	 * Creates a new connection with the specified streams and listeners
-	 *
+	 * 
 	 * @param inputStream the stream to read information from
 	 * @param outputStream the stream to send information to
 	 * @param receivable the Receivable to delegate events to
@@ -71,7 +71,7 @@ public abstract class Connection {
 
 	/**
 	 * Creates a new connection with the specified streams and listeners
-	 *
+	 * 
 	 * @param inputStream the stream to read information from
 	 * @param outputStream the stream to send information to
 	 * @param receivable the receivable to delegate events to
@@ -79,6 +79,7 @@ public abstract class Connection {
 	public Connection(WrappedInputStream inputStream, WrappedOutputStream outputStream, Receivable receivable) {
 		this(inputStream, outputStream, receivable, null);
 	}
+
 	/**
 	 * The Thread to interrupt when listening should stop
 	 */
@@ -126,11 +127,14 @@ public abstract class Connection {
 					expectingPassword = false;
 				}
 				else {
-					endSession("Password incorrect"); //expectingPassword = false;
+					endSession("Password incorrect"); // expectingPassword
+												// = false;
 				}
 			}
 			else {
-				endSession("Password expected, but not received"); //expectingPassword = false;
+				endSession("Password expected, but not received"); // expectingPassword
+															// =
+															// false;
 			}
 		}
 		else if (packetId == 4) {
@@ -156,18 +160,23 @@ public abstract class Connection {
 	}
 
 	/**
-	 * // TODO fix these messy comments
-	 * Sends a packet with the specified id and payload
+	 * // TODO fix these messy comments Sends a packet with the specified id
+	 * and payload
 	 * <p>
 	 * An example usage of this method might look like this:
-	 * <pre><code>
+	 * 
+	 * <pre>
+	 * <code>
 	 * sendPacket(77, player.getName(), player.getIP());
 	 * // Or
 	 * sendPacket(15, player.getName(), player.getSkillLevel(0), player.getSkillLevel(1), player.getSkillLevel(2));
-	 * </code></pre>
-	 *
-	 * Alternatively, {@link org.whired.ghost.net.packet.GhostPacket} can be extended to make this process easier.
+	 * </code>
+	 * </pre>
+	 * 
+	 * Alternatively, {@link org.whired.ghost.net.packet.GhostPacket} can be
+	 * extended to make this process easier.
 	 * </p>
+	 * 
 	 * @param packetId the id of the packet to send
 	 * @param data the data (in correct order, separated by commas) to send
 	 */
@@ -202,7 +211,9 @@ public abstract class Connection {
 	}
 
 	/**
-	 * Sets a password that must be received in order for the session to continue
+	 * Sets a password that must be received in order for the session to
+	 * continue
+	 * 
 	 * @param newPass the password that must be matched
 	 */
 	protected void setPassword(String newPass) {
@@ -214,8 +225,8 @@ public abstract class Connection {
 	/**
 	 * Called then the session must be terminated
 	 */
-	protected void endSession(String reason) {
-		Vars.getLogger().log(Level.INFO, "Termination requested [Reason: {0} - Target: {1}", new Object[]{reason != null ? reason + "]" : "unspecified]", this});
+	protected void endSession(final String reason) {
+		Vars.getLogger().log(Level.WARNING, "Termination requested [Reason: {0} - Target: {1}", new Object[] { reason != null ? reason + "]" : "unspecified]", this });
 		if (this.manager != null) {
 			this.manager.sessionEnded(reason);
 		}
@@ -226,7 +237,7 @@ public abstract class Connection {
 			Vars.getLogger().fine("Notifying");
 			notify();
 			Vars.getLogger().fine("Notified");
-			System.out.println("Connection reset: " + reason);
+			Vars.getLogger().fine("Connection reset: " + reason);
 		}
 	}
 
@@ -236,6 +247,7 @@ public abstract class Connection {
 
 	/**
 	 * Gets the input stream associated with this connection
+	 * 
 	 * @return the stream to read data from
 	 */
 	public WrappedInputStream getInputStream() {
@@ -244,6 +256,7 @@ public abstract class Connection {
 
 	/**
 	 * Gets the output stream associated with this connection
+	 * 
 	 * @return the stream to send data to
 	 */
 	public WrappedOutputStream getOutputStream() {

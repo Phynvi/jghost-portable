@@ -11,7 +11,7 @@ import org.whired.rsmap.graphics.RSCanvas;
 
 /**
  * Represents a string of text that can be drawn on the map
- *
+ * 
  * @author Whired
  */
 public class TextSprite extends Sprite {
@@ -30,6 +30,7 @@ public class TextSprite extends Sprite {
 	public boolean hasDropShadow;
 	public int yOffset;
 	private int textWidth;
+
 	public TextSprite(String text, Font font, int hexRGB, boolean isCentered, boolean hasDropShadow, Component component) {
 		this(text, font, isCentered, hasDropShadow, component);
 		this.hexRGB = hexRGB;
@@ -151,7 +152,6 @@ public class TextSprite extends Sprite {
 				}
 			}
 			catch (Exception exception) {
-				System.out.println("drawstring: " + exception);
 				exception.printStackTrace();
 			}
 		}
@@ -161,12 +161,12 @@ public class TextSprite extends Sprite {
 	public int getWidth() {
 		return textWidth;
 	}
-	
+
 	@Override
 	public int getHeight() {
 		return getStringHeight();
 	}
-	
+
 	private int getStringWidth(String s) {
 		int i = 0;
 		for (int j = 0; j < s.length(); j++) {
@@ -230,8 +230,7 @@ public class TextSprite extends Sprite {
 		int i_6_ = 0;
 		int i_7_ = i_0_;
 		int i_8_ = i_3_;
-		while_0_:
-		for (int i_9_ = 0; i_9_ < i_3_; i_9_++) {
+		while_0_: for (int i_9_ = 0; i_9_ < i_3_; i_9_++) {
 			for (int i_10_ = 0; i_10_ < i_0_; i_10_++) {
 				int i_11_ = is[i_10_ + i_9_ * i_0_];
 				if ((i_11_ & 16777215) != 0) {
@@ -240,8 +239,7 @@ public class TextSprite extends Sprite {
 				}
 			}
 		}
-		while_1_:
-		for (int i_12_ = 0; i_12_ < i_0_; i_12_++) {
+		while_1_: for (int i_12_ = 0; i_12_ < i_0_; i_12_++) {
 			for (int i_13_ = 0; i_13_ < i_3_; i_13_++) {
 				int i_14_ = is[i_12_ + i_13_ * i_0_];
 				if ((i_14_ & 16777215) != 0) {
@@ -250,8 +248,7 @@ public class TextSprite extends Sprite {
 				}
 			}
 		}
-		while_2_:
-		for (int i_15_ = i_3_ - 1; i_15_ >= 0; i_15_--) {
+		while_2_: for (int i_15_ = i_3_ - 1; i_15_ >= 0; i_15_--) {
 			for (int i_16_ = 0; i_16_ < i_0_; i_16_++) {
 				int i_17_ = is[i_16_ + i_15_ * i_0_];
 				if ((i_17_ & 16777215) != 0) {
@@ -260,8 +257,7 @@ public class TextSprite extends Sprite {
 				}
 			}
 		}
-		while_3_:
-		for (int i_18_ = i_0_ - 1; i_18_ >= 0; i_18_--) {
+		while_3_: for (int i_18_ = i_0_ - 1; i_18_ >= 0; i_18_--) {
 			for (int i_19_ = 0; i_19_ < i_3_; i_19_++) {
 				int i_20_ = is[i_18_ + i_19_ * i_0_];
 				if ((i_20_ & 16777215) != 0) {
@@ -326,9 +322,10 @@ public class TextSprite extends Sprite {
 			exception.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Gets the text displayed on this sprite
+	 * 
 	 * @return this sprite's text
 	 */
 	public String getText() {

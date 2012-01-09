@@ -5,6 +5,7 @@ import org.whired.ghost.net.packet.GhostPacket;
 
 /**
  * Contains empty methods for receiving ghost events
+ * 
  * @author Whired
  */
 public abstract class GhostEventAdapter implements GhostEventListener {

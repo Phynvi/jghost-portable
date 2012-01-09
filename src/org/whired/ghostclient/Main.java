@@ -4,7 +4,7 @@ import javax.swing.ImageIcon;
 import org.whired.ghost.Vars;
 import org.whired.ghost.client.net.ClientConnection;
 import org.whired.ghostclient.client.command.Command;
-import org.whired.ghostclient.client.user.SessionSettings;
+import org.whired.ghostclient.client.settings.SettingsFactory;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.model.player.Rank;
@@ -16,165 +16,155 @@ import org.whired.ghostclient.client.user.impl.DefaultUser;
 
 public class Main {
 
-	public static DefaultUser instance;
+	public static DefaultController client;
 
 	public static void main(String args[]) {
-		final DefaultController client = new DefaultController();
-		client.getModel().getCommandHandler().registerCommands(new Command[]{
-				new Command("setrights", 1) {
+		client = new DefaultController(new DefaultUser(SettingsFactory.loadFromDatabase(Vars.LOCAL_CODEBASE)));
+		client.getModel().getCommandHandler().registerCommands(new Command[] { new Command("setrights", 1) {
 
-					@Override
-					public boolean handle(String[] args) {
-						client.getModel().getUser().getSettings().getPlayer().setRights(Integer.parseInt(args[0]));
-						return true;
-					}
-				},
-				new Command("disconnect", 0) {
+			@Override
+			public boolean handle(String[] args) {
+				client.getModel().getUser().getSettings().getPlayer().setRights(Integer.parseInt(args[0]));
+				return true;
+			}
+		}, new Command("disconnect", 0) {
 
-					public boolean handle(String[] args) {
-						Connection c = client.getModel().getSessionManager().getConnection();
-						if (c != null) {
-							client.getModel().getSessionManager().removeConnection("User requested.");
-							return true;
-						}
-						else {
-							Vars.getLogger().info("No connection to server currently exists");
-							return false;
-						}
-					}
-				},
-				new Command("setname", 1) {
+			public boolean handle(String[] args) {
+				Connection c = client.getModel().getSessionManager().getConnection();
+				if (c != null) {
+					client.getModel().getSessionManager().removeConnection("User requested.");
+					return true;
+				}
+				else {
+					Vars.getLogger().info("No connection to server currently exists");
+					return false;
+				}
+			}
+		}, new Command("setname", 1) {
 
-					@Override
-					public boolean handle(String[] args) {
-						StringBuilder finalName = new StringBuilder();
-						for (String s : args) {
-							finalName.append(s);
-							finalName.append(" ");
-						}
-						client.getModel().getUser().getSettings().getPlayer().setName(finalName.toString().trim());
-						return true;
-					}
-				},
-				new Command("pm", 2) {
+			@Override
+			public boolean handle(String[] args) {
+				StringBuilder finalName = new StringBuilder();
+				for (String s : args) {
+					finalName.append(s);
+					finalName.append(" ");
+				}
+				client.getModel().getUser().getSettings().getPlayer().setName(finalName.toString().trim());
+				return true;
+			}
+		}, new Command("pm", 2) {
 
-					@Override
-					public boolean handle(String[] args) {
-						String message = "";
-						for (int i = 1; i < args.length; i++) {
-							message += args[i] + " ";
-						}
-						int rights = 0;
-						for (Player p : client.getModel().getPlayerList().getPlayers()) {
-							if (p.getName().equals(args[0])) {
-								rights = p.getRights();
-								break;
-							}
-						}
-						/*
-						for (Object o : client.playerListModel.toArray()) {
-						if (o instanceof Player) {
-						Player p = (Player) o;
-						if (p.getName().equals(args[0])) {
+			@Override
+			public boolean handle(String[] args) {
+				String message = "";
+				for (int i = 1; i < args.length; i++) {
+					message += args[i] + " ";
+				}
+				int rights = 0;
+				for (Player p : client.getModel().getPlayerList().getPlayers()) {
+					if (p.getName().equals(args[0])) {
 						rights = p.getRights();
 						break;
-						}
-						}
-						}*/
-						client.getModel().displayPrivateChat(client.getModel().getUser().getSettings().getPlayer(), new Player(args[0], rights, -1, -1), message);
+					}
+				}
+				client.getModel().displayPrivateChat(client.getModel().getUser().getSettings().getPlayer(), new Player(args[0], rights, -1, -1), message);
+				return true;
+			}
+		}, new Command("setdebug", 1) {
+
+			public boolean handle(String[] args) {
+				if (args[0].equals("on")) {
+					Vars.setDebug(true);
+					client.getModel().getUser().getSettings().debugOn = true;
+					Vars.getLogger().info("Debug mode ON");
+				}
+				else if (args[0].equals("off")) {
+					Vars.setDebug(false);
+					client.getModel().getUser().getSettings().debugOn = false;
+					Vars.getLogger().info("Debug mode OFF");
+				}
+				else {
+					Vars.getLogger().info("Argument state invalid. Try on/off.");
+					return false;
+				}
+				return true;
+			}
+		}, new Command("whoami") {
+			public boolean handle(String[] args) {
+				Player p = client.getModel().getUser().getSettings().getPlayer();
+				Vars.getLogger().info("You are " + client.getModel().getRankHandler().rankForLevel(p.getRights()).getTitle() + " " + p.getName());
+				return true;
+			}
+		}, new Command("savesession") {
+			public boolean handle(String[] args) {
+				SettingsFactory.saveToDatabase(Vars.LOCAL_CODEBASE, client.getModel().getUser().getSettings());
+				return true;
+			}
+		}, new Command("connect", 0) {
+
+			@Override
+			public boolean handle(String[] args) {
+				if (args == null) {
+					String[] con = client.getModel().getUser().getSettings().defaultConnect;
+					if (con[0] == null || con[1] == null || con[2] == null) {
+						Vars.getLogger().warning("No default connection saved");
+						return false;
+					}
+					try {
+						client.getModel().getSessionManager().setConnection(ClientConnection.connect(con[0], Integer.parseInt(con[1]), con[2], client.getModel()));
 						return true;
 					}
-				},
-				new Command("setdebug", 1) {
-
-					public boolean handle(String[] args) {
-						if (args[0].equals("on")) {
-							Vars.setDebug(true);
-							client.getModel().getUser().getSettings().debugOn = true;
-							Vars.getLogger().info("Debug mode ON");
-						}
-						else if (args[0].equals("off")) {
-							Vars.setDebug(false);
-							client.getModel().getUser().getSettings().debugOn = false;
-							Vars.getLogger().info("Debug mode OFF");
-						}
-						else {
-							Vars.getLogger().info("Argument state invalid. Try on/off.");
-							return false;
-						}
-						return true;
+					catch (Exception e) {
+						Vars.getLogger().warning("Unable to connect to " + con[0] + ":" + con[1] + " - " + e.toString());
+						Vars.getLogger().fine(e.getMessage());
+						return false;
 					}
-				},
-				new Command("connect", 0) {
-
-					@Override
-					public boolean handle(String[] args) {
-						if (args == null) {
-							String[] con = client.getModel().getUser().getSettings().defaultConnect;
-							if (con[0] == null || con[1] == null || con[2] == null) {
-								Vars.getLogger().warning("No default connection saved");
+				}
+				else if (args.length > 0 && args[0] != null) {
+					if (args.length > 1 && args[1] != null) {
+						if (args.length > 2 && args[2] != null) {
+							int port = -1;
+							try {
+								port = Integer.parseInt(args[1]);
+							}
+							catch (Exception e) {
+								Vars.getLogger().warning("Port must be numeric.");
 								return false;
 							}
 							try {
-								client.getModel().getSessionManager().setConnection(ClientConnection.connect(con[0], Integer.parseInt(con[1]), con[2], client.getModel()));
+								client.getModel().getSessionManager().setConnection(ClientConnection.connect(args[0], port, args[2], client.getModel()));
+								Vars.getLogger().info("Successfully connected to " + args[0] + ":" + port);
+								Vars.getLogger().info("Use /connect to quickly connect to this IP in the future.");
+								client.getModel().getUser().getSettings().defaultConnect[0] = args[0];
+								client.getModel().getUser().getSettings().defaultConnect[1] = Integer.toString(port);
+								client.getModel().getUser().getSettings().defaultConnect[2] = args[2];
 								return true;
 							}
 							catch (Exception e) {
-								Vars.getLogger().warning("Unable to connect to " + con[0] + ":" + con[1] + " - " + e.toString());
+								Vars.getLogger().warning("Unable to connect to " + args[0] + ":" + port);
 								Vars.getLogger().fine(e.getMessage());
 								return false;
 							}
 						}
-						else if (args.length > 0 && args[0] != null) {
-							if (args.length > 1 && args[1] != null) {
-								if (args.length > 2 && args[2] != null) {
-									int port = -1;
-									try {
-										port = Integer.parseInt(args[1]);
-									}
-									catch (Exception e) {
-										Vars.getLogger().warning("Port must be numeric.");
-										return false;
-									}
-									try {
-										client.getModel().getSessionManager().setConnection(ClientConnection.connect(args[0], port, args[2], client.getModel()));
-										Vars.getLogger().info("Successfully connected to " + args[0] + ":" + port);
-										Vars.getLogger().info("Use /connect to quickly connect to this IP in the future.");
-										client.getModel().getUser().getSettings().defaultConnect[0] = args[0];
-										client.getModel().getUser().getSettings().defaultConnect[1] = Integer.toString(port);
-										client.getModel().getUser().getSettings().defaultConnect[2] = args[2];
-										return true;
-									}
-									catch (Exception e) {
-										Vars.getLogger().warning("Unable to connect to " + args[0] + ":" + port);
-										Vars.getLogger().fine(e.getMessage());
-										return false;
-									}
-								}
-								else {
-									Vars.getLogger().warning("Please specify a password.");
-								}
-							}
-							else {
-								Vars.getLogger().warning("Please specify a port.");
-							}
-						}
 						else {
-							Vars.getLogger().warning("Please specify an IP.");
+							Vars.getLogger().warning("Please specify a password.");
 						}
-						return false;
+					}
+					else {
+						Vars.getLogger().warning("Please specify a port.");
 					}
 				}
-			});
-		client.getModel().getRankHandler().registerRanks(new Rank[]{
-				new Rank(0, "Player", new ImageIcon(client.getClass().getResource("resources/player.png"))),
-				new Rank(1, "Veteran", new ImageIcon(client.getClass().getResource("resources/veteran.png"))),
-				new Rank(2, "Donator", new ImageIcon(client.getClass().getResource("resources/donator.png"))),
-				new Rank(3, "Developer", new ImageIcon(client.getClass().getResource("resources/developer.png"))),
-				new Rank(4, "Moderator", new ImageIcon(client.getClass().getResource("resources/moderator.png"))),
-				new Rank(5, "Administrator", new ImageIcon(client.getClass().getResource("resources/administrator.png"))),
-				new Rank(6, "Owner", new ImageIcon(client.getClass().getResource("resources/owner.png")))
-			});
+				else {
+					Vars.getLogger().warning("Please specify an IP.");
+				}
+				return false;
+			}
+		} });
+		client.getModel()
+				.getRankHandler()
+				.registerRanks(
+						new Rank[] { new Rank(Rank.PLAYER, "Player", new ImageIcon(client.getClass().getResource("resources/player.png"))), new Rank(Rank.VETERAN, "Veteran", new ImageIcon(client.getClass().getResource("resources/veteran.png"))), new Rank(Rank.DONATOR, "Donator", new ImageIcon(client.getClass().getResource("resources/donator.png"))), new Rank(Rank.DEVELOPER, "Developer", new ImageIcon(client.getClass().getResource("resources/developer.png"))), new Rank(Rank.MODERATOR, "Moderator", new ImageIcon(client.getClass().getResource("resources/moderator.png"))), new Rank(Rank.ADMINISTRATOR, "Administrator", new ImageIcon(client.getClass().getResource("resources/administrator.png"))),
+								new Rank(Rank.OWNER, "Owner", new ImageIcon(client.getClass().getResource("resources/owner.png"))) });
 		client.getModel().getPacketHandler().registerPacket(new GhostPacket(PacketType.INVOKE_ACCESSOR) {
 
 			@Override
@@ -190,14 +180,5 @@ public class Main {
 				return true;
 			}
 		});
-		SessionSettings settings;
-		try {
-			settings = SessionSettings.loadFromDisk();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			settings = new SessionSettings(new Player("Admin", 6, -1, -1));
-		}
-		instance = new DefaultUser(client.getModel(), settings);
 	}
 }

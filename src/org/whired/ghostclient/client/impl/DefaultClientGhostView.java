@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.LinkedList;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.*;
@@ -18,6 +20,7 @@ import org.whired.ghostclient.client.module.Module;
 
 /**
  * The graphical components for the client
+ * 
  * @author Whired
  */
 public class DefaultClientGhostView extends JFrame implements GhostClientView {
@@ -26,13 +29,10 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	public DefaultListModel playerListModel;
 	private int historyIndex = 1;
 	private java.util.HashMap<Integer, String> chatHistory = new java.util.HashMap<Integer, String>();
-	private java.util.Calendar cal = java.util.Calendar.getInstance();
-	private java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("h:mm:ss a");
 	public JLabel lblState;
 	private JLabel atkDisp;
 	private JLabel atkLabel;
 	public JTextField chatInput;
-	public LinkingJTextPane chatOutput;
 	private JLabel coordDisp;
 	private JLabel coordsLabel;
 	private JLabel defDisp;
@@ -46,17 +46,12 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	private JLabel jLabel5;
 	private JPanel jPanel1;
 	protected ScrollablePanel boundPacketPanel;
-	private JScrollPane jScrollPane1;
-	private JScrollPane jScrollPane2;
-	private JScrollPane jScrollPane3;
 	private JScrollPane jScrollPane4;
-	private JTextArea debugOutput;
 	private JLabel mageDisp;
 	private JLabel mageLabel;
 	private JLabel pkpDisp;
 	private JLabel pkpLabel;
 	private JLabel playerCount;
-	protected LinkingJTextPane pmOutput;
 	private JLabel pwDisp;
 	private JLabel pwLabel;
 	private JLabel rangeDisp;
@@ -72,29 +67,30 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 
 	/**
 	 * Invoked when a menu item has been selected
+	 * 
 	 * @param i the index of the {@code JMenuItem} that was clicked
 	 */
 	public void menuActionPerformed(int i, ActionEvent e) {
 		switch (i) {
-			case 0: //Connect with dialog
-				tryExtendedConnect();
-				break;
-			case 1: //Connect to default
-				controller.handleCommand("connect");
-				break;
-			case 2:
-				// TODO Send the file request packet here
-				break;
-			case 3:
-				if (JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-					controller.saveSettings();
-					System.exit(0);
-				}
-				break;
-			case 4:
-				throw new UnsupportedOperationException("Momentarily disabled.");
-			//controller.displayReflectionManager();
-			//break;
+		case 0: // Connect with dialog
+			tryExtendedConnect();
+		break;
+		case 1: // Connect to default
+			controller.handleCommand("connect");
+		break;
+		case 2:
+		// TODO Send the file request packet here
+		break;
+		case 3:
+			if (JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+				controller.saveSettings();
+				System.exit(0);
+			}
+		break;
+		case 4:
+			throw new UnsupportedOperationException("Momentarily disabled.");
+			// controller.displayReflectionManager();
+			// break;
 		}
 	}
 
@@ -105,11 +101,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		final JTextField connectInput = new JTextField();
 		final JTextField portInput = new JTextField();
 		final JPasswordField passwordInput = new JPasswordField();
-		final JOptionPane jo = new JOptionPane(new Object[]{
-				"Enter IP, port, and password.", connectInput, portInput, passwordInput
-			}, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[]{
-				"OK", "Cancel"
-			}, "OK");
+		final JOptionPane jo = new JOptionPane(new Object[] { "Enter IP, port, and password.", connectInput, portInput, passwordInput }, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[] { "OK", "Cancel" }, "OK");
 		jd.setContentPane(jo);
 		jd.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		// Close the window here, but save the values entered
@@ -120,49 +112,48 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 				jo.setValue(JOptionPane.CLOSED_OPTION);
 			}
 		});
-		jo.addPropertyChangeListener(
-			new java.beans.PropertyChangeListener() {
+		jo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
 
-				public void propertyChange(java.beans.PropertyChangeEvent e) {
-					String prop = e.getPropertyName();
-					if (isVisible() && (e.getSource() == jo) && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
-						Object value = jo.getValue();
-						if (value == JOptionPane.UNINITIALIZED_VALUE) {
+			public void propertyChange(java.beans.PropertyChangeEvent e) {
+				String prop = e.getPropertyName();
+				if (isVisible() && (e.getSource() == jo) && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
+					Object value = jo.getValue();
+					if (value == JOptionPane.UNINITIALIZED_VALUE) {
+						return;
+					}
+					jo.setValue(JOptionPane.UNINITIALIZED_VALUE);
+					if (value.equals("OK")) {
+						String IP = connectInput.getText();
+						String port = portInput.getText();
+						String password = new String(passwordInput.getPassword());
+						if (IP.length() == 0 || port.length() == 0 || password.length() == 0) {
+							JOptionPane.showMessageDialog(jd, "Not all fields were filled out properly.", "Error", JOptionPane.ERROR_MESSAGE);
 							return;
 						}
-						jo.setValue(JOptionPane.UNINITIALIZED_VALUE);
-						if (value.equals("OK")) {
-							String IP = connectInput.getText();
-							String port = portInput.getText();
-							String password = new String(passwordInput.getPassword());
-							if (IP.length() == 0 || port.length() == 0 || password.length() == 0) {
-								JOptionPane.showMessageDialog(jd, "Not all fields were filled out properly.", "Error", JOptionPane.ERROR_MESSAGE);
-								return;
-							}
-							try {
-								port = "" + Integer.parseInt(portInput.getText());
-							}
-							catch (Exception err) {
-								JOptionPane.showMessageDialog(jd, "The port must be numeric!", "Error", JOptionPane.ERROR_MESSAGE);
-								portInput.setText(null);
-								portInput.requestFocusInWindow();
-								return;
-							}
-							if (!IP.contains(".") && !IP.toLowerCase().equals("localhost")) {
-								JOptionPane.showMessageDialog(jd, "The IP entered was invalid.", "Error", JOptionPane.ERROR_MESSAGE);
-								connectInput.setText(null);
-								connectInput.requestFocusInWindow();
-								return;
-							}
-							jd.dispose();
-							controller.handleCommand("connect " + IP + " " + port + " " + password);
+						try {
+							port = "" + Integer.parseInt(portInput.getText());
 						}
-						else {
-							jd.dispose();
+						catch (Exception err) {
+							JOptionPane.showMessageDialog(jd, "The port must be numeric!", "Error", JOptionPane.ERROR_MESSAGE);
+							portInput.setText(null);
+							portInput.requestFocusInWindow();
+							return;
 						}
+						if (!IP.contains(".") && !IP.toLowerCase().equals("localhost")) {
+							JOptionPane.showMessageDialog(jd, "The IP entered was invalid.", "Error", JOptionPane.ERROR_MESSAGE);
+							connectInput.setText(null);
+							connectInput.requestFocusInWindow();
+							return;
+						}
+						jd.dispose();
+						controller.handleCommand("connect " + IP + " " + port + " " + password);
+					}
+					else {
+						jd.dispose();
 					}
 				}
-			});
+			}
+		});
 		jd.setResizable(false);
 		jd.pack();
 		jd.setLocationRelativeTo(this);
@@ -175,17 +166,8 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
-				try {
-					//redirectSystemStreams();
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
 				setLookAndFeel();
 				initComponents();
-				createTabHandler(chatOutput, 0);//TODO modularize and remove
-				createTabHandler(pmOutput, 1);
-				createTabHandler(debugOutput, 2);
 				setLocationRelativeTo(null);
 				setVisible(true);
 			}
@@ -232,102 +214,6 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		}
 	}
 
-	/**
-	 * Updates a tab's notifications if the tab is not selected
-	 */
-	private void setNotification(int tabIndex) {
-		if (jTabbedPane1.getSelectedIndex() != tabIndex && jTabbedPane1.getForegroundAt(tabIndex) != Color.red) {
-			jTabbedPane1.setForegroundAt(tabIndex, Color.red);
-		}
-	}
-
-	/**
-	 * Sets up the handlers that control the tab font color;
-	 * Used for notifying the user of changes happening elsewhere.
-	 * @param box the JTextArea to set up the handler for
-	 * @param tabIndex the corresponding index for the tab in which "box" lies
-	 */
-	private void createTabHandler(JTextComponent box, final int tabIndex) {
-		box.getDocument().addDocumentListener(new DocumentListener() {
-
-			public void insertUpdate(DocumentEvent e) {
-			}
-
-			public void removeUpdate(DocumentEvent e) {
-			}
-
-			public void changedUpdate(DocumentEvent e) {
-				setNotification(tabIndex);
-			}
-		});
-	}
-
-	/**
-	 * Used for hooking debugOutput to System.out/err
-	 */
-	private synchronized void redirectSystemStreams() {
-		java.io.OutputStream out = new java.io.OutputStream() {
-
-			@Override
-			public void write(int b) throws IOException {
-				updateTextArea(String.valueOf((char) b));
-			}
-
-			@Override
-			public void write(byte[] b, int off, int len) throws IOException {
-				updateTextArea(new String(b, off, len));
-			}
-
-			@Override
-			public void write(byte[] b) throws IOException {
-				write(b, 0, b.length);
-			}
-		};
-		PrintStream p = new PrintStream(out, true);
-		System.setOut(p);
-		System.setErr(p);
-		final GhostFormatter formatter = new GhostFormatter();
-		/*Vars.getLogger().addHandler(new Handler() {
-
-			@Override
-			public void publish(LogRecord record) {
-				if (!isLoggable(record)) {
-					return;
-				}
-				debugOutput.append(formatter.format(record));
-			}
-
-			@Override
-			public void flush() {
-				throw new UnsupportedOperationException("Not supported yet.");
-			}
-
-			@Override
-			public void close() throws SecurityException {
-				throw new UnsupportedOperationException("Not supported yet.");
-			}
-		});*/
-	}
-
-	/**
-	 * Updates debugOutput when System.out is written to
-	 * @see redirectSystemStreams()
-	 * @param text the text to append to debugOutput
-	 */
-	private void updateTextArea(final String text) {
-		// Supposedly thread-safe, apparently not--keep on EDT
-		SwingUtilities.invokeLater(new Runnable() {
-
-			public void run() {
-				cal = java.util.Calendar.getInstance();
-				// Append the debug, but ensure it displays properly
-				if (debugOutput != null && debugOutput.getDocument() != null) {
-					debugOutput.append(!text.contains(System.getProperty("line.separator")) ? "[" + sdf.format(cal.getTime()) + "]" + " " + text : text);
-					debugOutput.setCaretPosition(debugOutput.getDocument().getLength());
-				}
-			}
-		});
-	}
 	private JLabel imageLabel;
 
 	/**
@@ -353,16 +239,12 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 
 			@Override
 			public void run() {
-				String[] tabs = {""};
-				controller.getSettings().setTabOrder(tabs);
+				LinkedList<String> tabs = new LinkedList<String>();
+				for(int i = 0; i < jTabbedPane1.getTabCount(); i++)
+					tabs.add(jTabbedPane1.getTitleAt(i));
+				controller.getSettings().setTabOrder(tabs.toArray(new String[tabs.size()]));
 			}
 		};
-		jScrollPane1 = new JScrollPane();
-		chatOutput = new LinkingJTextPane(false);
-		jScrollPane2 = new JScrollPane();
-		pmOutput = new LinkingJTextPane(false);
-		jScrollPane3 = new JScrollPane();
-		debugOutput = new JTextArea();
 		pkpDisp = new JLabel();
 		chatInput = new JTextField();
 		rangeDisp = new JLabel();
@@ -375,7 +257,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 				Object x = playerListComponent.getSelectedValue();
 				if (e.getClickCount() == 1) {
 					if (x != null) {
-						//Load stats here
+						// Load stats here
 					}
 				}
 				else if (e.getClickCount() == 2) {
@@ -510,7 +392,6 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		jTabbedPane1.setTabPlacement(JTabbedPane.BOTTOM);
 		jTabbedPane1.setAutoscrolls(true);
 		layeredPane.add(jTabbedPane1, 1);
-		chatOutput.setEditable(false);
 		LinkEventListener l = new LinkEventListener() {
 
 			@Override
@@ -519,20 +400,6 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 				chatInput.requestFocus();
 			}
 		};
-		chatOutput.addLinkEventListener(l);
-		pmOutput.addLinkEventListener(l);
-		jScrollPane1.setViewportView(chatOutput);
-		//jTabbedPane1.addTab("Chat", jScrollPane1);
-		pmOutput.setEditable(false);
-		jScrollPane2.setViewportView(pmOutput);
-		//jTabbedPane1.addTab("PM", jScrollPane2);
-		debugOutput.setColumns(20);
-		debugOutput.setRows(5);
-		debugOutput.setEditable(false);
-		debugOutput.setLineWrap(true);
-		jScrollPane3.setViewportView(debugOutput);
-		//jTabbedPane1.addTab("Debug", jScrollPane3);
-		//map = new RSMap(737, 318);
 		jTabbedPane1.addChangeListener(new ChangeListener() {
 
 			public void stateChanged(ChangeEvent evt) {
@@ -605,7 +472,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		boundPacketPanel.setBackground(new Color(0, 0, 250, 0));
 		boundPacketPanel.setScrollableWidth(ScrollablePanel.ScrollableSizeHint.FIT);
 		packetPanelContainer = new JScrollPane(boundPacketPanel);
-		packetPanelContainer.getViewport().setOpaque(false);//setBackground(new Color(0, 0, 250, 10));
+		packetPanelContainer.getViewport().setOpaque(false);
 		packetPanelContainer.setBackground(new Color(0, 0, 250, 0));
 		packetPanelContainer.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		Border border = BorderFactory.createEmptyBorder();
@@ -684,57 +551,70 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			private void consumeEvent(DefaultListModel source, String item, boolean add) {
 				playerCount.setText("Players - " + source.getSize());
 				if (add) {
-					chatOutput.addMatch(item);
-					pmOutput.addMatch(item);
+					//chatOutput.addMatch(item);
+					//pmOutput.addMatch(item);
 				}
 				else {
-					chatOutput.removeMatch(item);
-					pmOutput.removeMatch(item);
+					//chatOutput.removeMatch(item);
+					//pmOutput.removeMatch(item);
 				}
 			}
 		});
 		playerListComponent.setModel(playerListModel);
 		GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
 		jPanel1.setLayout(jPanel1Layout);
-		jPanel1Layout.setHorizontalGroup(
-			jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(jPanel1Layout.createSequentialGroup().addContainerGap().addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(jScrollPane4, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE).addComponent(playerCount, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE).addComponent(restartBut, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(jLabel2, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 739, Short.MAX_VALUE).addGroup(GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup().addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false).addGroup(jPanel1Layout.createSequentialGroup().addGap(10, 10, 10).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup().addComponent(thpLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(thpDisp, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)).addGroup(GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false).addGroup(jPanel1Layout.createSequentialGroup().addComponent(hpLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(hpDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(rangeLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(rangeDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(mageLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(mageDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(defLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(defDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(strLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(strDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(atkLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(atkDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(pkpLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(pkpDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(ipLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(ipDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(pwLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(pwDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(coordsLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(coordDisp, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE))))).addComponent(jLabel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(jLabel5, GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))))).addContainerGap()));
-		jPanel1Layout.linkSize(SwingConstants.HORIZONTAL, new Component[]{
-				atkLabel, coordsLabel, defLabel, hpLabel, ipLabel, mageLabel, pkpLabel, pwLabel, rangeLabel, strLabel, thpLabel
-			});
-		jPanel1Layout.setVerticalGroup(
-			jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(jPanel1Layout.createSequentialGroup().addContainerGap().addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(playerCount).addComponent(jLabel2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(jPanel1Layout.createSequentialGroup().addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(jPanel1Layout.createSequentialGroup().addComponent(jLabel3).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(coordsLabel).addComponent(coordDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(pwLabel).addComponent(pwDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(ipLabel).addComponent(ipDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(pkpLabel).addComponent(pkpDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(atkLabel).addComponent(atkDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(strLabel).addComponent(strDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(defLabel).addComponent(defDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(mageLabel).addComponent(mageDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(rangeLabel).addComponent(rangeDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(hpLabel).addComponent(hpDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(thpLabel).addComponent(thpDisp))).addGroup(jPanel1Layout.createSequentialGroup().addComponent(jLabel5).addGap(18, 18, 18).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE))).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))).addGap(14, 14, 14)).addComponent(jScrollPane4, GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(restartBut)).addContainerGap()));
+		jPanel1Layout.setHorizontalGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
+				jPanel1Layout
+						.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(jScrollPane4, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE).addComponent(playerCount, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE).addComponent(restartBut, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE))
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+						.addGroup(jPanel1Layout
+								.createParallelGroup(GroupLayout.Alignment.TRAILING)
+								.addComponent(jLabel2, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 739, Short.MAX_VALUE)
+								.addGroup(GroupLayout.Alignment.LEADING,
+										jPanel1Layout
+												.createSequentialGroup()
+												.addGroup(jPanel1Layout
+														.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+														.addGroup(jPanel1Layout
+																.createSequentialGroup()
+																.addGap(10, 10, 10)
+																.addGroup(jPanel1Layout
+																		.createParallelGroup(GroupLayout.Alignment.LEADING)
+																		.addGroup(GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup().addComponent(thpLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(thpDisp, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE))
+																		.addGroup(GroupLayout.Alignment.TRAILING,
+																				jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false).addGroup(jPanel1Layout.createSequentialGroup().addComponent(hpLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(hpDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(rangeLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(rangeDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+																						.addGroup(jPanel1Layout.createSequentialGroup().addComponent(mageLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(mageDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(defLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(defDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(strLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(strDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+																						.addGroup(jPanel1Layout.createSequentialGroup().addComponent(atkLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(atkDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(pkpLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(pkpDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(ipLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(ipDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+																						.addGroup(jPanel1Layout.createSequentialGroup().addComponent(pwLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(pwDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(coordsLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(coordDisp, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE))))).addComponent(jLabel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+												.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+												.addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(jLabel5, GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))
+														.addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))))).addContainerGap()));
+		jPanel1Layout.linkSize(SwingConstants.HORIZONTAL, new Component[] { atkLabel, coordsLabel, defLabel, hpLabel, ipLabel, mageLabel, pkpLabel, pwLabel, rangeLabel, strLabel, thpLabel });
+		jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
+				jPanel1Layout
+						.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(playerCount).addComponent(jLabel2))
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+						.addGroup(jPanel1Layout
+								.createParallelGroup(GroupLayout.Alignment.LEADING)
+								.addGroup(jPanel1Layout
+										.createSequentialGroup()
+										.addGroup(jPanel1Layout
+												.createParallelGroup(GroupLayout.Alignment.LEADING)
+												.addGroup(jPanel1Layout.createSequentialGroup().addComponent(jLabel3).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(coordsLabel).addComponent(coordDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(pwLabel).addComponent(pwDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(ipLabel).addComponent(ipDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+														.addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(pkpLabel).addComponent(pkpDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(atkLabel).addComponent(atkDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(strLabel).addComponent(strDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(defLabel).addComponent(defDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+														.addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(mageLabel).addComponent(mageDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(rangeLabel).addComponent(rangeDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(hpLabel).addComponent(hpDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(thpLabel).addComponent(thpDisp)))
+												.addGroup(jPanel1Layout.createSequentialGroup().addComponent(jLabel5).addGap(18, 18, 18).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+														.addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE))).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))).addGap(14, 14, 14)).addComponent(jScrollPane4, GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(restartBut)).addContainerGap()));
 		GroupLayout layout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
-		layout.setHorizontalGroup(
-			layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
-		layout.setVerticalGroup(
-			layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
-
-		jScrollPane1.setBorder(border);
-		jScrollPane1.setViewportBorder(border);
-		chatOutput.setBorder(border);
-		jScrollPane2.setBorder(border);
-		jScrollPane2.setViewportBorder(border);
-		pmOutput.setBorder(border);
-		jScrollPane3.setBorder(border);
-		jScrollPane3.setViewportBorder(border);
-		debugOutput.setBorder(border);
-
-		jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		jScrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		jScrollPane3.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
 		jScrollPane4.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
-		jScrollPane1.setOpaque(false);
-		jScrollPane2.setOpaque(false);
-		jScrollPane3.setOpaque(false);
-		chatOutput.setOpaque(false);
-		pmOutput.setOpaque(false);
-		debugOutput.setOpaque(false);
 		jTabbedPane1.setOpaque(false);
-		jScrollPane1.getViewport().setOpaque(false);
-		jScrollPane2.getViewport().setOpaque(false);
-		jScrollPane3.getViewport().setOpaque(false);
 		pack();
 		imageLabel.setSize(jPanel1.getSize());
 		jPanel1.add(imageLabel);
@@ -762,7 +642,6 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	@Override
 	public void sessionOpened() {
 		SwingUtilities.invokeLater(new Runnable() {
-
 			@Override
 			public void run() {
 				lblState.setText("Connected");
@@ -788,7 +667,11 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 
 	@Override
 	public void displayModuleNotification(Module module) {
-		setNotification(jTabbedPane1.indexOfComponent(module.getComponent()));
+		int bgTab = jTabbedPane1.indexOfComponent(module.getComponent());
+		int selTab = jTabbedPane1.getSelectedIndex();
+		if (bgTab != -1 && selTab != -1 && selTab != bgTab && jTabbedPane1.getForegroundAt(bgTab) != Color.red) {
+			jTabbedPane1.setForegroundAt(bgTab, Color.red);
+		}
 	}
 
 	@Override
@@ -799,5 +682,10 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	@Override
 	public void playerRemoved(Player player) {
 		this.playerListModel.removeElement(player);
+	}
+
+	@Override
+	public void focusInputBox() {
+		this.chatInput.requestFocus();
 	}
 }

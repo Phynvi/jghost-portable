@@ -5,7 +5,7 @@ import org.whired.ghost.net.model.player.Player;
 
 /**
  * A typical chat packet
- *
+ * 
  * @author Whired
  */
 public abstract class GhostChatPacket extends GhostPacket {
@@ -22,15 +22,8 @@ public abstract class GhostChatPacket extends GhostPacket {
 	public GhostChatPacket(int id) {
 		super(id);
 	}
-	private final char[] XLATE_TABLE = {
-		' ', 'e', 't', 'a', 'o', 'i', 'h', 'n', 's', 'r',
-		'd', 'l', 'u', 'm', 'w', 'c', 'y', 'f', 'g', 'p',
-		'b', 'v', 'k', 'x', 'j', 'q', 'z', '0', '1', '2',
-		'3', '4', '5', '6', '7', '8', '9', ' ', '!', '?',
-		'.', ',', ':', ';', '(', ')', '-', '&', '*', '\\',
-		'\'', '@', '#', '+', '=', '\243', '$', '%', '"', '[',
-		']'
-	};
+
+	private final char[] XLATE_TABLE = { ' ', 'e', 't', 'a', 'o', 'i', 'h', 'n', 's', 'r', 'd', 'l', 'u', 'm', 'w', 'c', 'y', 'f', 'g', 'p', 'b', 'v', 'k', 'x', 'j', 'q', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '!', '?', '.', ',', ':', ';', '(', ')', '-', '&', '*', '\\', '\'', '@', '#', '+', '=', '\243', '$', '%', '"', '[', ']' };
 
 	/**
 	 * Gets the message as a byte array
@@ -78,6 +71,7 @@ public abstract class GhostChatPacket extends GhostPacket {
 
 	/**
 	 * Unpacks and formats chat that was sent on the specified connection
+	 * 
 	 * @return the unpacked and formatted chat
 	 */
 	protected String unpackMessage(byte[] chatText, int chatSize) {

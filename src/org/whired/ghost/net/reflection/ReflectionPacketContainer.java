@@ -10,8 +10,9 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 /**
- * Simple container for {@code ArrayList<Accessor>} to be serialized and deserialized
- *
+ * Simple container for {@code ArrayList<Accessor>} to be serialized and
+ * deserialized
+ * 
  * @author Whired
  */
 public class ReflectionPacketContainer implements java.io.Serializable {
@@ -22,7 +23,7 @@ public class ReflectionPacketContainer implements java.io.Serializable {
 
 	/**
 	 * Creates a new instance of ReflectionPacketContainer
-	 *
+	 * 
 	 * @param accessorChain the chain of accessors to contain
 	 */
 	public ReflectionPacketContainer(String packetName, ArrayList<Accessor> accessorChain) {
@@ -32,7 +33,7 @@ public class ReflectionPacketContainer implements java.io.Serializable {
 
 	/**
 	 * Saves the specified chain of accessors to the local disk
-	 *
+	 * 
 	 * @param accessorChain the chain of accessors to save
 	 */
 	public static void saveContainer(ReflectionPacketContainer c) throws java.io.IOException {
@@ -48,12 +49,13 @@ public class ReflectionPacketContainer implements java.io.Serializable {
 
 	/**
 	 * Loads a chain of accessors based on the supplied packet name.
-	 *
+	 * 
 	 * @param packetName the name of the packet that was bound
 	 * @return the chain of accessors that was loaded
-	 *
+	 * 
 	 * @throws java.io.IOException if the file could not be found
-	 * @throws ClassNotFoundException when the loaded object can not  be cast to {@code ArrayList<Accessor>}
+	 * @throws ClassNotFoundException when the loaded object can not be cast to
+	 * {@code ArrayList<Accessor>}
 	 */
 	public static ReflectionPacketContainer loadContainer(String packetName) throws java.io.IOException, ClassNotFoundException {
 		ObjectInputStream in = new ObjectInputStream(new FileInputStream(ReflectionPacketContainer.SAVE_DIR + packetName));
@@ -64,7 +66,7 @@ public class ReflectionPacketContainer implements java.io.Serializable {
 
 	/**
 	 * Loads all containers that might be saved to the local disk
-	 *
+	 * 
 	 * @return the list of containers that were loaded
 	 */
 	public static ArrayList<ReflectionPacketContainer> loadAllContainers() {
@@ -77,9 +79,9 @@ public class ReflectionPacketContainer implements java.io.Serializable {
 					list.add(ReflectionPacketContainer.loadContainer(file));
 				}
 				catch (Exception e) {
-					//e.printStackTrace();
+					// e.printStackTrace();
 					Vars.getLogger().warning("Failed to load " + file + ": " + e.toString());
-					//System.out.println("Failed to load "+file+": "+e.toString());
+					// System.out.println("Failed to load "+file+": "+e.toString());
 				}
 		}
 		return list;

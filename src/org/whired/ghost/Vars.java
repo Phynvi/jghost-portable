@@ -10,7 +10,7 @@ import org.whired.ghost.client.util.GhostFormatter;
 
 /**
  * A collection of configurations
- *
+ * 
  * @author Whired
  */
 public class Vars {
@@ -43,7 +43,7 @@ public class Vars {
 
 	/**
 	 * Specifies whether or not debugging messages are logged
-	 *
+	 * 
 	 * @param on whether or not to log all messages
 	 */
 	public static void setDebug(boolean on) {

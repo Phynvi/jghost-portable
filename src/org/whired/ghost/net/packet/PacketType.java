@@ -2,6 +2,7 @@ package org.whired.ghost.net.packet;
 
 /**
  * Constants for packet types
+ * 
  * @author Whired
  */
 public abstract class PacketType {

@@ -44,6 +44,7 @@ public class CacheLoader {
 
 	/**
 	 * Loads a sub node by name
+	 * 
 	 * @param nodeName the name of the node
 	 * @return the bytes that were loaded
 	 */
@@ -74,6 +75,7 @@ public class CacheLoader {
 
 		return null;
 	}
+
 	public byte aByteArray93[];
 	public int nodesLoaded;
 	public int anIntArray95[];

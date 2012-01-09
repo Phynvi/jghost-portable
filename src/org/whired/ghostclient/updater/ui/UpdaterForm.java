@@ -16,14 +16,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 /**
- *
+ * 
  * @author Whired
  */
 public class UpdaterForm extends JFrame {
 
 	private JTextArea output;
 	private JLabel iconLbl;
-	
+
 	/**
 	 * Creates a new updater form
 	 */
@@ -78,6 +78,7 @@ public class UpdaterForm extends JFrame {
 
 	/**
 	 * Logs a message to the primary output box
+	 * 
 	 * @param message the message to log
 	 */
 	public void log(final String message) {

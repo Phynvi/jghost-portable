@@ -32,7 +32,7 @@ public abstract class Accessor implements java.io.Serializable {
 		this.name = name;
 		this.isStatic = isStatic;
 	}
-	
+
 	public RMIField getField(String name) {
 		RMIField f = new RMIField(name, instruction.size() == 1);
 		f.declaringClass = this.name;
@@ -40,7 +40,7 @@ public abstract class Accessor implements java.io.Serializable {
 		f.instruction.add(f);
 		return f;
 	}
-	
+
 	public RMIMethod getMethod(String name, Object... params) {
 		RMIMethod m = new RMIMethod(name, instruction.size() == 1, params);
 		m.declaringClass = this.name;
@@ -54,12 +54,12 @@ public abstract class Accessor implements java.io.Serializable {
 		c.instruction.add(c);
 		return c;
 	}
-	
+
 	protected LinkedList<Accessor> instruction = new LinkedList<Accessor>();
-	
+
 	/**
 	 * Gets the name of this accessor
-	 *
+	 * 
 	 * @return the name of this accessor
 	 */
 	public String getName() {
@@ -68,7 +68,7 @@ public abstract class Accessor implements java.io.Serializable {
 
 	/**
 	 * Gets the name of the declaring class for this Accessor
-	 *
+	 * 
 	 * @return the name of the class that contains this Accessor
 	 */
 	public String getDeclaringClassName() {
@@ -77,7 +77,7 @@ public abstract class Accessor implements java.io.Serializable {
 
 	/**
 	 * Specifies whether or not this accessor is static
-	 *
+	 * 
 	 * @return {@code true} if this accessor is static, otherwise {@code false}
 	 */
 	public boolean isStatic() {
@@ -87,18 +87,20 @@ public abstract class Accessor implements java.io.Serializable {
 	public boolean isClass() {
 		return this instanceof RMIClass;
 	}
-	
+
 	public RMIClass asClass() {
-		if(this.isClass())
-			return (RMIClass)this;
+		if (this.isClass())
+			return (RMIClass) this;
 		else
-			throw new ClassCastException(this.getName() + " is not a "+RMIClass.class.getName());
+			throw new ClassCastException(this.getName() + " is not a " + RMIClass.class.getName());
 	}
-	
+
 	/**
-	 * Checks to see if this accessor is a {@link org.whired.ghost.net.reflection.RMIField}
-	 *
-	 * @return {@code true} if the accessor is a {@code RMIField}, otherwise {@code false}
+	 * Checks to see if this accessor is a
+	 * {@link org.whired.ghost.net.reflection.RMIField}
+	 * 
+	 * @return {@code true} if the accessor is a {@code RMIField}, otherwise
+	 * {@code false}
 	 */
 	public boolean isField() {
 		return this instanceof RMIField;
@@ -108,13 +110,15 @@ public abstract class Accessor implements java.io.Serializable {
 		if (this.isField())
 			return (RMIField) this;
 		else
-			throw new ClassCastException(this.getName() + " is not a "+RMIField.class.getName());
+			throw new ClassCastException(this.getName() + " is not a " + RMIField.class.getName());
 	}
 
 	/**
-	 * Checks to see if this accessor is a {@link org.whired.ghost.net.reflection.RMIMethod}
-	 *
-	 * @return {@code true} if the accessor is a {@code RMIMethod}, otherwise {@code false}
+	 * Checks to see if this accessor is a
+	 * {@link org.whired.ghost.net.reflection.RMIMethod}
+	 * 
+	 * @return {@code true} if the accessor is a {@code RMIMethod}, otherwise
+	 * {@code false}
 	 */
 	public boolean isMethod() {
 		return this instanceof org.whired.ghost.net.reflection.RMIMethod;
@@ -124,27 +128,28 @@ public abstract class Accessor implements java.io.Serializable {
 		if (this.isMethod())
 			return (org.whired.ghost.net.reflection.RMIMethod) this;
 		else
-			throw new ClassCastException(this.getName() + " is not a "+RMIMethod.class.getName());
+			throw new ClassCastException(this.getName() + " is not a " + RMIMethod.class.getName());
 	}
+
 	/**
 	 * Gets the String that represents this accessor
-	 *
+	 * 
 	 * @return the formatted String that represents this accessor
 	 */
 	@Override
 	public String toString() {
 		return this.name;
 	}
-	
+
 	public Object invoke() throws InvocationTargetException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
 		Object curObj = null;
 		if (instruction.size() > 1) {
 			Class cls;
 			Accessor a = instruction.get(0);
-			if(a.isClass())
+			if (a.isClass())
 				cls = a.asClass().getDeclaringClass();
 			else
-				throw new ClassCastException("First instruction must be a "+RMIClass.class.getName());
+				throw new ClassCastException("First instruction must be a " + RMIClass.class.getName());
 			System.out.println(instruction.get(0).toString());
 			for (int i = 1; i < instruction.size(); i++) {
 				a = instruction.get(i);

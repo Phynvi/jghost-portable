@@ -4,12 +4,9 @@ package org.whired.rsmap.io;
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+public class Class5 {
 
-public class Class5
-{
-
-	public Class5()
-	{
+	public Class5() {
 		anInt44 = 4096;
 		anInt45 = 16;
 		anInt46 = 258;

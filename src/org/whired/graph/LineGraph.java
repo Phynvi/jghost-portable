@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 /**
  * Represents a line graph
- *
+ * 
  * @author Whired
  */
 public class LineGraph extends Graph {
@@ -32,6 +32,7 @@ public class LineGraph extends Graph {
 
 	/**
 	 * Creates a new line graph with the specified width and height
+	 * 
 	 * @param width the width of the graph
 	 * @param height the height of the graph
 	 */
@@ -43,16 +44,17 @@ public class LineGraph extends Graph {
 	public LineGraph() {
 		this.addMouseWheelListener(panListener);
 	}
-	
+
 	/**
 	 * Adds the specified line to this graph
-	 *
+	 * 
 	 * @param line the line to add
 	 */
 	public void addLine(Line line) {
 		lines.add(line);
 		line.setOwner(this);
 	}
+
 	private boolean isPanning = false;
 
 	@Override
@@ -60,7 +62,6 @@ public class LineGraph extends Graph {
 
 		double widthScale = getWidthScale();
 		float unitsPerView = (float) (this.getWidth() / widthScale);
-		System.out.println("autoscroll: " + (unitsPerView - getVisibleX()));
 		if (isAutoScroll() && unitsPerView - getVisibleX() <= 0 && !isPanning) {
 			xOffset++;
 		}
@@ -74,8 +75,6 @@ public class LineGraph extends Graph {
 		double heightScale = getHeightScale();
 
 		int minY = getMinVisibleY();
-
-
 
 		// Draw gridlines
 		if (showGridLineX() || showGridLineY()) {
@@ -108,7 +107,6 @@ public class LineGraph extends Graph {
 			for (int i = xOffset; i < l.getPoints().length; i++) {
 				// Stop plotting if these points are out of range
 				if (i - xOffset > unitsPerView) {
-					System.out.println("Points exceed view. Abort.");
 					break;
 				}
 
@@ -117,10 +115,7 @@ public class LineGraph extends Graph {
 
 				// Draw points
 				if (showPointXLabel() || showPointYLabel()) {
-					g.drawString((showPointXLabel() && showPointYLabel() ? "(" + realPt.x + ", " + realPt.y + ")"
-						   : showPointXLabel() ? Integer.toString(realPt.x)
-						   : showPointYLabel() ? Integer.toString(realPt.y)
-						   : ""), (int) (scaledPt.x * widthScale + 4), getHeight() - (int) (scaledPt.y * heightScale) - 4);
+					g.drawString((showPointXLabel() && showPointYLabel() ? "(" + realPt.x + ", " + realPt.y + ")" : showPointXLabel() ? Integer.toString(realPt.x) : showPointYLabel() ? Integer.toString(realPt.y) : ""), (int) (scaledPt.x * widthScale + 4), getHeight() - (int) (scaledPt.y * heightScale) - 4);
 				}
 				Point pt = new Point((int) (scaledPt.x * widthScale), getHeight() - (int) (scaledPt.y * heightScale));
 
@@ -131,11 +126,13 @@ public class LineGraph extends Graph {
 			}
 		}
 	}
+
 	private int xOffset = 0;
 
 	/**
 	 * Gets the height scale of this graph
-	 * @return 
+	 * 
+	 * @return
 	 */
 	private double getHeightScale() {
 		int canY = getHeight() - (int) (getHeight() * .1);
@@ -146,7 +143,8 @@ public class LineGraph extends Graph {
 
 	/**
 	 * Gets the minimum y-value on this graph
-	 * @return 
+	 * 
+	 * @return
 	 */
 	public int getMinY() {
 		int minY = Integer.MAX_VALUE;
@@ -160,7 +158,8 @@ public class LineGraph extends Graph {
 
 	/**
 	 * Gets the minimum visible y-value on this graph
-	 * @return 
+	 * 
+	 * @return
 	 */
 	public int getMinVisibleY() {
 		int minY = Integer.MAX_VALUE;
@@ -181,7 +180,8 @@ public class LineGraph extends Graph {
 
 	/**
 	 * Gets the highest y-value on this graph
-	 * @return 
+	 * 
+	 * @return
 	 */
 	public int getMaxY() {
 		int maxY = 0;
@@ -195,7 +195,8 @@ public class LineGraph extends Graph {
 
 	/**
 	 * Gets the highest x-value on this graph
-	 * @return 
+	 * 
+	 * @return
 	 */
 	public int getMaxX() {
 		int maxX = 0;
@@ -214,7 +215,8 @@ public class LineGraph extends Graph {
 
 	/**
 	 * Gets the highest visible y-value on this graph
-	 * @return 
+	 * 
+	 * @return
 	 */
 	public int getMaxVisibleY() {
 		int maxY = Integer.MIN_VALUE;
@@ -235,7 +237,8 @@ public class LineGraph extends Graph {
 
 	/**
 	 * Gets the width scale for this graph
-	 * @return 
+	 * 
+	 * @return
 	 */
 	private double getWidthScale() {
 		return getWidth() * .05D;
@@ -246,8 +249,9 @@ public class LineGraph extends Graph {
 	}
 
 	/**
-	 * Shifts this graph's view by the specified amount of pixels, or the maximum amount
-	 * possible if {@code amount} exceeds it.
+	 * Shifts this graph's view by the specified amount of pixels, or the
+	 * maximum amount possible if {@code amount} exceeds it.
+	 * 
 	 * @param amt the amount, in points, to shift this graph's view
 	 */
 	public void shift(int amt) {
@@ -267,13 +271,6 @@ public class LineGraph extends Graph {
 			isPanning = true;
 		}
 
-
-		/*
-		if(xOffset + ptAmount < 0) {
-		xOffset = 0;
-		isPanning = true;
-		}*/
-		System.out.println("new offset: " + xOffset + " upv/gvx: " + unitsPerView + "/" + getVisibleX());
 		repaint();
 	}
 

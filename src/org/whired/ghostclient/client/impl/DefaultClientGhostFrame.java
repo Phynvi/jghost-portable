@@ -5,20 +5,22 @@ import java.util.logging.Logger;
 import org.whired.ghost.Vars;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.reflection.ReflectionPacketContainer;
-import org.whired.ghostclient.client.ClientGhostFrame;
+import org.whired.ghostclient.client.GhostClientFrame;
 import org.whired.ghostclient.client.GhostClientView;
-import org.whired.ghostclient.client.user.SessionSettings;
+import org.whired.ghostclient.client.settings.SessionSettings;
+import org.whired.ghostclient.client.settings.SettingsFactory;
+import org.whired.ghostclient.client.user.GhostUser;
 
 /**
- *
+ * 
  * @author Whired
  */
-public class DefaultClientGhostFrame extends ClientGhostFrame {
+public class DefaultClientGhostFrame extends GhostClientFrame {
 
-	public DefaultClientGhostFrame(GhostClientView v) {
-		super(v);
+	public DefaultClientGhostFrame(GhostClientView v, GhostUser user) {
+		super(v, user);
 	}
-	
+
 	@Override
 	protected void bindPacket(ReflectionPacketContainer container) {
 		throw new UnsupportedOperationException("Not supported yet.");
@@ -41,7 +43,7 @@ public class DefaultClientGhostFrame extends ClientGhostFrame {
 
 	@Override
 	public void sessionOpened() {
-		Logger.getLogger(DefaultClientGhostFrame.class.getName()).info("Session opened");
+		Vars.getLogger().info("Session opened");
 		getView().sessionOpened();
 	}
 
@@ -54,7 +56,7 @@ public class DefaultClientGhostFrame extends ClientGhostFrame {
 	@Override
 	public void saveSettings() {
 		try {
-			getUser().getSettings().saveToDisk(Vars.LOCAL_CODEBASE);
+			SettingsFactory.saveToDatabase(Vars.LOCAL_CODEBASE, getUser().getSettings());
 		}
 		catch (Exception ex) {
 			Logger.getLogger(DefaultClientGhostFrame.class.getName()).log(Level.SEVERE, null, ex);

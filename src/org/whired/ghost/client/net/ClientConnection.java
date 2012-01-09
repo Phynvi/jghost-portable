@@ -8,13 +8,11 @@ import org.whired.ghost.net.model.GhostFrame;
 import org.whired.ghost.net.*;
 
 /**
- *	This class handles connections.
+ * This class handles connections.
  */
-public class ClientConnection extends Connection
-{
+public class ClientConnection extends Connection {
 
-	public ClientConnection(Socket sock, Receivable r, SessionManager manager, String passPhrase) throws IOException
-	{
+	public ClientConnection(Socket sock, Receivable r, SessionManager manager, String passPhrase) throws IOException {
 		super(new WrappedInputStream(sock.getInputStream()), new WrappedOutputStream(sock.getOutputStream()), r, manager);
 		Vars.getLogger().info("Connected");
 		super.setEnforceTimeout(false);
@@ -26,16 +24,13 @@ public class ClientConnection extends Connection
 		super.sendPacket(0, passPhrase);
 	}
 
-	public static Connection connect(String IP, int port, String password, GhostFrame frame) throws UnknownHostException, IOException, InvalidStateException
-	{
-		if (!frame.getSessionManager().sessionIsOpen())
-		{
+	public static Connection connect(String IP, int port, String password, GhostFrame frame) throws UnknownHostException, IOException, InvalidStateException {
+		if (!frame.getSessionManager().sessionIsOpen()) {
 			Socket s = new Socket(IP, port);
 			ClientConnection ccon = new ClientConnection(s, frame, frame.getSessionManager(), password);
 			return ccon;
 		}
-		else
-		{
+		else {
 			throw new InvalidStateException("Connection to server already exists");
 		}
 	}

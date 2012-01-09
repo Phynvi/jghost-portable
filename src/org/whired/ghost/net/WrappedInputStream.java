@@ -6,17 +6,20 @@ import org.whired.ghost.net.Connection.DisconnectCallback;
 
 /**
  * An easy wrapper to read data from an InputStream.
+ * 
  * @author Whired
  */
 public class WrappedInputStream {
 
 	/**
 	 * Constructs the InputStream wrapper.
+	 * 
 	 * @param is the InputStream to wrap.
 	 */
 	public WrappedInputStream(java.io.InputStream is) {
 		this.is = is;
 	}
+
 	/**
 	 * The InputStream to wrap.
 	 */
@@ -34,6 +37,7 @@ public class WrappedInputStream {
 
 	/**
 	 * Reads a boolean from the stream.
+	 * 
 	 * @return bool the boolean that was read.
 	 */
 	public boolean readBoolean() throws java.io.IOException, ClassNotFoundException {
@@ -42,6 +46,7 @@ public class WrappedInputStream {
 
 	/**
 	 * Reads a String from the stream.
+	 * 
 	 * @return the String that was read.
 	 */
 	public String readString() throws java.io.IOException, ClassNotFoundException {
@@ -50,6 +55,7 @@ public class WrappedInputStream {
 
 	/**
 	 * Reads an int from the stream.
+	 * 
 	 * @return the int that was read.
 	 */
 	public int readInt() throws java.io.IOException, ClassNotFoundException {
@@ -58,6 +64,7 @@ public class WrappedInputStream {
 
 	/**
 	 * Reads and saves a file sent from stream.
+	 * 
 	 * @param saveDir Specifies the directory to save the file to.
 	 */
 	public void readFile(String saveDir) throws java.io.IOException, ClassNotFoundException {
@@ -109,16 +116,23 @@ public class WrappedInputStream {
 	}
 
 	public int read = 0;
-	
+
 	/**
 	 * Reads any Object from the stream.
+	 * 
 	 * @return the Object that was read.
 	 */
 	public Object readObject() throws java.io.IOException, ClassNotFoundException {
 		try {
 			Object object = null;
-			object = new java.io.ObjectInputStream(is){  public byte readByte() throws IOException{ byte b = super.readByte(); read +=b; return b; }  }.readObject();
-			System.out.println("Read "+read+" bytes.");
+			object = new java.io.ObjectInputStream(is) {
+				public byte readByte() throws IOException {
+					byte b = super.readByte();
+					read += b;
+					return b;
+				}
+			}.readObject();
+			System.out.println("Read " + read + " bytes.");
 			read = 0;
 			return object;
 		}
@@ -135,7 +149,7 @@ public class WrappedInputStream {
 	public int readByte() throws java.io.IOException, ClassNotFoundException {
 		System.out.print("ReadByte: ");
 		int x = is.read();
-		if(x == -1) {
+		if (x == -1) {
 			disconnectCallback.disconnected("End of stream");
 			throw new java.io.IOException("End of stream");
 		}
@@ -144,6 +158,7 @@ public class WrappedInputStream {
 
 	/**
 	 * Disposes any information that can no longer be used.
+	 * 
 	 * @param length specifies the number of bytes to dispose.
 	 */
 	private void disposeData(int length) {
@@ -160,7 +175,7 @@ public class WrappedInputStream {
 	}
 
 	private DisconnectCallback disconnectCallback;
-	
+
 	/**
 	 * Sets the SessionManager for this stream
 	 */

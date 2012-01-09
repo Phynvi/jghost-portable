@@ -9,7 +9,7 @@ import org.whired.rsmap.ui.RSMap;
 import org.whired.ghost.math.GhostMath;
 
 /**
- *
+ * 
  * @author Whired
  */
 public class PlayerRSMap extends RSMap {
@@ -121,7 +121,7 @@ public class PlayerRSMap extends RSMap {
 		MapPlayer nearest = null;
 		for (MapPlayer pl : players.values()) {
 			if (nearest != null) {
-				if (GhostMath.getDistance(pl.getLocation(), mapCoord)< GhostMath.getDistance(nearest.getLocation(), mapCoord)) {
+				if (GhostMath.getDistance(pl.getLocation(), mapCoord) < GhostMath.getDistance(nearest.getLocation(), mapCoord)) {
 					nearest = pl;
 				}
 			}
@@ -136,7 +136,7 @@ public class PlayerRSMap extends RSMap {
 	public void mouseUp(int x, int y) {
 		selectedPlayer = findPlayerNearest(componentToMap(new Point(x, y)));
 	}
-	
+
 	@Override
 	public void loadMap(String cacheDir) {
 		super.loadMap(cacheDir);

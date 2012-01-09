@@ -4,14 +4,14 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * Represents a method; Used in conjunction with the reflection system
- *
+ * 
  * @author Whired
  */
 public class RMIMethod extends Accessor {
 
 	/**
 	 * Creates a new instance of RMIMethod
-	 *
+	 * 
 	 * @param name the name of the RMIMethod
 	 * @param isStatic whether or not the RMIMethod is static
 	 * @param args the arguments of the RMIMethod (Must be in order!)
@@ -27,9 +27,10 @@ public class RMIMethod extends Accessor {
 			}
 		}
 	}
+
 	/** The names of the types of parameters of the RMIMethod, in order */
 	private String[] paramTypeNames;
-	
+
 	/** The arguments to be used while invoking this method, in order */
 	private Object[] argValues = new Object[0];
 
@@ -39,7 +40,7 @@ public class RMIMethod extends Accessor {
 
 	/**
 	 * Gets the parameter types of this RMIMethod
-	 *
+	 * 
 	 * @return the types, in order
 	 */
 	protected Class[] getParameters() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
@@ -50,7 +51,7 @@ public class RMIMethod extends Accessor {
 				System.out.println(this.paramTypeNames[i]);
 				if (this.paramTypeNames[i].equals(Integer.class.getName())) {
 					params[i] = Integer.TYPE;
-					System.out.println("Warning: Unboxed "+Integer.class.getName()+" to "+Integer.TYPE);
+					System.out.println("Warning: Unboxed " + Integer.class.getName() + " to " + Integer.TYPE);
 				}
 				else if (this.paramTypeNames[i].equals("boolean")) {
 					params[i] = Boolean.TYPE;
