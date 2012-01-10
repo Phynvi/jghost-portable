@@ -26,7 +26,7 @@ public class OverviewArea {
 			k += i2 * canvas.getWidth();
 		}
 		if (y + i1 > canvas.endY) {
-			i1 -= (y + i1) - canvas.endY;
+			i1 -= y + i1 - canvas.endY;
 		}
 		if (x < canvas.startX) {
 			int j2 = canvas.startX - x;
@@ -38,7 +38,7 @@ public class OverviewArea {
 			k1 += j2;
 		}
 		if (x + j1 > canvas.endX) {
-			int k2 = (x + j1) - canvas.endX;
+			int k2 = x + j1 - canvas.endX;
 			j1 -= k2;
 			l1 += k2;
 			k1 += k2;

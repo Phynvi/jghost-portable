@@ -15,6 +15,7 @@ public class GhostAuthenticationPacket extends GhostPacket {
 		super(PacketType.AUTHENTICATION);
 	}
 
+	@Override
 	public boolean receive(Connection connection) {
 		try {
 			password = connection.getInputStream().readString();

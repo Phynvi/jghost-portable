@@ -2,7 +2,9 @@ package org.whired.ghost.client.ui;
 
 import java.awt.Frame;
 import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
+
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.reflection.Accessor;
 import org.whired.ghost.net.reflection.PacketLoader;
@@ -31,7 +33,7 @@ public class ReflectionPacketBuilderManager {
 	public void performReflection() {
 		ArrayList<Accessor> accessorChain = this.getAccessorChain("Choose an Accessor", "RS2E.Main", true);
 		ReflectionPacketContainer.invoke(accessorChain, connection);
-		while (true)
+		while (true) {
 			if (JOptionPane.showConfirmDialog(owner, "Bind packet for later use?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 				String packetName = "";
 				while (true) {
@@ -40,23 +42,28 @@ public class ReflectionPacketBuilderManager {
 						JOptionPane.showMessageDialog(owner, "The name entered was invalid.", "Error", JOptionPane.ERROR_MESSAGE);
 						continue;
 					}
-					else
+					else {
 						break;
+					}
 				}
 				try {
 					ReflectionPacketContainer container = new ReflectionPacketContainer(packetName, accessorChain);
 					ReflectionPacketContainer.saveContainer(container);
-					if (loader != null)
+					if (loader != null) {
 						loader.loadPacket(container);
+					}
 					break;
 				}
 				catch (Exception e) {
-					if (JOptionPane.showConfirmDialog(owner, "Unable to save packet: " + e.getMessage() + System.getProperty("line.separator") + System.getProperty("line.separator") + "Retry?", "Error", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION)
+					if (JOptionPane.showConfirmDialog(owner, "Unable to save packet: " + e.getMessage() + System.getProperty("line.separator") + System.getProperty("line.separator") + "Retry?", "Error", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
 						break;
+					}
 				}
 			}
-			else
+			else {
 				break;
+			}
+		}
 	}
 
 	public ArrayList<Accessor> getAccessorChain(String title, String typeMatch, boolean staticOnly) {

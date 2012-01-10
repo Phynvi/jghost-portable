@@ -3,14 +3,16 @@ package org.whired.ghost.client.ui;
 import java.awt.Frame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import org.whired.ghost.net.reflection.*;
+
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.WindowConstants;
+
+import org.whired.ghost.net.reflection.Accessor;
 
 public class ReflectionPacketBuilder extends JDialog {
 	private JList choiceList;

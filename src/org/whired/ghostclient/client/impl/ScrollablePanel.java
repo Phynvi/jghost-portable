@@ -1,7 +1,15 @@
 package org.whired.ghostclient.client.impl;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.LayoutManager;
+import java.awt.Rectangle;
+
+import javax.swing.JPanel;
+import javax.swing.JViewport;
+import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
 
 /**
  * A panel that implements the Scrollable interface. This class allows you to
@@ -24,7 +32,7 @@ import javax.swing.*;
  * @author Rob Camick
  */
 public class ScrollablePanel extends JPanel implements Scrollable// ,
-													// SwingConstants
+// SwingConstants
 {
 	public enum ScrollableSizeHint {
 		NONE, FIT, STRETCH;
@@ -218,10 +226,12 @@ public class ScrollablePanel extends JPanel implements Scrollable// ,
 
 	// Implement Scrollable interface
 
+	@Override
 	public Dimension getPreferredScrollableViewportSize() {
 		return getPreferredSize();
 	}
 
+	@Override
 	public int getScrollableUnitIncrement(Rectangle visible, int orientation, int direction) {
 		switch (orientation) {
 		case SwingConstants.HORIZONTAL:
@@ -233,6 +243,7 @@ public class ScrollablePanel extends JPanel implements Scrollable// ,
 		}
 	}
 
+	@Override
 	public int getScrollableBlockIncrement(Rectangle visible, int orientation, int direction) {
 		switch (orientation) {
 		case SwingConstants.HORIZONTAL:
@@ -245,39 +256,47 @@ public class ScrollablePanel extends JPanel implements Scrollable// ,
 	}
 
 	protected int getScrollableIncrement(IncrementInfo info, int distance) {
-		if (info.getIncrement() == IncrementType.PIXELS)
+		if (info.getIncrement() == IncrementType.PIXELS) {
 			return info.getAmount();
-		else
+		}
+		else {
 			return distance * info.getAmount() / 100;
+		}
 	}
 
+	@Override
 	public boolean getScrollableTracksViewportWidth() {
-		if (scrollableWidth == ScrollableSizeHint.NONE)
+		if (scrollableWidth == ScrollableSizeHint.NONE) {
 			return false;
+		}
 
-		if (scrollableWidth == ScrollableSizeHint.FIT)
+		if (scrollableWidth == ScrollableSizeHint.FIT) {
 			return true;
+		}
 
 		// STRETCH sizing, use the greater of the panel or viewport width
 
 		if (getParent() instanceof JViewport) {
-			return (((JViewport) getParent()).getWidth() > getPreferredSize().width);
+			return ((JViewport) getParent()).getWidth() > getPreferredSize().width;
 		}
 
 		return false;
 	}
 
+	@Override
 	public boolean getScrollableTracksViewportHeight() {
-		if (scrollableHeight == ScrollableSizeHint.NONE)
+		if (scrollableHeight == ScrollableSizeHint.NONE) {
 			return false;
+		}
 
-		if (scrollableHeight == ScrollableSizeHint.FIT)
+		if (scrollableHeight == ScrollableSizeHint.FIT) {
 			return true;
+		}
 
 		// STRETCH sizing, use the greater of the panel or viewport height
 
 		if (getParent() instanceof JViewport) {
-			return (((JViewport) getParent()).getHeight() > getPreferredSize().height);
+			return ((JViewport) getParent()).getHeight() > getPreferredSize().height;
 		}
 
 		return false;
@@ -311,6 +330,7 @@ public class ScrollablePanel extends JPanel implements Scrollable// ,
 			return amount;
 		}
 
+		@Override
 		public String toString() {
 			return "ScrollablePanel[" + type + ", " + amount + "]";
 		}

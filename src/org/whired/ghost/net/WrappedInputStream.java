@@ -1,7 +1,8 @@
 package org.whired.ghost.net;
 
 import java.io.IOException;
-import org.whired.ghost.Vars;
+
+import org.whired.ghost.constants.Vars;
 import org.whired.ghost.net.Connection.DisconnectCallback;
 
 /**
@@ -24,10 +25,6 @@ public class WrappedInputStream {
 	 * The InputStream to wrap.
 	 */
 	private java.io.InputStream is = null;
-	/**
-	 * The SessionManager that is managing this stream
-	 */
-	private SessionManager manager = null;
 	/**
 	 * Ensures that timeouts do not occur during inactivity.
 	 */
@@ -126,6 +123,7 @@ public class WrappedInputStream {
 		try {
 			Object object = null;
 			object = new java.io.ObjectInputStream(is) {
+				@Override
 				public byte readByte() throws IOException {
 					byte b = super.readByte();
 					read += b;

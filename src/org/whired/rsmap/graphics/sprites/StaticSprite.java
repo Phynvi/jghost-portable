@@ -2,7 +2,9 @@ package org.whired.rsmap.graphics.sprites;
 
 import java.awt.image.PixelGrabber;
 import java.net.URL;
+
 import javax.swing.ImageIcon;
+
 import org.whired.rsmap.graphics.RSCanvas;
 
 /**
@@ -26,6 +28,7 @@ public class StaticSprite extends Sprite {
 		this(new ImageIcon(url));
 	}
 
+	@Override
 	public void drawSprite(int x, int y, RSCanvas area) {
 		int l = x + y * area.getWidth();
 		int i1 = 0;
@@ -41,7 +44,7 @@ public class StaticSprite extends Sprite {
 			l += j2 * area.getWidth();
 		}
 		if (y + j1 > area.endY) {
-			j1 -= (y + j1) - area.endY;
+			j1 -= y + j1 - area.endY;
 		}
 		if (x < area.startX) {
 			int k2 = area.startX - x;
@@ -53,7 +56,7 @@ public class StaticSprite extends Sprite {
 			l1 += k2;
 		}
 		if (x + k1 > area.endX) {
-			int l2 = (x + k1) - area.endX;
+			int l2 = x + k1 - area.endX;
 			k1 -= l2;
 			i2 += l2;
 			l1 += l2;

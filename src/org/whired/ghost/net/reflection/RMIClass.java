@@ -17,7 +17,7 @@ public class RMIClass extends Accessor {
 	 * @return the class that reflects this class
 	 * @throws ClassNotFoundException
 	 */
-	public Class getDeclaringClass() throws ClassNotFoundException {
+	public Class<?> getDeclaringClass() throws ClassNotFoundException {
 		return Class.forName(this.getName());
 	}
 

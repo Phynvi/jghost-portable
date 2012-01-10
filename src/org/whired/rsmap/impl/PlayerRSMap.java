@@ -3,10 +3,11 @@ package org.whired.rsmap.impl;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.HashMap;
+
+import org.whired.ghost.math.GhostMath;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.rsmap.ui.MapButton;
 import org.whired.rsmap.ui.RSMap;
-import org.whired.ghost.math.GhostMath;
 
 /**
  * 
@@ -36,7 +37,7 @@ public class PlayerRSMap extends RSMap {
 	}
 
 	public void playerMoved(Player player) {
-		((MapPlayer) players.get(player.getName())).addLocation(player.getLocation());
+		players.get(player.getName()).addLocation(player.getLocation());
 	}
 
 	private void addButtons() {

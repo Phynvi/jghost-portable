@@ -2,6 +2,7 @@ package org.whired.ghost.net.model.player;
 
 /**
  * Constants for default rights
+ * 
  * @author Whired
  */
 public interface DefaultRightsConstants {

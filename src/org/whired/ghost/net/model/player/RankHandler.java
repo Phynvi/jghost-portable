@@ -23,8 +23,9 @@ public class RankHandler {
 	 * @param ranks the ranks to register
 	 */
 	public void registerRanks(Rank[] ranks) {
-		for (Rank r : ranks)
+		for (Rank r : ranks) {
 			registerRank(r);
+		}
 	}
 
 	/**
@@ -53,9 +54,11 @@ public class RankHandler {
 	 * @return the rank, or {@code null} if none was matched
 	 */
 	public Rank rankForName(String title) {
-		for (Rank r : ranks.values())
-			if (r.getTitle().toLowerCase().equals(title.toLowerCase()))
+		for (Rank r : ranks.values()) {
+			if (r.getTitle().toLowerCase().equals(title.toLowerCase())) {
 				return r;
+			}
+		}
 		return null;
 	}
 

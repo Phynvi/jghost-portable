@@ -4,10 +4,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.Area;
+import java.awt.geom.RoundRectangle2D;
+
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -27,7 +28,7 @@ public class JRoundedButton extends JButton {
 	 * @param preferredWidth the preferred width of the rounded button
 	 * @param preferredHeight the preferred height of the rounded button
 	 */
-	JRoundedButton(String text, int preferredWidth, int preferredHeight) {
+	public JRoundedButton(String text, int preferredWidth, int preferredHeight) {
 		super(text);
 		setPreferredSize(new Dimension(preferredWidth, preferredHeight));
 		setBorderPainted(false);
@@ -38,7 +39,7 @@ public class JRoundedButton extends JButton {
 	 * 
 	 * @param text the text to display on the rounded button
 	 */
-	JRoundedButton(String text) {
+	public JRoundedButton(String text) {
 		super(text);
 		setBorderPainted(false);
 	}
@@ -49,7 +50,7 @@ public class JRoundedButton extends JButton {
 	 * @param text the text of the rounded button
 	 * @param the image to display on the rounded button
 	 */
-	JRoundedButton(String text, Icon icon) {
+	public JRoundedButton(String text, Icon icon) {
 		super(text, icon);
 		setBorderPainted(false);
 	}
@@ -60,7 +61,7 @@ public class JRoundedButton extends JButton {
 	 * 
 	 * @param a the Action used to specify the new rounded button
 	 */
-	JRoundedButton(Action a) {
+	public JRoundedButton(Action a) {
 		super(a);
 		setBorderPainted(false);
 	}
@@ -70,7 +71,7 @@ public class JRoundedButton extends JButton {
 	 * 
 	 * @param icon the image to display on the rounded button
 	 */
-	JRoundedButton(Icon icon) {
+	public JRoundedButton(Icon icon) {
 		super(icon);
 		setBorderPainted(false);
 	}
@@ -78,7 +79,7 @@ public class JRoundedButton extends JButton {
 	/**
 	 * Creates a rounded button with no set text or icon.
 	 */
-	JRoundedButton() {
+	public JRoundedButton() {
 		setBorderPainted(false);
 	}
 
@@ -106,7 +107,7 @@ public class JRoundedButton extends JButton {
 		for (int i = 0; i < gradients.length; i++) {
 			arc -= 2;
 			g2.setColor(gradients[i]);
-			g2.drawRoundRect(i + 1, i + 1, (int) Math.ceil(getSize().getWidth() - 2) - (i * 2), (int) Math.ceil(getSize().getHeight() - 2) - (i * 2), (int) arc, (int) arc);
+			g2.drawRoundRect(i + 1, i + 1, (int) Math.ceil(getSize().getWidth() - 2) - i * 2, (int) Math.ceil(getSize().getHeight() - 2) - i * 2, (int) arc, (int) arc);
 		}
 	}
 }

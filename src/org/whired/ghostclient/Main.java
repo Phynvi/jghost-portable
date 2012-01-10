@@ -1,17 +1,19 @@
 package org.whired.ghostclient;
 
 import javax.swing.ImageIcon;
-import org.whired.ghost.Vars;
+
 import org.whired.ghost.client.net.ClientConnection;
-import org.whired.ghostclient.client.command.Command;
-import org.whired.ghostclient.client.settings.SettingsFactory;
+import org.whired.ghost.constants.Vars;
 import org.whired.ghost.net.Connection;
+import org.whired.ghost.net.model.player.DefaultRightsConstants;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.model.player.Rank;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.reflection.Accessor;
+import org.whired.ghostclient.client.command.Command;
 import org.whired.ghostclient.client.impl.DefaultController;
+import org.whired.ghostclient.client.settings.SettingsFactory;
 import org.whired.ghostclient.client.user.impl.DefaultUser;
 
 public class Main {
@@ -19,7 +21,7 @@ public class Main {
 	public static DefaultController client;
 
 	public static void main(String args[]) {
-		client = new DefaultController(new DefaultUser(SettingsFactory.loadFromDatabase(Vars.LOCAL_CODEBASE)));
+		client = new DefaultController(new DefaultUser(SettingsFactory.loadFromDatabase(Vars.getLocalCodebase())));
 		client.getModel().getCommandHandler().registerCommands(new Command[] { new Command("setrights", 1) {
 
 			@Override
@@ -29,6 +31,7 @@ public class Main {
 			}
 		}, new Command("disconnect", 0) {
 
+			@Override
 			public boolean handle(String[] args) {
 				Connection c = client.getModel().getSessionManager().getConnection();
 				if (c != null) {
@@ -49,7 +52,9 @@ public class Main {
 					finalName.append(s);
 					finalName.append(" ");
 				}
-				client.getModel().getUser().getSettings().getPlayer().setName(finalName.toString().trim());
+				String name = finalName.toString().trim();
+				client.getModel().getUser().getSettings().getPlayer().setName(name);
+				Vars.getLogger().info("Your name is now " + name);
 				return true;
 			}
 		}, new Command("pm", 2) {
@@ -72,6 +77,7 @@ public class Main {
 			}
 		}, new Command("setdebug", 1) {
 
+			@Override
 			public boolean handle(String[] args) {
 				if (args[0].equals("on")) {
 					Vars.setDebug(true);
@@ -90,14 +96,16 @@ public class Main {
 				return true;
 			}
 		}, new Command("whoami") {
+			@Override
 			public boolean handle(String[] args) {
 				Player p = client.getModel().getUser().getSettings().getPlayer();
 				Vars.getLogger().info("You are " + client.getModel().getRankHandler().rankForLevel(p.getRights()).getTitle() + " " + p.getName());
 				return true;
 			}
 		}, new Command("savesession") {
+			@Override
 			public boolean handle(String[] args) {
-				SettingsFactory.saveToDatabase(Vars.LOCAL_CODEBASE, client.getModel().getUser().getSettings());
+				SettingsFactory.saveToDatabase(Vars.getLocalCodebase(), client.getModel().getUser().getSettings());
 				return true;
 			}
 		}, new Command("connect", 0) {
@@ -163,8 +171,8 @@ public class Main {
 		client.getModel()
 				.getRankHandler()
 				.registerRanks(
-						new Rank[] { new Rank(Rank.PLAYER, "Player", new ImageIcon(client.getClass().getResource("resources/player.png"))), new Rank(Rank.VETERAN, "Veteran", new ImageIcon(client.getClass().getResource("resources/veteran.png"))), new Rank(Rank.DONATOR, "Donator", new ImageIcon(client.getClass().getResource("resources/donator.png"))), new Rank(Rank.DEVELOPER, "Developer", new ImageIcon(client.getClass().getResource("resources/developer.png"))), new Rank(Rank.MODERATOR, "Moderator", new ImageIcon(client.getClass().getResource("resources/moderator.png"))), new Rank(Rank.ADMINISTRATOR, "Administrator", new ImageIcon(client.getClass().getResource("resources/administrator.png"))),
-								new Rank(Rank.OWNER, "Owner", new ImageIcon(client.getClass().getResource("resources/owner.png"))) });
+						new Rank[] { new Rank(DefaultRightsConstants.PLAYER, "Player", new ImageIcon(client.getClass().getResource("resources/player.png"))), new Rank(DefaultRightsConstants.VETERAN, "Veteran", new ImageIcon(client.getClass().getResource("resources/veteran.png"))), new Rank(DefaultRightsConstants.DONATOR, "Donator", new ImageIcon(client.getClass().getResource("resources/donator.png"))), new Rank(DefaultRightsConstants.DEVELOPER, "Developer", new ImageIcon(client.getClass().getResource("resources/developer.png"))), new Rank(DefaultRightsConstants.MODERATOR, "Moderator", new ImageIcon(client.getClass().getResource("resources/moderator.png"))),
+								new Rank(DefaultRightsConstants.ADMINISTRATOR, "Administrator", new ImageIcon(client.getClass().getResource("resources/administrator.png"))), new Rank(DefaultRightsConstants.OWNER, "Owner", new ImageIcon(client.getClass().getResource("resources/owner.png"))) });
 		client.getModel().getPacketHandler().registerPacket(new GhostPacket(PacketType.INVOKE_ACCESSOR) {
 
 			@Override

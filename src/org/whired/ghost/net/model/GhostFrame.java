@@ -1,21 +1,22 @@
 package org.whired.ghost.net.model;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.whired.ghost.Vars;
-import org.whired.ghost.net.Connection;
-import org.whired.ghost.net.Receivable;
-import org.whired.ghost.net.reflection.ReflectionPacketContainer;
-import java.util.ArrayList;
-import org.whired.ghostclient.client.user.GhostUser;
+
 import org.whired.ghost.client.ui.ReflectionPacketBuilderManager;
+import org.whired.ghost.constants.Vars;
+import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.PacketHandler;
+import org.whired.ghost.net.Receivable;
 import org.whired.ghost.net.SessionManager;
+import org.whired.ghost.net.model.player.PlayerList;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.packet.PublicChatPacket;
 import org.whired.ghost.net.reflection.Accessor;
-import org.whired.ghost.net.model.player.PlayerList;
+import org.whired.ghost.net.reflection.ReflectionPacketContainer;
+import org.whired.ghostclient.client.user.GhostUser;
 
 /**
  * Provides the functionality and layout for a standard implementation of a
@@ -122,13 +123,17 @@ public abstract class GhostFrame implements Receivable, AbstractClient {
 			// packet
 			Vars.getLogger().fine("Pushing noninternal packet " + packetId + " to external listener " + this.getUser());
 			GhostPacket packet = getPacketHandler().get(packetId);
-			if (packet != null)
-				if (packet.receive(connection))
+			if (packet != null) {
+				if (packet.receive(connection)) {
 					packetReceived(packet);
-				else
+				}
+				else {
 					return false;
-			// return this.getUser().handlePacket(packetId, packetLength,
-			// connection);
+					// return this.getUser().handlePacket(packetId,
+					// packetLength,
+					// connection);
+				}
+			}
 		}
 		return true;
 	}

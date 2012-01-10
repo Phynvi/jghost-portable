@@ -1,6 +1,5 @@
 package org.whired.ghost.net.packet;
 
-import org.whired.ghost.Vars;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.model.player.Player;
 
@@ -31,6 +30,7 @@ public class PrivateChatPacket extends GhostChatPacket {
 	 * @return {@code true} if the packet was successfully received, otherwise
 	 * {@code false}
 	 */
+	@Override
 	public boolean receive(Connection connection) {
 		try {
 			this.sender = (Player) connection.getInputStream().readObject();

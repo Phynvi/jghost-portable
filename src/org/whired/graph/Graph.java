@@ -60,7 +60,7 @@ public abstract class Graph extends Component implements Plottable {
 	 * @param visible
 	 */
 	public void setShowAxisXLabel(boolean visible) {
-		this.labels = (visible ? this.getLabels() | Label.AXIS_X : this.getLabels() ^ Label.AXIS_X);
+		this.labels = visible ? this.getLabels() | Label.AXIS_X : this.getLabels() ^ Label.AXIS_X;
 	}
 
 	/**
@@ -69,7 +69,7 @@ public abstract class Graph extends Component implements Plottable {
 	 * @param visible
 	 */
 	public void setShowAxisYLabel(boolean visible) {
-		this.labels = (visible ? this.getLabels() | Label.AXIS_Y : this.getLabels() ^ Label.AXIS_Y);
+		this.labels = visible ? this.getLabels() | Label.AXIS_Y : this.getLabels() ^ Label.AXIS_Y;
 	}
 
 	/**
@@ -78,7 +78,7 @@ public abstract class Graph extends Component implements Plottable {
 	 * @param visible
 	 */
 	public void setShowGridLineX(boolean visible) {
-		this.labels = (visible ? this.getLabels() | Label.GRIDLINE_X : this.getLabels() ^ Label.GRIDLINE_X);
+		this.labels = visible ? this.getLabels() | Label.GRIDLINE_X : this.getLabels() ^ Label.GRIDLINE_X;
 	}
 
 	/**
@@ -87,7 +87,7 @@ public abstract class Graph extends Component implements Plottable {
 	 * @param visible
 	 */
 	public void setShowGridlineY(boolean visible) {
-		this.labels = (visible ? this.getLabels() | Label.GRIDLINE_Y : this.getLabels() ^ Label.GRIDLINE_Y);
+		this.labels = visible ? this.getLabels() | Label.GRIDLINE_Y : this.getLabels() ^ Label.GRIDLINE_Y;
 	}
 
 	/**
@@ -96,7 +96,7 @@ public abstract class Graph extends Component implements Plottable {
 	 * @param visible
 	 */
 	public void setShowPointXLabel(boolean visible) {
-		this.labels = (visible ? this.getLabels() | Label.POINT_X : this.getLabels() ^ Label.POINT_X);
+		this.labels = visible ? this.getLabels() | Label.POINT_X : this.getLabels() ^ Label.POINT_X;
 	}
 
 	/**
@@ -105,7 +105,7 @@ public abstract class Graph extends Component implements Plottable {
 	 * @param visible
 	 */
 	public void setShowPointYLabel(boolean visible) {
-		this.labels = (visible ? this.getLabels() | Label.POINT_Y : this.getLabels() ^ Label.POINT_Y);
+		this.labels = visible ? this.getLabels() | Label.POINT_Y : this.getLabels() ^ Label.POINT_Y;
 	}
 
 	/**

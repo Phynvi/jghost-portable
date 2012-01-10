@@ -3,10 +3,7 @@ package org.whired.ghost.net.reflection;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Stack;
 
 /**
  * Represents an Object; Used in conjunction with the reflection system.
@@ -89,10 +86,12 @@ public abstract class Accessor implements java.io.Serializable {
 	}
 
 	public RMIClass asClass() {
-		if (this.isClass())
+		if (this.isClass()) {
 			return (RMIClass) this;
-		else
+		}
+		else {
 			throw new ClassCastException(this.getName() + " is not a " + RMIClass.class.getName());
+		}
 	}
 
 	/**
@@ -107,10 +106,12 @@ public abstract class Accessor implements java.io.Serializable {
 	}
 
 	public RMIField asField() {
-		if (this.isField())
+		if (this.isField()) {
 			return (RMIField) this;
-		else
+		}
+		else {
 			throw new ClassCastException(this.getName() + " is not a " + RMIField.class.getName());
+		}
 	}
 
 	/**
@@ -125,10 +126,12 @@ public abstract class Accessor implements java.io.Serializable {
 	}
 
 	public RMIMethod asMethod() {
-		if (this.isMethod())
+		if (this.isMethod()) {
 			return (org.whired.ghost.net.reflection.RMIMethod) this;
-		else
+		}
+		else {
 			throw new ClassCastException(this.getName() + " is not a " + RMIMethod.class.getName());
+		}
 	}
 
 	/**
@@ -144,12 +147,14 @@ public abstract class Accessor implements java.io.Serializable {
 	public Object invoke() throws InvocationTargetException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
 		Object curObj = null;
 		if (instruction.size() > 1) {
-			Class cls;
+			Class<?> cls;
 			Accessor a = instruction.get(0);
-			if (a.isClass())
+			if (a.isClass()) {
 				cls = a.asClass().getDeclaringClass();
-			else
+			}
+			else {
 				throw new ClassCastException("First instruction must be a " + RMIClass.class.getName());
+			}
 			System.out.println(instruction.get(0).toString());
 			for (int i = 1; i < instruction.size(); i++) {
 				a = instruction.get(i);
@@ -165,8 +170,9 @@ public abstract class Accessor implements java.io.Serializable {
 				}
 			}
 		}
-		else
+		else {
 			throw new InvocationTargetException(new RuntimeException("Instructions not complete"));
+		}
 		return curObj;
 	}
 }

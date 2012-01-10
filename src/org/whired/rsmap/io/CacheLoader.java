@@ -1,7 +1,6 @@
 package org.whired.rsmap.io;
 
 // Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-import org.whired.rsmap.io.ByteBuffer;
 
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
@@ -53,7 +52,7 @@ public class CacheLoader {
 		int i = 0;
 		nodeName = nodeName.toUpperCase();
 		for (int j = 0; j < nodeName.length(); j++) {
-			i = (i * 61 + nodeName.charAt(j)) - 32;
+			i = i * 61 + nodeName.charAt(j) - 32;
 		}
 		for (int k = 0; k < nodesLoaded; k++) {
 			if (anIntArray95[k] == i) {

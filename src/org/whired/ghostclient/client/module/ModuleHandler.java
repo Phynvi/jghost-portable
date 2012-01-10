@@ -2,8 +2,10 @@ package org.whired.ghostclient.client.module;
 
 import java.util.HashSet;
 import java.util.logging.Level;
+
 import javax.swing.SwingUtilities;
-import org.whired.ghost.Vars;
+
+import org.whired.ghost.constants.Vars;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghostclient.client.GhostClientFrame;
@@ -21,8 +23,9 @@ public class ModuleHandler extends GhostEventAdapter {
 
 	public ModuleHandler(Module[] initialModules, final GhostClientFrame frame) {
 		this.frame = frame;
-		for (Module m : initialModules)
+		for (Module m : initialModules) {
 			registerModule(m);
+		}
 	}
 
 	public ModuleHandler(final GhostClientFrame frame) {
@@ -40,7 +43,7 @@ public class ModuleHandler extends GhostEventAdapter {
 			@Override
 			public void run() {
 				try {
-					Vars.getLogger().log(Level.INFO, "Registering and initializing module "+module.getModuleName());
+					Vars.getLogger().log(Level.INFO, "Registering and initializing module " + module.getModuleName());
 					frame.getView().moduleAdded(module);
 					module.load();
 				}

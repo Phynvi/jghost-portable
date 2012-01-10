@@ -23,6 +23,7 @@ public class GhostFormatter extends Formatter {
 	 * @param record the log record to be formatted.
 	 * @return a formatted log record
 	 */
+	@Override
 	public synchronized String format(LogRecord record) {
 		StringBuilder sb = new StringBuilder();
 		// Minimize memory allocations here.

@@ -1,9 +1,5 @@
 package org.whired.ghostclient.client.command;
 
-import java.util.logging.Logger;
-
-import org.whired.ghost.Vars;
-
 /**
  * Defines the layout of a command
  * 
@@ -27,14 +23,15 @@ public abstract class Command {
 	}
 
 	/**
-	 * Constructs a new {@code Command} with the specified command string and no parameters
+	 * Constructs a new {@code Command} with the specified command string and
+	 * no parameters
 	 * 
 	 * @param command the identifier for this command
 	 */
 	public Command(String command) {
 		this(command, 0);
 	}
-	
+
 	/**
 	 * Invoked when a command must be handled
 	 * 

@@ -2,6 +2,7 @@ package org.whired.rsmap.impl;
 
 import java.awt.Point;
 import java.util.LinkedList;
+
 import org.whired.ghost.math.GhostMath;
 import org.whired.ghost.net.model.player.Player;
 

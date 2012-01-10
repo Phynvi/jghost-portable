@@ -1,6 +1,6 @@
 package org.whired.ghost.net.packet;
 
-import org.whired.ghost.Vars;
+import org.whired.ghost.constants.Vars;
 import org.whired.ghost.net.Connection;
 
 /**
@@ -61,10 +61,12 @@ public abstract class GhostPacket {
 			return true;
 		}
 		catch (Exception e) {
-			if (connection == null)
+			if (connection == null) {
 				Vars.getLogger().warning("Dropped packet (no connection)");
-			else
+			}
+			else {
 				Vars.getLogger().warning("Dropped packet: " + e.toString());
+			}
 			return false;
 		}
 	}

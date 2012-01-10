@@ -3,9 +3,15 @@ package org.whired.ghost.client.net;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import org.whired.ghost.Vars;
+
+import org.whired.ghost.constants.Vars;
+import org.whired.ghost.net.Connection;
+import org.whired.ghost.net.InvalidStateException;
+import org.whired.ghost.net.Receivable;
+import org.whired.ghost.net.SessionManager;
+import org.whired.ghost.net.WrappedInputStream;
+import org.whired.ghost.net.WrappedOutputStream;
 import org.whired.ghost.net.model.GhostFrame;
-import org.whired.ghost.net.*;
 
 /**
  * This class handles connections.

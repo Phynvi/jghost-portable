@@ -1,17 +1,55 @@
 package org.whired.ghostclient.client.impl;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.GroupLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.border.Border;
-import javax.swing.event.*;
-import javax.swing.text.JTextComponent;
-import org.whired.ghost.Vars;
-import org.whired.ghost.client.util.GhostFormatter;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+
+import org.whired.ghost.constants.Vars;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.model.player.Rank;
 import org.whired.ghostclient.client.GhostClient;
@@ -103,7 +141,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		final JPasswordField passwordInput = new JPasswordField();
 		final JOptionPane jo = new JOptionPane(new Object[] { "Enter IP, port, and password.", connectInput, portInput, passwordInput }, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[] { "OK", "Cancel" }, "OK");
 		jd.setContentPane(jo);
-		jd.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		jd.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		// Close the window here, but save the values entered
 		jd.addWindowListener(new WindowAdapter() {
 
@@ -114,9 +152,10 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		});
 		jo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
 
+			@Override
 			public void propertyChange(java.beans.PropertyChangeEvent e) {
 				String prop = e.getPropertyName();
-				if (isVisible() && (e.getSource() == jo) && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
+				if (isVisible() && e.getSource() == jo && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
 					Object value = jo.getValue();
 					if (value == JOptionPane.UNINITIALIZED_VALUE) {
 						return;
@@ -165,6 +204,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	public DefaultClientGhostView() {
 		SwingUtilities.invokeLater(new Runnable() {
 
+			@Override
 			public void run() {
 				setLookAndFeel();
 				initComponents();
@@ -240,8 +280,9 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			@Override
 			public void run() {
 				LinkedList<String> tabs = new LinkedList<String>();
-				for(int i = 0; i < jTabbedPane1.getTabCount(); i++)
+				for (int i = 0; i < jTabbedPane1.getTabCount(); i++) {
 					tabs.add(jTabbedPane1.getTitleAt(i));
+				}
 				controller.getSettings().setTabOrder(tabs.toArray(new String[tabs.size()]));
 			}
 		};
@@ -257,7 +298,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 				Object x = playerListComponent.getSelectedValue();
 				if (e.getClickCount() == 1) {
 					if (x != null) {
-						// Load stats here
+						controller.getPlayerList().playerSelected((Player) x);
 					}
 				}
 				else if (e.getClickCount() == 2) {
@@ -349,37 +390,42 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		setJMenuBar(jmb);
 		jmiConnect.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				menuActionPerformed(0, evt);
 			}
 		});
 		jmiQConnect.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				menuActionPerformed(1, evt);
 			}
 		});
 		jmiOpen.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				menuActionPerformed(2, evt);
 			}
 		});
 		jmiExit.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				menuActionPerformed(3, evt);
 			}
 		});
 		jmiNew.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				menuActionPerformed(4, evt);
 			}
 		});
 		lblState.setBounds(660, 319, 79, 14);
 		lblState.setBorder(BorderFactory.createLineBorder(new Color(99, 130, 191)));
-		lblState.setHorizontalAlignment(JLabel.CENTER);
+		lblState.setHorizontalAlignment(SwingConstants.CENTER);
 		ipDisp.setHorizontalAlignment(SwingConstants.CENTER);
 		ipDisp.setText("n/a");
 		defLabel.setText("Defence: ");
@@ -389,10 +435,10 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		JLayeredPane layeredPane = new JLayeredPane();
 		layeredPane.setBounds(132, 254, 739, 335);
 		jTabbedPane1.setBounds(0, 0, 739, 335);
-		jTabbedPane1.setTabPlacement(JTabbedPane.BOTTOM);
+		jTabbedPane1.setTabPlacement(SwingConstants.BOTTOM);
 		jTabbedPane1.setAutoscrolls(true);
 		layeredPane.add(jTabbedPane1, 1);
-		LinkEventListener l = new LinkEventListener() {
+		new LinkEventListener() {
 
 			@Override
 			public void linkClicked(String linkText) {
@@ -402,6 +448,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		};
 		jTabbedPane1.addChangeListener(new ChangeListener() {
 
+			@Override
 			public void stateChanged(ChangeEvent evt) {
 				jTabbedPane1.setForegroundAt(jTabbedPane1.getSelectedIndex(), Color.black);
 			}
@@ -424,12 +471,12 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 					if (historyIndex > 1) {
 						historyIndex--;
 					}
-					chatInput.setText((String) chatHistory.get(historyIndex));
+					chatInput.setText(chatHistory.get(historyIndex));
 				}
 				else if (ke.getKeyCode() == 40) {
-					if (historyIndex < (chatHistory.size() + 1)) {
+					if (historyIndex < chatHistory.size() + 1) {
 						historyIndex++;
-						chatInput.setText((String) chatHistory.get(historyIndex));
+						chatInput.setText(chatHistory.get(historyIndex));
 					}
 					else {
 						chatInput.setText(null);
@@ -439,6 +486,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		});
 		chatInput.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				String message = chatInput.getText();
 				chatInput.setText("");
@@ -474,7 +522,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		packetPanelContainer = new JScrollPane(boundPacketPanel);
 		packetPanelContainer.getViewport().setOpaque(false);
 		packetPanelContainer.setBackground(new Color(0, 0, 250, 0));
-		packetPanelContainer.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		packetPanelContainer.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		Border border = BorderFactory.createEmptyBorder();
 		Border border2 = BorderFactory.createLineBorder(new Color(99, 130, 191), 1);
 		packetPanelContainer.setBorder(border2);
@@ -500,6 +548,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		restartBut.setText("Restart");
 		restartBut.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				controller.restartServer();
 			}
@@ -536,28 +585,22 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		pkpLabel.setText("PK points: ");
 		playerListModel.addListDataListener(new ListDataListener() {
 
+			@Override
 			public void intervalAdded(ListDataEvent e) {
-				consumeEvent(((DefaultListModel) e.getSource()), (String) ((DefaultListModel) e.getSource()).elementAt(e.getIndex0()).toString(), true);
+				consumeEvent((DefaultListModel) e.getSource(), ((DefaultListModel) e.getSource()).elementAt(e.getIndex0()).toString());
 			}
 
+			@Override
 			public void intervalRemoved(ListDataEvent e) {
-				consumeEvent(((DefaultListModel) e.getSource()), (String) ((DefaultListModel) e.getSource()).elementAt(e.getIndex0()).toString(), false);
+				consumeEvent((DefaultListModel) e.getSource(), ((DefaultListModel) e.getSource()).elementAt(e.getIndex0()).toString());
 			}
 
+			@Override
 			public void contentsChanged(ListDataEvent e) {
 			}
 
-			// TODO reimpl
-			private void consumeEvent(DefaultListModel source, String item, boolean add) {
+			private void consumeEvent(DefaultListModel source, String item) {
 				playerCount.setText("Players - " + source.getSize());
-				if (add) {
-					//chatOutput.addMatch(item);
-					//pmOutput.addMatch(item);
-				}
-				else {
-					//chatOutput.removeMatch(item);
-					//pmOutput.removeMatch(item);
-				}
 			}
 		});
 		playerListComponent.setModel(playerListModel);
@@ -613,7 +656,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
 		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
-		jScrollPane4.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		jScrollPane4.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		jTabbedPane1.setOpaque(false);
 		pack();
 		imageLabel.setSize(jPanel1.getSize());

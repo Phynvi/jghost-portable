@@ -1,14 +1,15 @@
 package org.whired.ghostserver.server;
 
-import org.whired.ghostserver.server.net.ServerConnection;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.HashMap;
-import org.whired.ghost.Vars;
+
+import org.whired.ghost.constants.Vars;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.Receivable;
+import org.whired.ghostserver.server.net.ServerConnection;
 
 public class Server implements Runnable {
 
@@ -102,7 +103,7 @@ public class Server implements Runnable {
 				break;
 			}
 		}
-		if (((passPhrase.length() >= 6) && canBeShort) || (passPhrase.length() >= 12)) {
+		if (passPhrase.length() >= 6 && canBeShort || passPhrase.length() >= 12) {
 			this.PORT_NUM = port;
 			this.receivable = receivable;
 			this.passPhrase = passPhrase;
@@ -114,6 +115,7 @@ public class Server implements Runnable {
 		}
 	}
 
+	@Override
 	public void run() {
 		while (true) {
 			try {
@@ -155,8 +157,8 @@ public class Server implements Runnable {
 	}
 
 	private boolean isThrottling(SocketAddress remoteSocketAddress) {
-		Long lastConnTime = (Long) this.throttlerList.get(remoteSocketAddress);
-		if ((lastConnTime == null) || (System.currentTimeMillis() - lastConnTime.longValue() > MIN_THROTTLING_MS)) {
+		Long lastConnTime = this.throttlerList.get(remoteSocketAddress);
+		if (lastConnTime == null || System.currentTimeMillis() - lastConnTime.longValue() > MIN_THROTTLING_MS) {
 			Vars.getLogger().fine("Adding " + remoteSocketAddress + " as a throttlng connection.");
 			this.throttlerList.put(remoteSocketAddress, Long.valueOf(System.currentTimeMillis()));
 			return false;

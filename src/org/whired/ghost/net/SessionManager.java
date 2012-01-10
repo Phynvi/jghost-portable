@@ -1,6 +1,7 @@
 package org.whired.ghost.net;
 
 import java.util.HashSet;
+
 import org.whired.ghost.net.event.SessionEventListener;
 
 /**
@@ -55,11 +56,13 @@ public class SessionManager {
 	 * @param connection the connection to set
 	 */
 	public void setConnection(Connection connection) {
-		if (sessionIsOpen())
+		if (sessionIsOpen()) {
 			throw new IllegalStateException("Connection already exists");
+		}
 		this.connection = connection;
-		for (SessionEventListener l : listeners)
+		for (SessionEventListener l : listeners) {
 			l.sessionOpened();
+		}
 	}
 
 	/**
@@ -74,7 +77,8 @@ public class SessionManager {
 
 	protected void sessionEnded(String reason) {
 		this.connection = null;
-		for (SessionEventListener l : listeners)
+		for (SessionEventListener l : listeners) {
 			l.sessionClosed(reason);
+		}
 	}
 }

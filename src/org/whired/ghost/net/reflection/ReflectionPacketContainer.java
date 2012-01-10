@@ -1,13 +1,14 @@
 package org.whired.ghost.net.reflection;
 
-import org.whired.ghost.Vars;
-import org.whired.ghost.net.Connection;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+
+import org.whired.ghost.constants.Vars;
+import org.whired.ghost.net.Connection;
 
 /**
  * Simple container for {@code ArrayList<Accessor>} to be serialized and
@@ -38,9 +39,11 @@ public class ReflectionPacketContainer implements java.io.Serializable {
 	 */
 	public static void saveContainer(ReflectionPacketContainer c) throws java.io.IOException {
 		File dir = new File(ReflectionPacketContainer.SAVE_DIR);
-		if (!dir.exists())
-			if (!dir.mkdir())
+		if (!dir.exists()) {
+			if (!dir.mkdir()) {
 				throw new java.io.IOException("Unable to create save directory");
+			}
+		}
 		ObjectOutputStream out = null;
 		out = new ObjectOutputStream(new FileOutputStream(ReflectionPacketContainer.SAVE_DIR + c.packetName));
 		out.writeObject(c);
@@ -74,7 +77,7 @@ public class ReflectionPacketContainer implements java.io.Serializable {
 		File dir = new File(ReflectionPacketContainer.SAVE_DIR);
 		if (dir.exists()) {
 			String[] files = dir.list();
-			for (String file : files)
+			for (String file : files) {
 				try {
 					list.add(ReflectionPacketContainer.loadContainer(file));
 				}
@@ -83,6 +86,7 @@ public class ReflectionPacketContainer implements java.io.Serializable {
 					Vars.getLogger().warning("Failed to load " + file + ": " + e.toString());
 					// System.out.println("Failed to load "+file+": "+e.toString());
 				}
+			}
 		}
 		return list;
 	}

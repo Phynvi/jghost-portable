@@ -1,11 +1,10 @@
-package org.whired.ghost;
+package org.whired.ghost.constants;
 
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.io.IOException;
+import java.io.File;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.whired.ghost.client.util.GhostFormatter;
 
 /**
@@ -15,17 +14,17 @@ import org.whired.ghost.client.util.GhostFormatter;
  */
 public class Vars {
 
-	public final static String INCORRECTPASSWORD = "The password entered was incorrect.";
-	public final static String CONNECTED = "Connection successful.";
-	public final static String NORESPONSE = "Connection failed; no response from server.";
-	public final static String UNKNOWNHOST = "Connection failed; no server found.";
-	public final static String UPDATEFAIL = "Unable to check for updates. This action requires an internet connection.";
-	public final static String UPDATENEEDED = "An update has been found. Do '/renew' to update.";
-	public final static String UPDATEOK = "Your version of jGHOST.Portable is up to date.";
-	public final static int VERSION = 0;
 	public final static String FS = System.getProperty("file.separator");
-	public final static String LOCAL_CODEBASE = System.getProperty("user.home") + FS + ".ghost" + FS + "cache" + FS;
+	private final static String LOCAL_CODEBASE = ".ghost" + FS + "cache" + FS;
 	private final static Logger logger = LoggerFactory.create();
+
+	public final static String getLocalCodebase() {
+		File f = new File(LOCAL_CODEBASE);
+		if (!f.exists()) {
+			f.mkdirs();
+		}
+		return f.getAbsolutePath() + FS;
+	}
 
 	private static final class LoggerFactory {
 

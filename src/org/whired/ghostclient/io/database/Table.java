@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.whired.ghost.Vars;
+import org.whired.ghost.constants.Vars;
 
 /**
  * Represents a MySQL table
@@ -38,7 +38,7 @@ public class Table {
 			database.executeStatement("create table if not exists " + this.tableName + getStructure());
 		}
 	}
-	
+
 	public Table(Database database, String tableName, Column[] columns) throws SQLException {
 		this(database, tableName, false, columns);
 	}
@@ -48,17 +48,17 @@ public class Table {
 	}
 
 	public void insert(String[] columnNames, Object[] values) throws SQLException {
-		String stmt = "insert into " + getTableName() + " ("+MySql.listToSql(columnNames, false)+") values(" + MySql.listToSql(values, true) + ")";
-		Vars.getLogger().fine("Execute: "+stmt);
+		String stmt = "insert into " + getTableName() + " (" + MySql.listToSql(columnNames, false) + ") values(" + MySql.listToSql(values, true) + ")";
+		Vars.getLogger().fine("Execute: " + stmt);
 		database.executePreparedStatement(stmt);
 	}
-	
+
 	public void replace(String[] columnNames, Object[] values) throws SQLException {
-		String stmt = "replace into " + getTableName() + " ("+MySql.listToSql(columnNames, false)+") values(" + MySql.listToSql(values, true) + ")";
-		Vars.getLogger().fine("Execute: "+stmt);
+		String stmt = "replace into " + getTableName() + " (" + MySql.listToSql(columnNames, false) + ") values(" + MySql.listToSql(values, true) + ")";
+		Vars.getLogger().fine("Execute: " + stmt);
 		database.executePreparedStatement(stmt);
 	}
-	
+
 	public void removeRow(String column, String row) throws SQLException {
 		database.executeStatement("delete from " + getTableName() + " where " + column + "=" + MySql.wrapQuotes(row));
 	}
@@ -82,33 +82,37 @@ public class Table {
 
 	public Object[] selectRow(int index) throws SQLException, RowNotFoundException {
 		ResultSet rs = database.executeQuery("select * from " + getTableName());
-		for(int i = 0; i <= index; i++)
-			if(!rs.next())
-				throw new RowNotFoundException("Row at index "+index+" not found.");
+		for (int i = 0; i <= index; i++) {
+			if (!rs.next()) {
+				throw new RowNotFoundException("Row at index " + index + " not found.");
+			}
+		}
 		ArrayList<Object> values = new ArrayList<Object>();
-		for(int i = 0; i < columns.length; i++)
-			values.add(rs.getObject(i+1));
+		for (int i = 0; i < columns.length; i++) {
+			values.add(rs.getObject(i + 1));
+		}
 		rs.getStatement().close();
 		return values.toArray(new Object[values.size()]);
 	}
-	
+
 	public Object[] selectRow(String columnName, String columnValue) throws SQLException {
 		ResultSet rs = database.executeQuery("select * from " + getTableName() + " where " + columnName + "=" + MySql.wrapQuotes(columnValue));
 		ArrayList<Object> values = new ArrayList<Object>();
-		Vars.getLogger().info("selectRow success? "+rs.next());
-		for(int i = 0; i < columns.length; i++)
-			values.add(rs.getObject(i+1));
+		Vars.getLogger().info("selectRow success? " + rs.next());
+		for (int i = 0; i < columns.length; i++) {
+			values.add(rs.getObject(i + 1));
+		}
 		rs.getStatement().close();
 		return values.toArray(new Object[values.size()]);
 	}
-	
+
 	public Object selectFromRow(String returnColumn, String columnName, String columnValue) throws SQLException {
-		ResultSet rs = database.executeQuery("select "+returnColumn+" from " + getTableName() + " where " + columnName + "=" + MySql.wrapQuotes(columnValue));
+		ResultSet rs = database.executeQuery("select " + returnColumn + " from " + getTableName() + " where " + columnName + "=" + MySql.wrapQuotes(columnValue));
 		Object o = rs.getObject(1);
 		rs.getStatement().close();
 		return o;
 	}
-	
+
 	/**
 	 * @return the tableName
 	 */
@@ -128,7 +132,7 @@ public class Table {
 	 */
 	private String getStructure() {
 		StringBuilder sb = new StringBuilder("(");
-		for(Column c : columns) {
+		for (Column c : columns) {
 			sb.append(c).append(", ");
 		}
 		sb.delete(sb.lastIndexOf(", "), sb.length()).append(")");

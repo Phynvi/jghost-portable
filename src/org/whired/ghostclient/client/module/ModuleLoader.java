@@ -6,15 +6,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.SortedSet;
 import java.util.logging.Level;
 
 import javax.swing.SwingUtilities;
 
-import org.whired.ghost.Vars;
+import org.whired.ghost.constants.Vars;
 
 /**
  * Loads modules
@@ -61,10 +59,12 @@ public class ModuleLoader {
 											Vars.getLogger().log(Level.INFO, "Loaded module from disk: {0}", classN);
 										}
 										catch (Throwable ex) {
-											if(ex instanceof ClassCastException)
-												Vars.getLogger().log(Level.WARNING, classN + " is not a "+Module.class.getName());
-											else
+											if (ex instanceof ClassCastException) {
+												Vars.getLogger().log(Level.WARNING, classN + " is not a " + Module.class.getName());
+											}
+											else {
 												Vars.getLogger().log(Level.WARNING, "Error while loading module from disk: " + classN + ":", ex);
+											}
 										}
 									}
 								});
@@ -91,9 +91,9 @@ public class ModuleLoader {
 		}
 		final LinkedHashSet<Module> smod = new LinkedHashSet<Module>();
 		// Add known modules in order
-		for(String s : order) {
-			for(Module m : modules.toArray(new Module[modules.size()])) {
-				if(s.equals(m.getModuleName())) {
+		for (String s : order) {
+			for (Module m : modules.toArray(new Module[modules.size()])) {
+				if (s.equals(m.getModuleName())) {
 					smod.add(m);
 					modules.remove(m);
 					break;
@@ -101,7 +101,7 @@ public class ModuleLoader {
 			}
 		}
 		// Add unknown modules to end
-		for(Module m : modules) {
+		for (Module m : modules) {
 			smod.add(m);
 		}
 		return smod.toArray(new Module[smod.size()]);

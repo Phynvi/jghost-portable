@@ -2,7 +2,8 @@ package org.whired.ghost.net;
 
 import java.io.IOException;
 import java.util.logging.Level;
-import org.whired.ghost.Vars;
+
+import org.whired.ghost.constants.Vars;
 
 /**
  * An easy-to-use OutputStream wrapper that provides methods to write to a
@@ -55,8 +56,8 @@ public class WrappedOutputStream {
 		}
 		byte[] chunk;
 		while (sent != f.length()) {
-			if ((f.length() - sent) < size) {
-				size = ((int) f.length()) - sent;
+			if (f.length() - sent < size) {
+				size = (int) f.length() - sent;
 			}
 			chunk = new byte[size];
 			sent += is.read(chunk, 0, size);

@@ -1,7 +1,7 @@
 package org.whired.rsmap.graphics;
 
-import org.whired.rsmap.io.CacheLoader;
 import org.whired.rsmap.io.ByteBuffer;
+import org.whired.rsmap.io.CacheLoader;
 
 public class TextRenderer {
 	public int getTextWidth(String text) {
@@ -96,7 +96,7 @@ public class TextRenderer {
 			}
 			j2 = 0;
 			for (int i3 = curCharHeight / 7; i3 < curCharHeight; i3++) {
-				j2 += charPixels[curChar][(curCharWidth - 1) + i3 * curCharWidth];
+				j2 += charPixels[curChar][curCharWidth - 1 + i3 * curCharWidth];
 			}
 
 			if (j2 <= curCharHeight / 7) {
@@ -123,7 +123,7 @@ public class TextRenderer {
 			j1 += j2 * canvas.getWidth();
 		}
 		if (j + l >= canvas.endY) {
-			l -= ((j + l) - canvas.endY) + 1;
+			l -= j + l - canvas.endY + 1;
 		}
 		if (i < canvas.startX) {
 			int k2 = canvas.startX - i;
@@ -135,7 +135,7 @@ public class TextRenderer {
 			k1 += k2;
 		}
 		if (i + k >= canvas.endX) {
-			int l2 = ((i + k) - canvas.endX) + 1;
+			int l2 = i + k - canvas.endX + 1;
 			k -= l2;
 			l1 += l2;
 			k1 += l2;

@@ -26,4 +26,11 @@ public interface GhostClient extends AbstractClient {
 	public void setView(GhostClientView view);
 
 	public SessionSettings getSettings();
+
+	/**
+	 * Gets the abstract player list for this client
+	 * 
+	 * @return the list
+	 */
+	public ClientPlayerList getPlayerList();
 }

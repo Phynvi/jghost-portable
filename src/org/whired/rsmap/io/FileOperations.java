@@ -4,7 +4,13 @@ package org.whired.rsmap.io;
 // Home Page: http://members.fortunecity.com/neshkov/dj.html http://www.neshkov.com/dj.html - Check often for new version!
 // Decompiler options: packimports(3)
 // Source File Name:   FileOperations.java
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class FileOperations {
 
@@ -39,7 +45,7 @@ public class FileOperations {
 
 	public static final void WriteFile(String s, byte abyte0[]) {
 		try {
-			(new File((new File(s)).getParent())).mkdirs();
+			new File(new File(s).getParent()).mkdirs();
 			FileOutputStream fileoutputstream = new FileOutputStream(s);
 			fileoutputstream.write(abyte0, 0, abyte0.length);
 			fileoutputstream.close();

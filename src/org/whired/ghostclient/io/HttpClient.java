@@ -2,6 +2,7 @@ package org.whired.ghostclient.io;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -92,7 +93,7 @@ public class HttpClient {
 				// If it's a 404 or 500, it's probably not going to exist
 				// even after 10 tries
 				// If the connection timed out, don't even try again
-				if (stat != 404 && stat != 503 && stat != 500 || (e instanceof SocketTimeoutException)) {
+				if (stat != 404 && stat != 503 && stat != 500 || e instanceof SocketTimeoutException) {
 					failures++;
 				}
 				else {
@@ -148,7 +149,7 @@ public class HttpClient {
 		return stat;
 	}
 
-	public static void saveToDisk(String path, String url) throws MalformedURLException, FileNotFoundException, IOException {
+	public static File saveToDisk(String path, String url) throws MalformedURLException, FileNotFoundException, IOException {
 		BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
 		FileOutputStream fos = new java.io.FileOutputStream(path);
 		BufferedOutputStream bout = new BufferedOutputStream(fos, 1024);
@@ -159,6 +160,7 @@ public class HttpClient {
 		}
 		bout.close();
 		in.close();
+		return new File(path);
 	}
 
 	public static boolean ping(String url) {
@@ -172,7 +174,7 @@ public class HttpClient {
 			stat = con.getResponseCode();
 			con.disconnect();
 			System.out.println("Ping status: " + stat);
-			return (stat != -1);
+			return stat != -1;
 		}
 		catch (Exception ee) {
 			System.out.println("Ping error: " + ee.toString());

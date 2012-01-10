@@ -1,6 +1,7 @@
 package org.whired.ghost.net;
 
 import java.util.HashMap;
+
 import org.whired.ghost.net.packet.GhostPacket;
 
 /**

@@ -8,8 +8,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.HashSet;
+
 import javax.swing.JTextPane;
-import javax.swing.text.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.Utilities;
 
 /**
  * Adds basic link functionality to a {@code JTextPane}
@@ -74,8 +79,9 @@ public class LinkingJTextPane extends JTextPane {
 	 * @param linkText the text of the link that was clicked
 	 */
 	private void fireLinkClicked(String linkText) {
-		for (LinkEventListener listener : linkEventListeners)
+		for (LinkEventListener listener : linkEventListeners) {
 			listener.linkClicked(linkText);
+		}
 	}
 
 	private void setUpListeners() {
@@ -85,8 +91,9 @@ public class LinkingJTextPane extends JTextPane {
 			public void mousePressed(java.awt.event.MouseEvent evt) {
 				if (evt.getButton() == MouseEvent.BUTTON1) {
 					String word;
-					if ((word = findWordAt(evt.getPoint())) != null)
+					if ((word = findWordAt(evt.getPoint())) != null) {
 						fireLinkClicked(word);
+					}
 				}
 			}
 
@@ -104,10 +111,12 @@ public class LinkingJTextPane extends JTextPane {
 		});
 		this.addFocusListener(new FocusListener() {
 
+			@Override
 			public void focusLost(FocusEvent e) {
 				clearUnderlines();
 			}
 
+			@Override
 			public void focusGained(FocusEvent e) {
 			}
 		});
@@ -119,8 +128,9 @@ public class LinkingJTextPane extends JTextPane {
 	 * @param matches the matches to add
 	 */
 	public void addMatches(String[] matches) {
-		if (!caseSensitive)
+		if (!caseSensitive) {
 			matches = allToLower(matches);
+		}
 		this.matches.addAll(Arrays.asList(matches));
 	}
 
@@ -132,8 +142,9 @@ public class LinkingJTextPane extends JTextPane {
 	 * @return the converted array
 	 */
 	private String[] allToLower(String[] sourceArr) {
-		for (int i = 0; i < sourceArr.length; i++)
+		for (int i = 0; i < sourceArr.length; i++) {
 			sourceArr[i] = sourceArr[i].toLowerCase();
+		}
 		return sourceArr;
 	}
 
@@ -147,8 +158,9 @@ public class LinkingJTextPane extends JTextPane {
 			String[] newMatches = allToLower(matches.toArray(new String[matches.size()]));
 			this.matches.addAll(Arrays.asList(newMatches));
 		}
-		else
+		else {
 			this.matches.addAll(matches);
+		}
 	}
 
 	/**
@@ -189,8 +201,9 @@ public class LinkingJTextPane extends JTextPane {
 			int firstOffs = Utilities.getWordStart(this, inOffs);
 			int lastOffs = Utilities.getWordEnd(this, firstOffs);
 			word = getStyledDocument().getText(firstOffs, lastOffs - firstOffs);
-			if (!caseSensitive)
+			if (!caseSensitive) {
 				word = word.toLowerCase();
+			}
 			if (word.length() > 0 && this.matches.contains(word)) {
 				if (curOffs[0] != firstOffs || curOffs[1] != lastOffs) {
 					clearUnderlines();

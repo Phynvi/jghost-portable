@@ -13,8 +13,9 @@ public class Rank implements DefaultRightsConstants {
 	private final int level;
 
 	public Rank(int level, String title, Icon icon) {
-		if (level > 127 || level < 0)
+		if (level > 127 || level < 0) {
 			throw new IllegalArgumentException("level must be between 0 and 127, inclusive");
+		}
 		this.level = level;
 		this.title = title;
 		this.icon = icon;

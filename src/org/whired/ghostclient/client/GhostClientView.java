@@ -5,7 +5,7 @@ import org.whired.ghost.net.model.player.Player;
 import org.whired.ghostclient.client.module.Module;
 
 /**
- * The contract that a graphical view must follow
+ * A graphical view for the client
  * 
  * @author Whired
  */
@@ -23,7 +23,7 @@ public interface GhostClientView extends SessionEventListener {
 	 * @param text the text to set
 	 */
 	public void setInputText(String text);
-	
+
 	/**
 	 * Applies focus to the main input box on this view
 	 */

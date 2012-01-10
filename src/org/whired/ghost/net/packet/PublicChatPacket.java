@@ -18,6 +18,7 @@ public class PublicChatPacket extends GhostChatPacket {
 		super(PacketType.PUBLIC_CHAT);
 	}
 
+	@Override
 	public boolean receive(Connection connection) {
 		try {
 			this.sender = (Player) connection.getInputStream().readObject();

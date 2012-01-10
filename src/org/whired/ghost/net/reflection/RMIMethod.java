@@ -43,8 +43,8 @@ public class RMIMethod extends Accessor {
 	 * 
 	 * @return the types, in order
 	 */
-	protected Class[] getParameters() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
-		Class[] params = null;
+	protected Class<?>[] getParameters() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
+		Class<?>[] params = null;
 		if (this.paramTypeNames != null) {
 			params = new Class[paramTypeNames.length];
 			for (int i = 0; i < params.length; i++) {

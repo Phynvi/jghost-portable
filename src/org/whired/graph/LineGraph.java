@@ -1,6 +1,9 @@
 package org.whired.graph;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.util.HashSet;
@@ -115,7 +118,7 @@ public class LineGraph extends Graph {
 
 				// Draw points
 				if (showPointXLabel() || showPointYLabel()) {
-					g.drawString((showPointXLabel() && showPointYLabel() ? "(" + realPt.x + ", " + realPt.y + ")" : showPointXLabel() ? Integer.toString(realPt.x) : showPointYLabel() ? Integer.toString(realPt.y) : ""), (int) (scaledPt.x * widthScale + 4), getHeight() - (int) (scaledPt.y * heightScale) - 4);
+					g.drawString(showPointXLabel() && showPointYLabel() ? "(" + realPt.x + ", " + realPt.y + ")" : showPointXLabel() ? Integer.toString(realPt.x) : showPointYLabel() ? Integer.toString(realPt.y) : "", (int) (scaledPt.x * widthScale + 4), getHeight() - (int) (scaledPt.y * heightScale) - 4);
 				}
 				Point pt = new Point((int) (scaledPt.x * widthScale), getHeight() - (int) (scaledPt.y * heightScale));
 
@@ -138,7 +141,7 @@ public class LineGraph extends Graph {
 		int canY = getHeight() - (int) (getHeight() * .1);
 		int maxY = getMaxVisibleY();
 		int minY = getMinVisibleY();
-		return maxY - minY > 0 ? ((double) canY / (double) (maxY - minY)) : 1;
+		return maxY - minY > 0 ? (double) canY / (double) (maxY - minY) : 1;
 	}
 
 	/**

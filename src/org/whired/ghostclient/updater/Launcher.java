@@ -1,11 +1,23 @@
 package org.whired.ghostclient.updater;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.MessageDigest;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
 import javax.swing.SwingUtilities;
-import org.whired.ghost.Vars;
+
+import org.whired.ghost.constants.Vars;
 import org.whired.ghostclient.io.HttpClient;
-import org.whired.ghostclient.updater.ui.UpdaterForm;
+import org.whired.ghostclient.updater.ui.UpdaterFrame;
 
 /**
  * Downloads and launches the newest version of GHOST
@@ -15,9 +27,13 @@ import org.whired.ghostclient.updater.ui.UpdaterForm;
 public class Launcher implements Runnable {
 
 	/**
-	 * The name of the package
+	 * The name of the jar package
 	 */
-	private static final String PACKAGE_NAME = "ghostclient.jar";
+	private static final String JAR_PACKAGE_NAME = "ghostclient.jar";
+	/**
+	 * The name of the module package
+	 */
+	private static final String MODULE_PACKAGE_NAME = "modules.zip";
 	/**
 	 * Where the packages are hosted
 	 */
@@ -26,7 +42,7 @@ public class Launcher implements Runnable {
 	/**
 	 * Where the packages are saved
 	 */
-	private static final String LOCAL_CODEBASE = Vars.LOCAL_CODEBASE;
+	private static final String LOCAL_CODEBASE = Vars.getLocalCodebase();
 	/**
 	 * The entry point of the main application
 	 */
@@ -34,56 +50,112 @@ public class Launcher implements Runnable {
 	/**
 	 * The GUI to display output on
 	 */
-	private final UpdaterForm form;
+	private final UpdaterFrame form;
 
 	/**
 	 * Creates a new launcher for the given form
 	 * 
 	 * @param form the form to display output to
 	 */
-	public Launcher(UpdaterForm form) {
+	public Launcher(UpdaterFrame form) {
 		this.form = form;
 	}
 
+	@Override
 	public void run() {
-		form.log("Preparing system..");
-		File f = new File(LOCAL_CODEBASE);
-		if (!f.exists())
-			f.mkdirs();
 		form.log("Grabbing file version..");
+		String remoteHash;
 		try {
-			String remoteHash = getRemoteHash(REMOTE_CODEBASE + PACKAGE_NAME);
-			String localHash = getLocalHash(LOCAL_CODEBASE + PACKAGE_NAME);
-			boolean match = localHash != null && remoteHash.toLowerCase().equals(localHash.toLowerCase());
-			while (!match) {
-				form.log("Hash mismatch.");
-				form.log("Downloading new version..");
-				HttpClient.saveToDisk(LOCAL_CODEBASE + PACKAGE_NAME, REMOTE_CODEBASE + PACKAGE_NAME);
-				form.log("Newest version downloaded.");
-				form.log("Checking sanity..");
-				localHash = getLocalHash(LOCAL_CODEBASE + PACKAGE_NAME);
-				match = remoteHash.toLowerCase().equals(localHash.toLowerCase());
-				break;
-			}
-			form.log("Hashes match, GHOST is up to date!");
-			form.log("Attempting to launch..");
+			remoteHash = getRemoteHash(REMOTE_CODEBASE + JAR_PACKAGE_NAME);
+		}
+		catch (IOException e) {
+			form.log("Unable to check hash.");
+			e.printStackTrace();
+			launchGhost();
+			return;
+		}
+		String localHash = getLocalHash(LOCAL_CODEBASE + JAR_PACKAGE_NAME);
+		boolean match = localHash != null && remoteHash.toLowerCase().equals(localHash.toLowerCase());
+		while (!match) {
+			form.log("Hash mismatch.");
+			form.log("Downloading new version..");
 			try {
-				ProcessBuilder pb = new ProcessBuilder("java", "-classpath", LOCAL_CODEBASE + PACKAGE_NAME, ENTRY_POINT);
-				pb.start();
-				form.log("Exiting..");
-				try {
-					Thread.sleep(8000);
-				}
-				catch (InterruptedException ex) {
-				}
-				System.exit(0);
+				HttpClient.saveToDisk(LOCAL_CODEBASE + JAR_PACKAGE_NAME, REMOTE_CODEBASE + JAR_PACKAGE_NAME);
 			}
-			catch (IOException e) {
-				form.log("Unable to launch GHOST: " + e.toString());
+			catch (Throwable t) {
+				form.log("Unable to download new codebase.");
+				t.printStackTrace();
+				launchGhost();
+				return;
+			}
+			form.log("Newest version downloaded.");
+			form.log("Checking sanity..");
+			localHash = getLocalHash(LOCAL_CODEBASE + JAR_PACKAGE_NAME);
+			match = remoteHash.toLowerCase().equals(localHash.toLowerCase());
+			break;
+		}
+		form.log("Hashes match, GHOST is up to date!");
+		if (form.downloadModules()) {
+			form.log("Downloading modules..");
+			File zipped;
+			try {
+				zipped = HttpClient.saveToDisk(LOCAL_CODEBASE + MODULE_PACKAGE_NAME, REMOTE_CODEBASE + MODULE_PACKAGE_NAME);
+			}
+			catch (Throwable t) {
+				form.log("Unable to download modules.");
+				t.printStackTrace();
+				launchGhost();
+				return;
+			}
+			form.log("Unpacking modules..");
+			File f = new File(LOCAL_CODEBASE + "modules" + Vars.FS);
+			if (!f.exists()) {
+				f.mkdirs();
+			}
+			try {
+				ZipFile zipFile = new ZipFile(zipped);
+				Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
+				while (enumeration.hasMoreElements()) {
+					ZipEntry zipEntry = enumeration.nextElement();
+					BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(zipEntry));
+					int size;
+					byte[] buffer = new byte[2048];
+					BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(zipEntry.getName()), buffer.length);
+					while ((size = bis.read(buffer, 0, buffer.length)) != -1) {
+						bos.write(buffer, 0, size);
+					}
+					bos.flush();
+					bos.close();
+					bis.close();
+				}
+				zipped.delete();
+			}
+			catch (Throwable t) {
+				form.log("Unable to unpack modules.");
+				t.printStackTrace();
+				launchGhost();
+				return;
 			}
 		}
-		catch (IOException ex) {
-			form.log("Unable to update: " + (ex.getMessage() == null ? "Hash not available" : ex.getMessage()));
+		form.log("Update fully successful.");
+		launchGhost();
+	}
+
+	private void launchGhost() {
+		try {
+			form.log("Launching GHOST..");
+			ProcessBuilder pb = new ProcessBuilder("java", "-classpath", LOCAL_CODEBASE + JAR_PACKAGE_NAME, ENTRY_POINT);
+			pb.start();
+			form.log("Exiting..");
+			try {
+				Thread.sleep(8000);
+			}
+			catch (InterruptedException ex) {
+			}
+			System.exit(0);
+		}
+		catch (IOException e) {
+			form.log("Unable to launch GHOST: " + e.toString());
 		}
 	}
 
@@ -97,8 +169,9 @@ public class Launcher implements Runnable {
 		BufferedReader br = new BufferedReader(new InputStreamReader(HttpClient.getStream(url + ".MD5")));
 		StringBuilder sb = new StringBuilder();
 		String line;
-		while ((line = br.readLine()) != null)
+		while ((line = br.readLine()) != null) {
 			sb.append(line);
+		}
 		return sb.toString();
 	}
 
@@ -116,8 +189,9 @@ public class Launcher implements Runnable {
 			int bytesRead;
 			byte[] buffer = new byte[1024];
 			bis = new BufferedInputStream(new FileInputStream(file));
-			while ((bytesRead = bis.read(buffer)) != -1)
+			while ((bytesRead = bis.read(buffer)) != -1) {
 				md.update(buffer, 0, bytesRead);
+			}
 			bis.close();
 			return toHexString(md.digest());
 		}
@@ -125,8 +199,9 @@ public class Launcher implements Runnable {
 		} // Swallow irrelevant exceptions
 		finally {
 			try {
-				if (bis != null)
+				if (bis != null) {
 					bis.close();
+				}
 			}
 			catch (IOException ex) {
 			}
@@ -154,10 +229,15 @@ public class Launcher implements Runnable {
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
-
+			@Override
 			public void run() {
-				final UpdaterForm form = new UpdaterForm();
-				new Thread(new Launcher(form)).start();
+				final UpdaterFrame form = new UpdaterFrame();
+				form.setOnLaunch(new Runnable() {
+					@Override
+					public void run() {
+						new Thread(new Launcher(form)).start();
+					}
+				});
 			}
 		});
 	}

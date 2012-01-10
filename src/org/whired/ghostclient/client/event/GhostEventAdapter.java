@@ -29,4 +29,7 @@ public abstract class GhostEventAdapter implements GhostEventListener {
 	@Override
 	public void packetReceived(GhostPacket packet) {
 	}
+
+	public void playerSelected(Player player) {
+	}
 }

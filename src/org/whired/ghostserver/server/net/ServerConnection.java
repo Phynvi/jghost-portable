@@ -2,7 +2,8 @@ package org.whired.ghostserver.server.net;
 
 import java.io.IOException;
 import java.net.Socket;
-import org.whired.ghost.Vars;
+
+import org.whired.ghost.constants.Vars;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.Receivable;
 import org.whired.ghost.net.WrappedInputStream;

@@ -2,9 +2,11 @@ package org.whired.ghostclient.client.module;
 
 import java.awt.Component;
 import java.io.Serializable;
+
 import org.whired.ghostclient.client.GhostClientFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 
+//TODO make abstract class
 /**
  * A module that can be added to the frame
  * 

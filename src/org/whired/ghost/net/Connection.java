@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.whired.ghost.Vars;
+
+import org.whired.ghost.constants.Vars;
 import org.whired.ghost.net.packet.GhostAuthenticationPacket;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.packet.UnhandledPacket;
@@ -92,6 +93,7 @@ public abstract class Connection {
 		Vars.getLogger().fine("Initiating new thread for packet listening..");
 		listenerThread = new Thread(new Runnable() {
 
+			@Override
 			public void run() {
 				Vars.getLogger().log(Level.FINE, "Listening for incoming packets on {0}", Thread.currentThread().getName());
 				while (true) {

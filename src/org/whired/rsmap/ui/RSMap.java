@@ -1,29 +1,29 @@
 package org.whired.rsmap.ui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.MouseWheelEvent;
-import org.whired.rsmap.io.FileOperations;
-import org.whired.rsmap.graphics.TextRenderer;
-import org.whired.rsmap.graphics.OverviewArea;
-import org.whired.rsmap.io.CacheLoader;
-import org.whired.rsmap.io.ByteBuffer;
 import java.awt.Point;
+import java.awt.event.MouseWheelEvent;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.whired.rsmap.graphics.sprites.Sprite;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
-import org.whired.ghost.Vars;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.whired.ghost.constants.Vars;
+import org.whired.rsmap.graphics.OverviewArea;
 import org.whired.rsmap.graphics.RSCanvas;
+import org.whired.rsmap.graphics.TextRenderer;
+import org.whired.rsmap.graphics.sprites.Sprite;
 import org.whired.rsmap.graphics.sprites.StaticSprite;
 import org.whired.rsmap.graphics.sprites.TextSprite;
+import org.whired.rsmap.io.ByteBuffer;
+import org.whired.rsmap.io.CacheLoader;
+import org.whired.rsmap.io.FileOperations;
 
 public abstract class RSMap extends RSCanvas {
 
@@ -104,9 +104,9 @@ public abstract class RSMap extends RSCanvas {
 		mapHeight = byteBuffer.getShort();
 
 		overviewCenterX = 2460 - mapStartX;
-		overviewCenterY = (mapStartY + mapHeight) - 3090;
+		overviewCenterY = mapStartY + mapHeight - 3090;
 		minimapHeight = 180;
-		minimapWidth = (mapWidth * minimapHeight) / mapHeight;
+		minimapWidth = mapWidth * minimapHeight / mapHeight;
 		minimapX = super.getWidth() - minimapWidth - 5;
 		minimapY = super.getHeight() - minimapHeight - 5;
 
@@ -273,7 +273,7 @@ public abstract class RSMap extends RSCanvas {
 					k1 += (k2 >> 10 & 0x3ff) - (j2 >> 10 & 0x3ff);
 					l1 += (k2 & 0x3ff) - (j2 & 0x3ff);
 					if (l1 > 0) {
-						ai2[i2] = method17((double) j1 / 8533D, (double) k1 / 8533D, (double) l1 / 8533D);
+						ai2[i2] = method17(j1 / 8533D, k1 / 8533D, l1 / 8533D);
 					}
 				}
 			}
@@ -298,7 +298,7 @@ public abstract class RSMap extends RSCanvas {
 				d6 = d2 * (1.0D + d1);
 			}
 			else {
-				d6 = (d2 + d1) - d2 * d1;
+				d6 = d2 + d1 - d2 * d1;
 			}
 			double d7 = 2D * d2 - d6;
 			double d8 = d + 0.33333333333333331D;
@@ -357,17 +357,17 @@ public abstract class RSMap extends RSCanvas {
 	@Override
 	public void draw() {
 
-		int i = overviewCenterX - (int) ((double) super.getWidth() / currentZoomLevel);
-		int j = overviewCenterY - (int) ((double) super.getHeight() / currentZoomLevel);
-		int k = overviewCenterX + (int) ((double) super.getWidth() / currentZoomLevel);
-		int l = overviewCenterY + (int) ((double) super.getHeight() / currentZoomLevel);
+		int i = overviewCenterX - (int) (super.getWidth() / currentZoomLevel);
+		int j = overviewCenterY - (int) (super.getHeight() / currentZoomLevel);
+		int k = overviewCenterX + (int) (super.getWidth() / currentZoomLevel);
+		int l = overviewCenterY + (int) (super.getHeight() / currentZoomLevel);
 
 		renderMap(pixels, new Dimension(super.getWidth(), super.getHeight()), i, j, k, l);
 
 		if (showOverview) {
 			overviewArea.validateAndDrawArea(minimapX, minimapY);
-			fillRect(minimapX + (minimapWidth * i) / mapWidth, minimapY + (minimapHeight * j) / mapHeight, ((k - i) * minimapWidth) / mapWidth, ((l - j) * minimapHeight) / mapHeight, 0xACA9FC, 100);
-			drawRect(minimapX + (minimapWidth * i) / mapWidth, minimapY + (minimapHeight * j) / mapHeight, ((k - i) * minimapWidth) / mapWidth, ((l - j) * minimapHeight) / mapHeight, 0xACA9FC);
+			fillRect(minimapX + minimapWidth * i / mapWidth, minimapY + minimapHeight * j / mapHeight, (k - i) * minimapWidth / mapWidth, (l - j) * minimapHeight / mapHeight, 0xACA9FC, 100);
+			drawRect(minimapX + minimapWidth * i / mapWidth, minimapY + minimapHeight * j / mapHeight, (k - i) * minimapWidth / mapWidth, (l - j) * minimapHeight / mapHeight, 0xACA9FC);
 		}
 
 		synchronized (RSMap.this) {
@@ -559,15 +559,15 @@ public abstract class RSMap extends RSCanvas {
 			for (Sprite s : mapSprites) {
 				if (s.isRelativeToMap) {
 					Point loc = s.location;
-					int px = (loc.x - mapStartX);
-					int py = ((mapStartY + mapHeight) - loc.y);
-					py -= (currentZoomLevel < 8D ? 4 : 2);
+					int px = loc.x - mapStartX;
+					int py = mapStartY + mapHeight - loc.y;
+					py -= currentZoomLevel < 8D ? 4 : 2;
 					int j6;
 					int l6;
 					j6 = px;
 					l6 = py;
-					int adjustedX = ((getWidth()) * (j6 - x1)) / (x2 - x1);
-					int adjustedY = ((getHeight()) * (l6 - y1)) / (y2 - y1);
+					int adjustedX = getWidth() * (j6 - x1) / (x2 - x1);
+					int adjustedY = getHeight() * (l6 - y1) / (y2 - y1);
 					s.drawSprite(adjustedX - s.getWidth() / 2, adjustedY, this);
 				}
 				else {
@@ -584,19 +584,19 @@ public abstract class RSMap extends RSCanvas {
 	 * @return the pixel coordinate
 	 */
 	public Point mapToPixel(Point mapCoord) {
-		int i = overviewCenterX - (int) ((double) super.getWidth() / currentZoomLevel);
-		int j = overviewCenterY - (int) ((double) super.getHeight() / currentZoomLevel);
-		int k = overviewCenterX + (int) ((double) super.getWidth() / currentZoomLevel);
-		int l = overviewCenterY + (int) ((double) super.getHeight() / currentZoomLevel);
-		int px = (mapCoord.x - mapStartX);
-		int py = ((mapStartY + mapHeight) - mapCoord.y);
-		py -= (currentZoomLevel < 8D ? 4 : 2);
+		int i = overviewCenterX - (int) (super.getWidth() / currentZoomLevel);
+		int j = overviewCenterY - (int) (super.getHeight() / currentZoomLevel);
+		int k = overviewCenterX + (int) (super.getWidth() / currentZoomLevel);
+		int l = overviewCenterY + (int) (super.getHeight() / currentZoomLevel);
+		int px = mapCoord.x - mapStartX;
+		int py = mapStartY + mapHeight - mapCoord.y;
+		py -= currentZoomLevel < 8D ? 4 : 2;
 		int j6;
 		int l6;
 		j6 = px;
 		l6 = py;
-		int adjustedX = ((getWidth()) * (j6 - i)) / (k - i);
-		int adjustedY = ((getHeight()) * (l6 - j)) / (l - j);
+		int adjustedX = getWidth() * (j6 - i) / (k - i);
+		int adjustedY = getHeight() * (l6 - j) / (l - j);
 		return new Point(adjustedX, adjustedY);
 
 	}
@@ -608,8 +608,8 @@ public abstract class RSMap extends RSCanvas {
 	 * @return the map coordinate
 	 */
 	public Point componentToMap(Point componentCoord) {
-		int localX = (int) ((componentCoord.x * 2D) / currentZoomLevel) - (int) (getWidth() / currentZoomLevel);
-		int localY = (int) ((componentCoord.y * 2D) / currentZoomLevel) - (int) (getHeight() / currentZoomLevel);
+		int localX = (int) (componentCoord.x * 2D / currentZoomLevel) - (int) (getWidth() / currentZoomLevel);
+		int localY = (int) (componentCoord.y * 2D / currentZoomLevel) - (int) (getHeight() / currentZoomLevel);
 		int mapCoordX = mapStartX + overviewCenterX + localX;
 		int mapCoordY = mapStartY + mapHeight - localY - overviewCenterY;
 		return new Point(mapCoordX, mapCoordY);
@@ -667,12 +667,12 @@ public abstract class RSMap extends RSCanvas {
 	@Override
 	public void mouseDragged(int oldX, int oldY, int newX, int newY) {
 		if (newX > minimapX && newY > minimapY && newX < minimapX + minimapWidth && newY < minimapY + minimapHeight && showOverview) {
-			overviewCenterX = ((newX - minimapX) * mapWidth) / minimapWidth;
-			overviewCenterY = ((newY - minimapY) * mapHeight) / minimapHeight;
+			overviewCenterX = (newX - minimapX) * mapWidth / minimapWidth;
+			overviewCenterY = (newY - minimapY) * mapHeight / minimapHeight;
 		}
 		else {
-			overviewCenterX = dragStartX + (int) (((double) (oldX - newX) * 2D) / currentZoomLevel);
-			overviewCenterY = dragStartY + (int) (((double) (oldY - newY) * 2D) / currentZoomLevel);
+			overviewCenterX = dragStartX + (int) ((oldX - newX) * 2D / currentZoomLevel);
+			overviewCenterY = dragStartY + (int) ((oldY - newY) * 2D / currentZoomLevel);
 		}
 		adjustOverview();
 	}
@@ -695,21 +695,21 @@ public abstract class RSMap extends RSCanvas {
 	}
 
 	private void adjustOverview() {
-		int l = overviewCenterX - (int) ((double) super.getWidth() / currentZoomLevel);
-		int l1 = overviewCenterY - (int) ((double) super.getHeight() / currentZoomLevel);
-		int i2 = overviewCenterX + (int) ((double) super.getWidth() / currentZoomLevel);
-		int k2 = overviewCenterY + (int) ((double) super.getHeight() / currentZoomLevel);
+		int l = overviewCenterX - (int) (super.getWidth() / currentZoomLevel);
+		int l1 = overviewCenterY - (int) (super.getHeight() / currentZoomLevel);
+		int i2 = overviewCenterX + (int) (super.getWidth() / currentZoomLevel);
+		int k2 = overviewCenterY + (int) (super.getHeight() / currentZoomLevel);
 		if (l < 48) {
-			overviewCenterX = 48 + (int) ((double) super.getWidth() / currentZoomLevel);
+			overviewCenterX = 48 + (int) (super.getWidth() / currentZoomLevel);
 		}
 		if (l1 < 48) {
-			overviewCenterY = 48 + (int) ((double) super.getHeight() / currentZoomLevel);
+			overviewCenterY = 48 + (int) (super.getHeight() / currentZoomLevel);
 		}
 		if (i2 > mapWidth - 48) {
-			overviewCenterX = mapWidth - 48 - (int) ((double) super.getWidth() / currentZoomLevel);
+			overviewCenterX = mapWidth - 48 - (int) (super.getWidth() / currentZoomLevel);
 		}
 		if (k2 > mapHeight - 48) {
-			overviewCenterY = mapHeight - 48 - (int) ((double) super.getHeight() / currentZoomLevel);
+			overviewCenterY = mapHeight - 48 - (int) (super.getHeight() / currentZoomLevel);
 		}
 	}
 
@@ -723,16 +723,16 @@ public abstract class RSMap extends RSCanvas {
 	public void keyPressed(int keyCode) {
 		switch (keyCode) {
 		case 38: // UP
-			overviewCenterY = (int) ((double) overviewCenterY - 16D / currentZoomLevel);
+			overviewCenterY = (int) (overviewCenterY - 16D / currentZoomLevel);
 		break;
 		case 40: // DOWN
-			overviewCenterY = (int) ((double) overviewCenterY + 16D / currentZoomLevel);
+			overviewCenterY = (int) (overviewCenterY + 16D / currentZoomLevel);
 		break;
 		case 37: // LEFT
-			overviewCenterX = (int) ((double) overviewCenterX - 16D / currentZoomLevel);
+			overviewCenterX = (int) (overviewCenterX - 16D / currentZoomLevel);
 		break;
 		case 39: // RIGHT
-			overviewCenterX = (int) ((double) overviewCenterX + 16D / currentZoomLevel);
+			overviewCenterX = (int) (overviewCenterX + 16D / currentZoomLevel);
 		break;
 		case 77: // "M"
 			showOverview = !showOverview;

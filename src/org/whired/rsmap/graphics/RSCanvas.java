@@ -15,6 +15,7 @@ import java.awt.image.DirectColorModel;
 import java.awt.image.ImageConsumer;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
+
 import org.whired.rsmap.graphics.sprites.TextSprite;
 import org.whired.rsmap.ui.MapButton;
 
@@ -34,6 +35,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 		addMouseListener(new MouseAdapter() {
 
+			@Override
 			public void mousePressed(MouseEvent mouseevent) {
 				requestFocusInWindow();
 				if (!clicked(mouseevent.getPoint())) {
@@ -46,12 +48,15 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 				}
 			}
 
+			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (xDragged == xPressed && yDragged == yPressed && !ignoreDrag)
+				if (xDragged == xPressed && yDragged == yPressed && !ignoreDrag) {
 					RSCanvas.this.mouseUp(xPressed, yPressed);
+				}
 				ignoreDrag = false;
 			}
 
+			@Override
 			public void mouseExited(MouseEvent mouseevent) {
 				xDragged = -1;
 				yDragged = -1;
@@ -62,6 +67,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 		addMouseMotionListener(new MouseAdapter() {
 
+			@Override
 			public void mouseMoved(MouseEvent mouseevent) {
 				if (!ignoreDrag) {
 					xDragged = mouseevent.getX();
@@ -69,6 +75,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 				}
 			}
 
+			@Override
 			public void mouseDragged(MouseEvent mouseevent) {
 				if (!ignoreDrag) {
 					xDragged = mouseevent.getX();
@@ -81,10 +88,12 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 		addKeyListener(new KeyAdapter() {
 
+			@Override
 			public void keyPressed(KeyEvent keyevent) {
 				RSCanvas.this.keyPressed(keyevent.getKeyCode());
 			}
 
+			@Override
 			public void keyReleased(KeyEvent keyevent) {
 			}
 		});
@@ -316,6 +325,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 	 */
 	public abstract void draw();
 
+	@Override
 	public final void paint(Graphics g) {
 		setAllPixelsToZero(); // TODO possibly bad here?
 		try {
@@ -944,7 +954,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 				int k2 = (pixels[k3] >> 16 & 0xff) * k1;
 				int l2 = (pixels[k3] >> 8 & 0xff) * k1;
 				int i3 = (pixels[k3] & 0xff) * k1;
-				int j4 = ((l1 + k2 >> 8) << 16) + ((i2 + l2 >> 8) << 8) + (j2 + i3 >> 8);
+				int j4 = (l1 + k2 >> 8 << 16) + (i2 + l2 >> 8 << 8) + (j2 + i3 >> 8);
 				pixels[k3++] = j4;
 			}
 			k3 += j3;
@@ -954,9 +964,9 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 	// This actually draws a rectangle..
 	public void drawRect(int rectX, int rectY, int rectWidth, int rectHeight, int hexRGB) {
 		renderHorizontalLine(rectX, rectY, rectWidth, hexRGB);
-		renderHorizontalLine(rectX, (rectY + rectHeight) - 1, rectWidth, hexRGB);
+		renderHorizontalLine(rectX, rectY + rectHeight - 1, rectWidth, hexRGB);
 		renderVerticalLine(rectX, rectY, rectHeight, hexRGB);
-		renderVerticalLine((rectX + rectWidth) - 1, rectY, rectHeight, hexRGB);
+		renderVerticalLine(rectX + rectWidth - 1, rectY, rectHeight, hexRGB);
 	}
 
 	private void setAllPixelsToZero() {

@@ -1,8 +1,7 @@
 package org.whired.ghostclient.client.settings;
 
-import java.io.*;
+import java.io.Serializable;
 
-import org.whired.ghost.Vars;
 import org.whired.ghost.net.model.player.Player;
 
 public class SessionSettings implements Serializable {
@@ -12,6 +11,7 @@ public class SessionSettings implements Serializable {
 	private final Player player;
 	private String[] tabOrder = new String[0];
 	private final int idInTable;
+
 	public SessionSettings(Player player, int databaseId) {
 		this.idInTable = databaseId;
 		this.player = player;
@@ -43,7 +43,7 @@ public class SessionSettings implements Serializable {
 	public String[] getTabOrder() {
 		return tabOrder;
 	}
-	
+
 	protected int getUserId() {
 		return idInTable;
 	}

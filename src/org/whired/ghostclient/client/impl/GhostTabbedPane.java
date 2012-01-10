@@ -4,12 +4,36 @@ package org.whired.ghostclient.client.impl;
  * @author eed3si9n
  * @author Whired
  */
-import java.awt.*;
-import java.awt.datatransfer.*;
-import java.awt.dnd.*;
-import java.awt.geom.*;
-import java.awt.image.*;
-import javax.swing.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.DragSourceEvent;
+import java.awt.dnd.DragSourceListener;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.awt.dnd.InvalidDnDOperationException;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 public class GhostTabbedPane extends JTabbedPane {
 
@@ -28,10 +52,12 @@ public class GhostTabbedPane extends JTabbedPane {
 		super();
 		final DragSourceListener dsl = new DragSourceListener() {
 
+			@Override
 			public void dragEnter(DragSourceDragEvent e) {
 				e.getDragSourceContext().setCursor(DragSource.DefaultMoveDrop);
 			}
 
+			@Override
 			public void dragExit(DragSourceEvent e) {
 				e.getDragSourceContext().setCursor(DragSource.DefaultMoveNoDrop);
 				m_lineRect.setRect(0, 0, 0, 0);
@@ -40,6 +66,7 @@ public class GhostTabbedPane extends JTabbedPane {
 				s_glassPane.repaint();
 			}
 
+			@Override
 			public void dragOver(DragSourceDragEvent e) {
 				// e.getLocation()
 				// This method returns a Point indicating the cursor
@@ -72,6 +99,7 @@ public class GhostTabbedPane extends JTabbedPane {
 				e.getDragSourceContext().setCursor(DragSource.DefaultMoveDrop);
 			}
 
+			@Override
 			public void dragDropEnd(DragSourceDropEvent e) {
 				m_isDrawRect = false;
 				m_lineRect.setRect(0, 0, 0, 0);
@@ -83,12 +111,14 @@ public class GhostTabbedPane extends JTabbedPane {
 				}
 			}
 
+			@Override
 			public void dropActionChanged(DragSourceDragEvent e) {
 			}
 		};
 
 		final DragGestureListener dgl = new DragGestureListener() {
 
+			@Override
 			public void dragGestureRecognized(DragGestureEvent e) {
 				// System.out.println("dragGestureRecognized");
 
@@ -113,6 +143,7 @@ public class GhostTabbedPane extends JTabbedPane {
 		new DragSource().createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, dgl);
 		m_acceptor = new TabAcceptor() {
 
+			@Override
 			public boolean isDropAcceptable(GhostTabbedPane a_component, int a_index) {
 				return true;
 			}
@@ -171,17 +202,20 @@ public class GhostTabbedPane extends JTabbedPane {
 			m_data = new TabTransferData(GhostTabbedPane.this, a_tabIndex);
 		}
 
+		@Override
 		public Object getTransferData(DataFlavor flavor) {
 			return m_data;
 			// return DnDTabbedPane.this;
 		}
 
+		@Override
 		public DataFlavor[] getTransferDataFlavors() {
 			DataFlavor[] f = new DataFlavor[1];
 			f[0] = FLAVOR;
 			return f;
 		}
 
+		@Override
 		public boolean isDataFlavorSupported(DataFlavor flavor) {
 			return flavor.getHumanPresentableName().equals(NAME);
 		}
@@ -221,25 +255,25 @@ public class GhostTabbedPane extends JTabbedPane {
 		Point retval = new Point(a_location);
 
 		switch (getTabPlacement()) {
-		case JTabbedPane.TOP: {
+		case SwingConstants.TOP: {
 			retval.y = 1;
 			retval.x -= s_glassPane.getGhostWidth() / 2;
 		}
 		break;
 
-		case JTabbedPane.BOTTOM: {
+		case SwingConstants.BOTTOM: {
 			retval.y = getHeight() - 1 - s_glassPane.getGhostHeight();
 			retval.x -= s_glassPane.getGhostWidth() / 2;
 		}
 		break;
 
-		case JTabbedPane.LEFT: {
+		case SwingConstants.LEFT: {
 			retval.x = 1;
 			retval.y -= s_glassPane.getGhostHeight() / 2;
 		}
 		break;
 
-		case JTabbedPane.RIGHT: {
+		case SwingConstants.RIGHT: {
 			retval.x = getWidth() - 1 - s_glassPane.getGhostWidth();
 			retval.y -= s_glassPane.getGhostHeight() / 2;
 		}
@@ -252,6 +286,7 @@ public class GhostTabbedPane extends JTabbedPane {
 
 	class CDropTargetListener implements DropTargetListener {
 
+		@Override
 		public void dragEnter(DropTargetDragEvent e) {
 			// System.out.println("DropTarget.dragEnter: " +
 			// DnDTabbedPane.this);
@@ -264,19 +299,22 @@ public class GhostTabbedPane extends JTabbedPane {
 			} // if
 		}
 
+		@Override
 		public void dragExit(DropTargetEvent e) {
 			// System.out.println("DropTarget.dragExit: " +
 			// DnDTabbedPane.this);
 			m_isDrawRect = false;
 		}
 
+		@Override
 		public void dropActionChanged(DropTargetDragEvent e) {
 		}
 
+		@Override
 		public void dragOver(final DropTargetDragEvent e) {
 			TabTransferData data = getTabTransferData(e);
 
-			if (getTabPlacement() == JTabbedPane.TOP || getTabPlacement() == JTabbedPane.BOTTOM) {
+			if (getTabPlacement() == SwingConstants.TOP || getTabPlacement() == SwingConstants.BOTTOM) {
 				initTargetLeftRightLine(getTargetTabIndex(e.getLocation()), data);
 			}
 			else {
@@ -290,6 +328,7 @@ public class GhostTabbedPane extends JTabbedPane {
 			}
 		}
 
+		@Override
 		public void drop(DropTargetDropEvent a_event) {
 			// System.out.println("DropTarget.drop: " + DnDTabbedPane.this);
 
@@ -375,7 +414,7 @@ public class GhostTabbedPane extends JTabbedPane {
 	 * @return returns potential index for drop.
 	 */
 	private int getTargetTabIndex(Point a_point) {
-		boolean isTopOrBottom = getTabPlacement() == JTabbedPane.TOP || getTabPlacement() == JTabbedPane.BOTTOM;
+		boolean isTopOrBottom = getTabPlacement() == SwingConstants.TOP || getTabPlacement() == SwingConstants.BOTTOM;
 
 		// if the pane is empty, the target index is always zero.
 		if (getTabCount() == 0) {
@@ -461,8 +500,9 @@ public class GhostTabbedPane extends JTabbedPane {
 			insertTab(str, null, cmp, null, a_targetIndex - 1);
 			setSelectedIndex(a_targetIndex - 1);
 		}
-		if (tabsReordered != null)
+		if (tabsReordered != null) {
 			tabsReordered.run();
+		}
 	}
 
 	private void initTargetLeftRightLine(int next, TabTransferData a_data) {
@@ -472,7 +512,7 @@ public class GhostTabbedPane extends JTabbedPane {
 			return;
 		} // if
 
-		if ((a_data.getTabbedPane() == this) && (a_data.getTabIndex() == next || next - a_data.getTabIndex() == 1)) {
+		if (a_data.getTabbedPane() == this && (a_data.getTabIndex() == next || next - a_data.getTabIndex() == 1)) {
 			m_lineRect.setRect(0, 0, 0, 0);
 			m_isDrawRect = false;
 		}
@@ -505,7 +545,7 @@ public class GhostTabbedPane extends JTabbedPane {
 			return;
 		} // if
 
-		if ((a_data.getTabbedPane() == this) && (a_data.getTabIndex() == next || next - a_data.getTabIndex() == 1)) {
+		if (a_data.getTabbedPane() == this && (a_data.getTabIndex() == next || next - a_data.getTabIndex() == 1)) {
 			m_lineRect.setRect(0, 0, 0, 0);
 			m_isDrawRect = false;
 		}
@@ -547,11 +587,7 @@ public class GhostTabbedPane extends JTabbedPane {
 		s_glassPane.setVisible(true);
 	}
 
-	private Rectangle getTabAreaBound() {
-		Rectangle lastTab = getUI().getTabBounds(this, getTabCount() - 1);
-		return new Rectangle(0, 0, getWidth(), lastTab.y + lastTab.height);
-	}
-
+	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
@@ -605,6 +641,7 @@ class GhostGlassPane extends JPanel {
 		return m_draggingGhost.getHeight(this);
 	}
 
+	@Override
 	public void paintComponent(Graphics g) {
 		if (m_draggingGhost == null) {
 			return;

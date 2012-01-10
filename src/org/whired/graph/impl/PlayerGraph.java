@@ -1,6 +1,7 @@
 package org.whired.graph.impl;
 
 import java.awt.Component;
+
 import org.whired.ghostclient.client.GhostClientFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 import org.whired.ghostclient.client.module.Module;

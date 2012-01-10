@@ -2,8 +2,9 @@ package org.whired.ghostserver.server.model;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.whired.ghost.net.model.GhostFrame;
+
 import org.whired.ghost.net.Connection;
+import org.whired.ghost.net.model.GhostFrame;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.model.player.PlayerList;
 import org.whired.ghost.net.packet.PacketType;

@@ -16,6 +16,7 @@ public class UnhandledPacket extends GhostPacket {
 		this.length = length;
 	}
 
+	@Override
 	public boolean receive(Connection connection) {
 		try {
 			for (int i = 0; i < length; i++) {

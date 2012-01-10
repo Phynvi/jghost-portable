@@ -1,6 +1,7 @@
 package org.whired.ghost.net.model;
 
 import java.util.logging.Level;
+
 import org.whired.ghost.net.event.SessionEventListener;
 import org.whired.ghost.net.model.player.Player;
 

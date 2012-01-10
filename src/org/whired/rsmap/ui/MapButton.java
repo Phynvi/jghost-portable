@@ -2,6 +2,7 @@ package org.whired.rsmap.ui;
 
 import java.awt.Color;
 import java.awt.Point;
+
 import org.whired.rsmap.graphics.sprites.TextSprite;
 
 /**
@@ -250,7 +251,7 @@ public abstract class MapButton {
 	 * otherwise {@code false}
 	 */
 	public boolean contains(Point point) {
-		return point.getX() >= this.getX() && point.getX() <= (this.getWidth() + this.getX()) && point.getY() >= this.getY() && point.getY() <= (this.getHeight() + this.getY());
+		return point.getX() >= this.getX() && point.getX() <= this.getWidth() + this.getX() && point.getY() >= this.getY() && point.getY() <= this.getHeight() + this.getY();
 	}
 
 	/**

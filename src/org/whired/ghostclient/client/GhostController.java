@@ -7,16 +7,7 @@ package org.whired.ghostclient.client;
  */
 public abstract class GhostController implements GhostClient {
 
-	private final GhostClient view;
-	private final GhostClient model;
-
 	public GhostController(GhostClient model, GhostClient view) {
-		this.model = model;
-		this.view = view;
-		// this.model.setController(this);
-		// this.view.setController(this);
-		// view.setFrame(this);
-		// addModule(new PublicChatModule());
 	}
 
 	/*

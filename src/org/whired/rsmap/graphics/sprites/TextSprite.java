@@ -7,6 +7,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.PixelGrabber;
+
 import org.whired.rsmap.graphics.RSCanvas;
 
 /**
@@ -64,6 +65,7 @@ public class TextSprite extends Sprite {
 		spritePixels = abyte0;
 	}
 
+	@Override
 	public void drawSprite(int x, int y, RSCanvas canvas) {
 		parseAndRenderString(x, y, canvas);
 	}
@@ -85,7 +87,7 @@ public class TextSprite extends Sprite {
 			scanOffset += i3 * canvas.getWidth();
 		}
 		if (adjustedY + l1 >= canvas.endY) {
-			l1 -= ((adjustedY + l1) - canvas.endY) + 1;
+			l1 -= adjustedY + l1 - canvas.endY + 1;
 		}
 		if (adjustedX < canvas.startX) {
 			int j3 = canvas.startX - adjustedX;
@@ -97,7 +99,7 @@ public class TextSprite extends Sprite {
 			k2 += j3;
 		}
 		if (adjustedX + k1 >= canvas.endX) {
-			int k3 = ((adjustedX + k1) - canvas.endX) + 1;
+			int k3 = adjustedX + k1 - canvas.endX + 1;
 			k1 -= k3;
 			l2 += k3;
 			k2 += k3;
@@ -115,7 +117,7 @@ public class TextSprite extends Sprite {
 				lineCount++;
 			}
 		}
-		y -= (method40() * (lineCount - 1)) / 2;
+		y -= method40() * (lineCount - 1) / 2;
 		y += getStringHeight() / 2;
 		do {
 			int newLineIndex = string.indexOf("/");
@@ -289,29 +291,40 @@ public class TextSprite extends Sprite {
 			l = -(l & 3);
 			for (int i2 = -i1; i2 < 0; i2++) {
 				for (int j2 = l1; j2 < 0; j2++) {
-					if (abyte0[j++] != 0)
+					if (abyte0[j++] != 0) {
 						ai[k++] = i;
-					else
+					}
+					else {
 						k++;
-					if (abyte0[j++] != 0)
+					}
+					if (abyte0[j++] != 0) {
 						ai[k++] = i;
-					else
+					}
+					else {
 						k++;
-					if (abyte0[j++] != 0)
+					}
+					if (abyte0[j++] != 0) {
 						ai[k++] = i;
-					else
+					}
+					else {
 						k++;
-					if (abyte0[j++] != 0)
+					}
+					if (abyte0[j++] != 0) {
 						ai[k++] = i;
-					else
+					}
+					else {
 						k++;
+					}
 				}
 
-				for (int k2 = l; k2 < 0; k2++)
-					if (abyte0[j++] != 0)
+				for (int k2 = l; k2 < 0; k2++) {
+					if (abyte0[j++] != 0) {
 						ai[k++] = i;
-					else
+					}
+					else {
 						k++;
+					}
+				}
 
 				k += j1;
 				j += k1;

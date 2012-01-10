@@ -17,6 +17,7 @@ public class PlayerMovementPacket extends GhostPacket {
 		super(PacketType.PLAYER_MOVEMENT);
 	}
 
+	@Override
 	public boolean receive(Connection connection) {
 		try {
 			this.playerName = connection.getInputStream().readString();

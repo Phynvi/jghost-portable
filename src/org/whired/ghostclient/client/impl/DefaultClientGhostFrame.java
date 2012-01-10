@@ -2,7 +2,8 @@ package org.whired.ghostclient.client.impl;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.whired.ghost.Vars;
+
+import org.whired.ghost.constants.Vars;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.reflection.ReflectionPacketContainer;
 import org.whired.ghostclient.client.GhostClientFrame;
@@ -56,7 +57,7 @@ public class DefaultClientGhostFrame extends GhostClientFrame {
 	@Override
 	public void saveSettings() {
 		try {
-			SettingsFactory.saveToDatabase(Vars.LOCAL_CODEBASE, getUser().getSettings());
+			SettingsFactory.saveToDatabase(Vars.getLocalCodebase(), getUser().getSettings());
 		}
 		catch (Exception ex) {
 			Logger.getLogger(DefaultClientGhostFrame.class.getName()).log(Level.SEVERE, null, ex);
