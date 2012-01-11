@@ -117,16 +117,27 @@ public class Launcher implements Runnable {
 				Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
 				while (enumeration.hasMoreElements()) {
 					ZipEntry zipEntry = enumeration.nextElement();
-					BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(zipEntry));
-					int size;
-					byte[] buffer = new byte[2048];
-					BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(zipEntry.getName()), buffer.length);
-					while ((size = bis.read(buffer, 0, buffer.length)) != -1) {
-						bos.write(buffer, 0, size);
+
+					if (zipEntry.isDirectory()) {
+						new File(f.getAbsolutePath() + Vars.FS + zipEntry.getName()).mkdir();
 					}
-					bos.flush();
-					bos.close();
-					bis.close();
+					else {
+						File tf = new File(f.getAbsolutePath() + Vars.FS + zipEntry.getName());
+						if (!tf.getParentFile().exists()) {
+							tf.getParentFile().mkdirs();
+						}
+
+						BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(zipEntry));
+						int size;
+						byte[] buffer = new byte[2048];
+						BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f.getAbsolutePath() + Vars.FS + zipEntry.getName()), buffer.length);
+						while ((size = bis.read(buffer, 0, buffer.length)) != -1) {
+							bos.write(buffer, 0, size);
+						}
+						bos.flush();
+						bos.close();
+						bis.close();
+					}
 				}
 				zipped.delete();
 			}
