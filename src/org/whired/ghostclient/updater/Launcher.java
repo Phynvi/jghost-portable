@@ -74,6 +74,10 @@ public class Launcher implements Runnable {
 			launchGhost();
 			return;
 		}
+		catch (UpdateNotFoundException e) {
+			form.log("No update found.");
+		}
+
 		if (form.downloadModules()) {
 			form.log("Checking for module updates..");
 			File zipped;
@@ -86,7 +90,12 @@ public class Launcher implements Runnable {
 				launchGhost();
 				return;
 			}
-			form.log("Unpacking modules..");
+			catch (UpdateNotFoundException e) {
+				form.log("No update found.");
+				launchGhost();
+				return;
+			}
+			form.log("Modules updated! Unpacking..");
 			File f = new File(LOCAL_CODEBASE + "modules" + Vars.FS);
 			if (!f.exists()) {
 				f.mkdirs();
@@ -119,7 +128,6 @@ public class Launcher implements Runnable {
 					}
 				}
 				zipFile.close();
-				zipped.delete();
 			}
 			catch (Throwable t) {
 				form.log("Unable to unpack modules.");
@@ -136,11 +144,15 @@ public class Launcher implements Runnable {
 	 * Checks for a new version and downloads, ensuring that the download succeeded
 	 * 
 	 * @throws IOException if the file can not be downloaded
+	 * @throws UpdateNotFoundException when no update is found
 	 */
-	private File checkAndDownload(String destFile, String remoteUrl) throws IOException {
+	private File checkAndDownload(String destFile, String remoteUrl) throws IOException, UpdateNotFoundException {
 		String remoteHash = getRemoteHash(remoteUrl);
 		String localHash = getLocalHash(destFile);
 		boolean match = localHash != null && remoteHash.toLowerCase().equals(localHash.toLowerCase());
+		if (match) {
+			throw new UpdateNotFoundException();
+		}
 		File file = null;
 		while (!match) {
 			form.log("Update found.");
@@ -239,15 +251,29 @@ public class Launcher implements Runnable {
 		return new String(hexChars);
 	}
 
+	private class UpdateNotFoundException extends Exception {
+	}
+
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				final UpdaterFrame form = new UpdaterFrame();
-				form.setOnLaunch(new Runnable() {
+				form.setOnUpdate(new Runnable() {
 					@Override
 					public void run() {
 						new Thread(new Launcher(form)).start();
+					}
+				});
+				form.setOnLaunch(new Runnable() {
+					@Override
+					public void run() {
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								new Launcher(form).launchGhost();
+							}
+						}).start();
 					}
 				});
 			}

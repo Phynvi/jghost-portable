@@ -30,6 +30,7 @@ public class UpdaterFrame extends JFrame {
 
 	private final JTextArea output;
 	private final JLabel iconLbl;
+	private Runnable onUpdate;
 	private Runnable onLaunch;
 	private final JCheckBox box;
 
@@ -75,26 +76,46 @@ public class UpdaterFrame extends JFrame {
 		pane.setViewportView(output);
 		pane.getViewport().setOpaque(false);
 
-		box = new JCheckBox("Download official modules");
+		box = new JCheckBox("Update official modules");
 		box.setSize(140, 14);
 		box.setOpaque(false);
-		box.setLocation(85, 209);
+		box.setLocation(97, 209);
 		box.setSelected(true);
 
-		JLabel launch = new JLabel("Launch");
-		launch.setSize(40, 16);
-		launch.setLocation(20, 209);
-		launch.setOpaque(false);
-		launch.setBorder(new RoundedBorder(5));
-		launch.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		launch.addMouseListener(new MouseAdapter() {
+		final JLabel btnLaunch = new JLabel("Launch");
+		final JLabel btnUpdate = new JLabel("Update");
+		btnUpdate.setSize(34, 16);
+		btnUpdate.setLocation(20, 209);
+		btnUpdate.setOpaque(false);
+		btnUpdate.setBorder(new RoundedBorder(5));
+		btnUpdate.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		btnUpdate.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				btnUpdate.setVisible(false);
+				btnLaunch.setVisible(false);
+				box.setVisible(false);
+				onUpdate.run();
+			}
+		});
+
+		btnLaunch.setSize(34, 16);
+		btnLaunch.setLocation(58, 209);
+		btnLaunch.setOpaque(false);
+		btnLaunch.setBorder(new RoundedBorder(5));
+		btnLaunch.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		btnLaunch.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				btnLaunch.setVisible(false);
+				btnUpdate.setVisible(false);
+				box.setVisible(false);
 				onLaunch.run();
 			}
 		});
 
-		this.getContentPane().add(launch);
+		this.getContentPane().add(btnUpdate);
+		this.getContentPane().add(btnLaunch);
 		this.getContentPane().add(box);
 		this.getContentPane().add(pane);
 		this.getContentPane().add(iconLbl);
@@ -108,6 +129,10 @@ public class UpdaterFrame extends JFrame {
 		}
 	}
 
+	public void setOnUpdate(Runnable onUpdate) {
+		this.onUpdate = onUpdate;
+	}
+
 	public void setOnLaunch(Runnable onLaunch) {
 		this.onLaunch = onLaunch;
 	}
@@ -119,6 +144,7 @@ public class UpdaterFrame extends JFrame {
 	private static class RoundedBorder implements Border {
 
 		private final int radius;
+		private final Insets insets = new Insets(2, 2, 2, 2);
 
 		RoundedBorder(int radius) {
 			this.radius = radius;
@@ -126,7 +152,7 @@ public class UpdaterFrame extends JFrame {
 
 		@Override
 		public Insets getBorderInsets(Component c) {
-			return new Insets(this.radius + 1, this.radius + 1, this.radius + 2, this.radius);
+			return insets;
 		}
 
 		@Override
