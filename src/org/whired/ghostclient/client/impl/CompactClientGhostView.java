@@ -504,9 +504,6 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 	@Override
 	public void setModel(GhostClient model) {
 		this.model = model;
-		for (int i = 0; i < 700; i++) {
-			playerAdded(new Player("Player" + i, (int) (Math.random() * 7)));
-		}
 	}
 
 	@Override
