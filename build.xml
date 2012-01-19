@@ -41,6 +41,7 @@
 		<zip destfile="${modules.zip}">
 			<zipfileset dir="deps/mod/bin" />
 		</zip>
+		<checksum file="${modules.zip}" />
 		
 		<copy todir=".ghost/cache/modules">
 		    <fileset dir="deps/mod/bin"/>

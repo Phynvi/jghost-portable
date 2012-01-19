@@ -63,47 +63,26 @@ public class Launcher implements Runnable {
 
 	@Override
 	public void run() {
-		form.log("Grabbing file version..");
-		String remoteHash;
+		form.log("Checking for client update..");
 		try {
-			remoteHash = getRemoteHash(REMOTE_CODEBASE + JAR_PACKAGE_NAME);
+			checkAndDownload(LOCAL_CODEBASE + JAR_PACKAGE_NAME, REMOTE_CODEBASE + JAR_PACKAGE_NAME);
+			form.log("Client updated!");
 		}
-		catch (IOException e) {
-			form.log("Unable to check hash.");
-			e.printStackTrace();
+		catch (IOException e1) {
+			form.log("Unable to update client.");
+			e1.printStackTrace();
 			launchGhost();
 			return;
 		}
-		String localHash = getLocalHash(LOCAL_CODEBASE + JAR_PACKAGE_NAME);
-		boolean match = localHash != null && remoteHash.toLowerCase().equals(localHash.toLowerCase());
-		while (!match) {
-			form.log("Hash mismatch.");
-			form.log("Downloading new version..");
-			try {
-				HttpClient.saveToDisk(LOCAL_CODEBASE + JAR_PACKAGE_NAME, REMOTE_CODEBASE + JAR_PACKAGE_NAME);
-			}
-			catch (Throwable t) {
-				form.log("Unable to download new codebase.");
-				t.printStackTrace();
-				launchGhost();
-				return;
-			}
-			form.log("Newest version downloaded.");
-			form.log("Checking sanity..");
-			localHash = getLocalHash(LOCAL_CODEBASE + JAR_PACKAGE_NAME);
-			match = remoteHash.toLowerCase().equals(localHash.toLowerCase());
-			break;
-		}
-		form.log("Hashes match, GHOST is up to date!");
 		if (form.downloadModules()) {
-			form.log("Downloading modules..");
+			form.log("Checking for module updates..");
 			File zipped;
 			try {
-				zipped = HttpClient.saveToDisk(LOCAL_CODEBASE + MODULE_PACKAGE_NAME, REMOTE_CODEBASE + MODULE_PACKAGE_NAME);
+				zipped = checkAndDownload(LOCAL_CODEBASE + MODULE_PACKAGE_NAME, REMOTE_CODEBASE + MODULE_PACKAGE_NAME);
 			}
-			catch (Throwable t) {
-				form.log("Unable to download modules.");
-				t.printStackTrace();
+			catch (IOException e) {
+				form.log("Unable to update modules.");
+				e.printStackTrace();
 				launchGhost();
 				return;
 			}
@@ -139,6 +118,7 @@ public class Launcher implements Runnable {
 						bis.close();
 					}
 				}
+				zipFile.close();
 				zipped.delete();
 			}
 			catch (Throwable t) {
@@ -152,11 +132,32 @@ public class Launcher implements Runnable {
 		launchGhost();
 	}
 
+	/**
+	 * Checks for a new version and downloads, ensuring that the download succeeded
+	 * 
+	 * @throws IOException if the file can not be downloaded
+	 */
+	private File checkAndDownload(String destFile, String remoteUrl) throws IOException {
+		String remoteHash = getRemoteHash(remoteUrl);
+		String localHash = getLocalHash(destFile);
+		boolean match = localHash != null && remoteHash.toLowerCase().equals(localHash.toLowerCase());
+		File file = null;
+		while (!match) {
+			form.log("Update found.");
+			form.log("Downloading new version..");
+			file = HttpClient.saveToDisk(destFile, remoteUrl);
+			form.log("Newest version downloaded.");
+			form.log("Checking integrity..");
+			localHash = getLocalHash(destFile);
+			match = remoteHash.toLowerCase().equals(localHash.toLowerCase());
+		}
+		return file;
+	}
+
 	private void launchGhost() {
 		try {
 			form.log("Launching GHOST..");
-			ProcessBuilder pb = new ProcessBuilder("java", "-classpath", LOCAL_CODEBASE + JAR_PACKAGE_NAME, ENTRY_POINT);
-			pb.start();
+			new ProcessBuilder("java", "-classpath", LOCAL_CODEBASE + JAR_PACKAGE_NAME, ENTRY_POINT).start();
 			form.log("Exiting..");
 			try {
 				Thread.sleep(8000);
