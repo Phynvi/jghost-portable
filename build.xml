@@ -30,7 +30,7 @@
 			<manifest>
 				<attribute name="Main-Class" value="org.whired.ghostclient.Main" />
 			</manifest>
-			<zipgroupfileset dir="deps" includes="*.jar" />
+			<zipgroupfileset dir="deps/jar" includes="*.jar" />
 		</jar>
 		<checksum file="${client.jar}" />
 
