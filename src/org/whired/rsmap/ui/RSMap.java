@@ -48,8 +48,8 @@ public abstract class RSMap extends RSCanvas {
 	private double currentZoomLevel = 3D;
 	private int overviewCenterX;
 	private int overviewCenterY;
-	private ArrayList<Sprite> mapSprites = new ArrayList<Sprite>();
-	private Font defaultFont = loadPackagedFont("ubuntu");
+	private final ArrayList<Sprite> mapSprites = new ArrayList<Sprite>();
+	private final Font defaultFont = loadPackagedFont("ubuntu");
 	public TextSprite defaultTextSprite;
 
 	public synchronized void addSprite(Sprite s) {
@@ -143,7 +143,6 @@ public abstract class RSMap extends RSCanvas {
 		catch (Exception ex) {
 			Logger.getLogger(RSMap.class.getName()).log(Level.SEVERE, null, ex);
 		}
-
 		overviewArea = new OverviewArea(this, minimapWidth, minimapHeight);
 
 		renderMiniMap(overviewArea.area, new Dimension(minimapWidth, minimapHeight), 2, 2, mapWidth - 2, mapHeight - 2);
@@ -642,7 +641,7 @@ public abstract class RSMap extends RSCanvas {
 		}
 	}
 
-	private HashSet<MapButton> buttons = new HashSet<MapButton>();
+	private final HashSet<MapButton> buttons = new HashSet<MapButton>();
 
 	/**
 	 * Adds a button to this map

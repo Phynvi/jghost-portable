@@ -1,6 +1,5 @@
 package org.whired.ghostclient.io.database;
 
-import org.whired.ghost.constants.Vars;
 
 /**
  * MySQL utilities
@@ -28,7 +27,7 @@ public class MySql {
 		}
 		builder.delete(builder.lastIndexOf(", "), builder.length());
 		String built = builder.toString();
-		Vars.getLogger().fine("values: " + built);
+		// Vars.getLogger().fine("values: " + built);
 		return built;
 	}
 }

@@ -1,5 +1,7 @@
 package org.whired.ghost.net.packet;
 
+import java.io.IOException;
+
 import org.whired.ghost.net.Connection;
 
 /**
@@ -13,16 +15,36 @@ public class GhostAuthenticationPacket extends GhostPacket {
 
 	public GhostAuthenticationPacket() {
 		super(PacketType.AUTHENTICATION);
+		this.setReceiveAction(new TransmitAction() {
+
+			@Override
+			public boolean onTransmit(Connection connection) {
+				try {
+					password = connection.getInputStream().readString();
+					return true;
+				}
+				catch (IOException e) {
+					return false;
+				}
+			}
+		});
 	}
 
-	@Override
-	public boolean receive(Connection connection) {
-		try {
-			password = connection.getInputStream().readString();
-			return true;
-		}
-		catch (Exception e) {
-			return false;
-		}
+	public GhostAuthenticationPacket(String password) {
+		super(PacketType.AUTHENTICATION);
+		this.password = password;
+		this.setSendAction(new TransmitAction() {
+
+			@Override
+			public boolean onTransmit(Connection connection) {
+				try {
+					connection.getOutputStream().writeString(GhostAuthenticationPacket.this.password);
+					return true;
+				}
+				catch (IOException e) {
+					return false;
+				}
+			}
+		});
 	}
 }

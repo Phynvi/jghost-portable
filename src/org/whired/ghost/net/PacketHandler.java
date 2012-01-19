@@ -13,7 +13,7 @@ public class PacketHandler {
 	/*
 	 * Packets that have been registered
 	 */
-	private HashMap<Integer, GhostPacket> packets = new HashMap<Integer, GhostPacket>();
+	private final HashMap<Integer, GhostPacket> packets = new HashMap<Integer, GhostPacket>();
 
 	/**
 	 * Registers a packet

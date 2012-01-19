@@ -15,7 +15,7 @@ public interface GhostClientView extends SessionEventListener {
 	 * 
 	 * @param controller the controller to set
 	 */
-	public void setController(GhostClient controller);
+	public void setModel(GhostClient controller);
 
 	/**
 	 * Sets the text of the main input box on this view

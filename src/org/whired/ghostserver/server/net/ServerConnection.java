@@ -12,6 +12,7 @@ import org.whired.ghost.net.WrappedOutputStream;
 public class ServerConnection extends Connection {
 
 	private final Socket ssock;
+	private boolean sessionValid = true;
 
 	public ServerConnection(Socket sock, Receivable receivable, String passPhrase) throws IOException {
 		super(new WrappedInputStream(sock.getInputStream()), new WrappedOutputStream(sock.getOutputStream()), receivable);
@@ -19,8 +20,9 @@ public class ServerConnection extends Connection {
 		this.ssock = sock;
 	}
 
-	public void startListening() {
-		startReceiving();
+	@Override
+	public void startReceiving() {
+		super.startReceiving();
 		Vars.getLogger().info("Session started with new client.");
 		validateSession();
 		try {
@@ -30,8 +32,27 @@ public class ServerConnection extends Connection {
 		}
 	}
 
-	private void validateSession() {
-		synchronized (this) {
+	/**
+	 * Marks this session as invalid and notifies all waiting threads
+	 */
+	public final synchronized void invalidateSession() {
+		sessionValid = false;
+		Vars.getLogger().fine("Notifying");
+		notify();
+		Vars.getLogger().fine("Notified");
+	}
+
+	@Override
+	protected void endSession(String reason) {
+		super.endSession(reason);
+		invalidateSession();
+	}
+
+	/**
+	 * Blocks until this session becomes invalid
+	 */
+	private final synchronized void validateSession() {
+		while (sessionValid) {
 			try {
 				Vars.getLogger().fine("Lock is waiting for notification.");
 				wait();
@@ -39,7 +60,6 @@ public class ServerConnection extends Connection {
 			}
 			catch (InterruptedException e) {
 			}
-
 		}
 	}
 }

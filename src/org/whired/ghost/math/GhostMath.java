@@ -3,7 +3,6 @@ package org.whired.ghost.math;
 import java.awt.Point;
 
 /**
- * 
  * @author Whired
  */
 public class GhostMath {

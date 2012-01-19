@@ -1,8 +1,9 @@
 package org.whired.ghostclient.client;
 
+import org.whired.ghost.net.SessionManager;
 import org.whired.ghost.net.model.AbstractClient;
 import org.whired.ghost.net.model.player.Player;
-import org.whired.ghost.net.model.player.Rank;
+import org.whired.ghost.net.model.player.RankHandler;
 import org.whired.ghostclient.client.settings.SessionSettings;
 
 /**
@@ -13,7 +14,9 @@ import org.whired.ghostclient.client.settings.SessionSettings;
 public interface GhostClient extends AbstractClient {
 	public void handleCommand(String command);
 
-	public Rank getRankForPlayer(Player player);
+	public RankHandler getRankHandler();
+
+	public SessionManager getSessionManager();
 
 	public Player getUserPlayer();
 

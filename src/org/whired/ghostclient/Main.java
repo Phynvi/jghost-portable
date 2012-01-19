@@ -1,5 +1,7 @@
 package org.whired.ghostclient;
 
+import java.util.logging.Level;
+
 import javax.swing.ImageIcon;
 
 import org.whired.ghost.client.net.ClientConnection;
@@ -8,9 +10,7 @@ import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.model.player.DefaultRightsConstants;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.model.player.Rank;
-import org.whired.ghost.net.packet.GhostPacket;
-import org.whired.ghost.net.packet.PacketType;
-import org.whired.ghost.net.reflection.Accessor;
+import org.whired.ghost.net.packet.AccessorPacket;
 import org.whired.ghostclient.client.command.Command;
 import org.whired.ghostclient.client.impl.DefaultController;
 import org.whired.ghostclient.client.settings.SettingsFactory;
@@ -26,8 +26,21 @@ public class Main {
 
 			@Override
 			public boolean handle(String[] args) {
-				client.getModel().getUser().getSettings().getPlayer().setRights(Integer.parseInt(args[0]));
-				return true;
+				Rank rank;
+				try {
+					rank = client.getModel().getRankHandler().rankForLevel(Integer.parseInt(args[0]));
+				}
+				catch (NumberFormatException e) {
+					rank = client.getModel().getRankHandler().rankForName(args[0]);
+				}
+				if (rank != null) {
+					client.getModel().getUser().getSettings().getPlayer().setRights(rank.getLevel());
+					Vars.getLogger().log(Level.INFO, "New rank: {0}", rank.getTitle());
+					return true;
+				}
+				else {
+					return false;
+				}
 			}
 		}, new Command("disconnect", 0) {
 
@@ -168,25 +181,16 @@ public class Main {
 				return false;
 			}
 		} });
-		client.getModel()
-				.getRankHandler()
-				.registerRanks(
-						new Rank[] { new Rank(DefaultRightsConstants.PLAYER, "Player", new ImageIcon(client.getClass().getResource("resources/player.png"))), new Rank(DefaultRightsConstants.VETERAN, "Veteran", new ImageIcon(client.getClass().getResource("resources/veteran.png"))), new Rank(DefaultRightsConstants.DONATOR, "Donator", new ImageIcon(client.getClass().getResource("resources/donator.png"))), new Rank(DefaultRightsConstants.DEVELOPER, "Developer", new ImageIcon(client.getClass().getResource("resources/developer.png"))), new Rank(DefaultRightsConstants.MODERATOR, "Moderator", new ImageIcon(client.getClass().getResource("resources/moderator.png"))),
-								new Rank(DefaultRightsConstants.ADMINISTRATOR, "Administrator", new ImageIcon(client.getClass().getResource("resources/administrator.png"))), new Rank(DefaultRightsConstants.OWNER, "Owner", new ImageIcon(client.getClass().getResource("resources/owner.png"))) });
-		client.getModel().getPacketHandler().registerPacket(new GhostPacket(PacketType.INVOKE_ACCESSOR) {
-
-			@Override
-			public boolean receive(Connection connection) {
-				try {
-					Accessor a = (Accessor) connection.getInputStream().readObject();
-					System.out.println(a.invoke());
-				}
-				catch (Exception ex) {
-					Vars.getLogger().warning("Unable to invoke accessor: " + ex);
-					ex.printStackTrace();
-				}
-				return true;
-			}
-		});
+		client.getModel().getRankHandler().registerRanks(new Rank[] { new Rank(DefaultRightsConstants.PLAYER, "Player", new ImageIcon(client.getClass().getResource("resources/player.png"))), new Rank(DefaultRightsConstants.VETERAN, "Veteran", new ImageIcon(client.getClass().getResource("resources/veteran.png"))), new Rank(DefaultRightsConstants.DONATOR, "Donator", new ImageIcon(client.getClass().getResource("resources/donator.png"))), new Rank(DefaultRightsConstants.DEVELOPER, "Developer", new ImageIcon(client.getClass().getResource("resources/developer.png"))), new Rank(DefaultRightsConstants.MODERATOR, "Moderator", new ImageIcon(client.getClass().getResource("resources/moderator.png"))), new Rank(DefaultRightsConstants.ADMINISTRATOR, "Administrator", new ImageIcon(client.getClass().getResource("resources/administrator.png"))), new Rank(DefaultRightsConstants.OWNER, "Owner", new ImageIcon(client.getClass().getResource("resources/owner.png"))) });
+		client.getModel().getPacketHandler().registerPacket(new AccessorPacket());
+		/*
+		 * new Thread(new Runnable() {
+		 * 
+		 * @Override public void run() { try { while (true) {
+		 * client.getModel().getCommandHandler().handleInput(
+		 * "connect localhost 43596 wrongpassword");
+		 * client.getModel().getCommandHandler().handleInput("disconnect"); }
+		 * } catch (Throwable t) { t.printStackTrace(); } } }).start();
+		 */
 	}
 }

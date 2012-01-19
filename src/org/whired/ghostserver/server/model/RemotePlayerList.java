@@ -3,7 +3,6 @@ package org.whired.ghostserver.server.model;
 import org.whired.ghost.net.model.GhostFrame;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.model.player.PlayerList;
-import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.reflection.Accessor;
 
 /**
@@ -35,7 +34,8 @@ public class RemotePlayerList extends PlayerList {
 	 * @param accessor the accessor to invoke
 	 */
 	private void invoke(Accessor accessor) {
-		getFrame().getSessionManager().getConnection().sendPacket(PacketType.INVOKE_ACCESSOR, accessor);
+		// getFrame().getSessionManager().getConnection().sendPacket(PacketType.INVOKE_ACCESSOR,
+		// accessor);//TODO fix
 	}
 
 	@Override

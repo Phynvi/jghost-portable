@@ -16,6 +16,7 @@ import java.awt.image.ImageConsumer;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 
+import org.whired.ghost.constants.Vars;
 import org.whired.rsmap.graphics.sprites.TextSprite;
 import org.whired.rsmap.ui.MapButton;
 
@@ -24,7 +25,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 	private int xDragged, yDragged, xPressed, yPressed;
 	public int pixels[];
 	public int startY, endY, startX, endX;
-	private ColorModel colorModel = new DirectColorModel(32, 0xff0000, 0x00ff00, 0x0000ff);
+	private final ColorModel colorModel = new DirectColorModel(32, 0xff0000, 0x00ff00, 0x0000ff);
 	private ImageConsumer imageConsumer;
 	private Image image;
 	public TextRenderer textRenderer;
@@ -104,6 +105,7 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 	public abstract void keyPressed(int keyCode);
 
 	public void loadMap() {
+		Vars.getLogger().info("Initial map size: (" + getWidth() + ", " + getHeight() + ")");
 		pixels = new int[getWidth() * getHeight()];
 		image = createImage(RSCanvas.this);
 		prepareImage(image, RSCanvas.this);
@@ -327,7 +329,6 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 
 	@Override
 	public final void paint(Graphics g) {
-		setAllPixelsToZero(); // TODO possibly bad here?
 		try {
 			draw();
 		}
@@ -967,14 +968,6 @@ public abstract class RSCanvas extends Component implements MouseWheelListener, 
 		renderHorizontalLine(rectX, rectY + rectHeight - 1, rectWidth, hexRGB);
 		renderVerticalLine(rectX, rectY, rectHeight, hexRGB);
 		renderVerticalLine(rectX + rectWidth - 1, rectY, rectHeight, hexRGB);
-	}
-
-	private void setAllPixelsToZero() {
-		int i = getWidth() * getHeight();
-		for (int j = 0; j < i; j++) {
-			pixels[j] = 0;
-		}
-
 	}
 
 	/**

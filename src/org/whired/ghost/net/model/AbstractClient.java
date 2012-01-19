@@ -6,7 +6,6 @@ import org.whired.ghost.net.event.SessionEventListener;
 import org.whired.ghost.net.model.player.Player;
 
 /**
- * 
  * @author Whired
  */
 public interface AbstractClient extends SessionEventListener {

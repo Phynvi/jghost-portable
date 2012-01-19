@@ -1,15 +1,15 @@
 package org.whired.ghostserver.server.model;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.whired.ghost.constants.Vars;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.model.GhostFrame;
 import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.model.player.PlayerList;
-import org.whired.ghost.net.packet.PacketType;
-import org.whired.ghost.net.reflection.Accessor;
-import org.whired.ghost.net.reflection.ReflectionPacketContainer;
+import org.whired.ghost.net.packet.DebugPacket;
+import org.whired.ghost.net.packet.PrivateChatPacket;
+import org.whired.ghost.net.packet.PublicChatPacket;
 
 /**
  * Provides access to the client from the server
@@ -26,22 +26,23 @@ public class RemoteGhostFrame extends GhostFrame {
 
 	@Override
 	public void displayPublicChat(Player sender, String message) {
-		getSessionManager().getConnection().sendPacket(PacketType.INVOKE_ACCESSOR, Accessor.getClass("org.whired.ghostclient.Main").getField("client").getMethod("getModel").getMethod("displayPublicChat", sender, message));
+		if (!new PublicChatPacket(sender, message).send(getSessionManager().getConnection())) {
+			Vars.getLogger().warning("Chat not sent");
+		}
 	}
 
 	@Override
 	public void displayPrivateChat(Player sender, Player recipient, String message) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-
-	@Override
-	protected void bindPacket(ReflectionPacketContainer container) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		if (!new PrivateChatPacket(sender, recipient, message).send(getSessionManager().getConnection())) {
+			Vars.getLogger().warning("Chat not sent");
+		}
 	}
 
 	@Override
 	public void displayDebug(Level level, String message) {
-		getSessionManager().getConnection().sendPacket(PacketType.INVOKE_ACCESSOR, Accessor.getClass("org.whired.ghostclient.Main").getField("client").getMethod("getModel").getMethod("displayDebug", level, message));
+		if (!new DebugPacket(level.intValue(), message).send(getSessionManager().getConnection())) {
+			Vars.getLogger().warning(message);
+		}
 	}
 
 	@Override
@@ -51,13 +52,11 @@ public class RemoteGhostFrame extends GhostFrame {
 
 	@Override
 	public void sessionOpened() {
-		Logger.getLogger(RemoteGhostFrame.class.getName()).info("Session opened");
-		// throw new UnsupportedOperationException("Not supported yet.");
+		Vars.getLogger().info("Session opened");
 	}
 
 	@Override
 	public void sessionClosed(String reason) {
-		Logger.getLogger(RemoteGhostFrame.class.getName()).info("Session closed");
-		// throw new UnsupportedOperationException("Not supported yet.");
+		Vars.getLogger().info("Session closed: " + reason);
 	}
 }

@@ -28,6 +28,15 @@ public class Database {
 		connectionProperties.put("password", "program");
 		this.databaseName = databaseName;
 		this.connection = DriverManager.getConnection(PROTOCOL + workingDir + this.databaseName, connectionProperties);
+
+	}
+
+	public void setAutoCommit(boolean autoCommit) throws SQLException {
+		this.connection.setAutoCommit(autoCommit);
+	}
+
+	public void commit() throws SQLException {
+		this.connection.commit();
 	}
 
 	/**

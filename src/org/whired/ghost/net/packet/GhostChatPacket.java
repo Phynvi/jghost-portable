@@ -24,7 +24,7 @@ public abstract class GhostChatPacket extends GhostPacket {
 		super(id);
 	}
 
-	private final char[] XLATE_TABLE = { ' ', 'e', 't', 'a', 'o', 'i', 'h', 'n', 's', 'r', 'd', 'l', 'u', 'm', 'w', 'c', 'y', 'f', 'g', 'p', 'b', 'v', 'k', 'x', 'j', 'q', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '!', '?', '.', ',', ':', ';', '(', ')', '-', '&', '*', '\\', '\'', '@', '#', '+', '=', '\243', '$', '%', '"', '[', ']' };
+	private final static char[] XLATE_TABLE = { ' ', 'e', 't', 'a', 'o', 'i', 'h', 'n', 's', 'r', 'd', 'l', 'u', 'm', 'w', 'c', 'y', 'f', 'g', 'p', 'b', 'v', 'k', 'x', 'j', 'q', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ', '!', '?', '.', ',', ':', ';', '(', ')', '-', '&', '*', '\\', '\'', '@', '#', '+', '=', '\243', '$', '%', '"', '[', ']' };
 
 	/**
 	 * Gets the message as a byte array
@@ -83,7 +83,7 @@ public abstract class GhostChatPacket extends GhostPacket {
 	 * 
 	 * @return the unpacked and formatted chat
 	 */
-	protected String unpackMessage(byte[] chatText, int chatSize) {
+	protected static String getUnpackedMessage(byte[] chatText, int chatSize) {
 		char decodeBuf[] = new char[4096];
 
 		int idx = 0, highNibble = -1;

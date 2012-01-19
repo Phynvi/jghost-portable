@@ -1,5 +1,7 @@
 package org.whired.ghost.net.packet;
 
+import java.util.logging.Level;
+
 import org.whired.ghost.constants.Vars;
 import org.whired.ghost.net.Connection;
 
@@ -8,12 +10,24 @@ import org.whired.ghost.net.Connection;
  * 
  * @author Whired
  */
-public abstract class GhostPacket {
+public class GhostPacket {
 
 	/**
 	 * The ID of this packet
 	 */
 	protected final int id;
+	/**
+	 * Whether or not this packet has been received
+	 */
+	private boolean isReceived;
+	/**
+	 * The receivable action
+	 */
+	private TransmitAction onReceive;
+	/**
+	 * The sendable action
+	 */
+	private TransmitAction onSend;
 
 	/**
 	 * Creates a new packet on the specified connection with the specified id
@@ -25,57 +39,47 @@ public abstract class GhostPacket {
 		this.id = id;
 	}
 
-	/**
-	 * Gets the id of this packet
-	 * 
-	 * @return the id
-	 */
 	public int getId() {
 		return this.id;
 	}
 
-	/**
-	 * Sends a payload with a checked exception
-	 * 
-	 * @param payload the payload to send
-	 * @throws Exception the exception that was caught
-	 */
-	public void sendChecked(Connection connection, Object... payload) throws Exception {
-		try {
-			connection.sendPacket(id, payload);
-		}
-		catch (Exception e) {
-			throw e;
-		}
+	public void setSendAction(TransmitAction action) {
+		this.onSend = action;
 	}
 
-	/**
-	 * Sends a payload without checking for exceptions
-	 * 
-	 * @param payload the payload to send
-	 * @return {@code true} if no exception was thrown, otherwise {@code false}
-	 */
-	public boolean sendUnchecked(Connection connection, Object... payload) {
-		try {
-			connection.sendPacket(id, payload);
-			return true;
-		}
-		catch (Exception e) {
-			if (connection == null) {
-				Vars.getLogger().warning("Dropped packet (no connection)");
-			}
-			else {
-				Vars.getLogger().warning("Dropped packet: " + e.toString());
-			}
-			return false;
-		}
+	public void setReceiveAction(TransmitAction action) {
+		this.onReceive = action;
 	}
 
-	/**
-	 * Called upon instantiation in order to receive and marshal the packet
-	 * 
-	 * @return {@code true} if the packet was successfully received, otherwise
-	 * {@code false}
-	 */
-	public abstract boolean receive(Connection connection);
+	public final boolean receive(Connection connection) throws IllegalStateException {
+		if (!isReceived && onReceive != null) {
+			isReceived = true;
+			return onReceive.onTransmit(connection);
+		}
+		else if (isReceived) {
+			throw new IllegalStateException("This packet has already been received");
+		}
+		return false;
+	}
+
+	public final boolean send(Connection connection) {
+		if (onSend != null) {
+			try {
+				if (connection != null) {
+					connection.getOutputStream().writeByte(id);
+					return onSend.onTransmit(connection);
+				}
+				else {
+					Vars.getLogger().log(Level.WARNING, "Packet {0} not sent: No connection to remote", id);
+				}
+			}
+			catch (Throwable t) {
+				Vars.getLogger().log(Level.WARNING, "Packet {0} not sent: {1}", new Object[] { id, t });
+				Vars.getLogger().log(Level.FINE, "Exception details: ", t);
+				return false;
+			}
+		}
+		return false;
+	}
+
 }

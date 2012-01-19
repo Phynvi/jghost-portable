@@ -8,7 +8,6 @@ import javax.swing.ImageIcon;
 import org.whired.rsmap.graphics.RSCanvas;
 
 /**
- * 
  * @author Whired
  */
 public class StaticSprite extends Sprite {

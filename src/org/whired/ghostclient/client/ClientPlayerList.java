@@ -5,7 +5,6 @@ import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.model.player.PlayerList;
 
 /**
- * 
  * @author Whired
  */
 public abstract class ClientPlayerList extends PlayerList {

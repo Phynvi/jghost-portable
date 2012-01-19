@@ -10,7 +10,7 @@ import java.util.LinkedList;
  * 
  * @author Whired
  */
-public abstract class Accessor implements java.io.Serializable {
+public abstract class Accessor {
 
 	/**
 	 * The name of the accessor
@@ -38,6 +38,13 @@ public abstract class Accessor implements java.io.Serializable {
 		return f;
 	}
 
+	/**
+	 * Gets a method by name and parameter signature
+	 * 
+	 * @param name the name of the method
+	 * @param params the
+	 * @return
+	 */
 	public RMIMethod getMethod(String name, Object... params) {
 		RMIMethod m = new RMIMethod(name, instruction.size() == 1, params);
 		m.declaringClass = this.name;
@@ -46,6 +53,12 @@ public abstract class Accessor implements java.io.Serializable {
 		return m;
 	}
 
+	/**
+	 * Gets a class by its name
+	 * 
+	 * @param name the name of the class to get
+	 * @return the class as an accessor
+	 */
 	public static RMIClass getClass(String name) {
 		RMIClass c = new RMIClass(name);
 		c.instruction.add(c);
@@ -99,12 +112,17 @@ public abstract class Accessor implements java.io.Serializable {
 	 * {@link org.whired.ghost.net.reflection.RMIField}
 	 * 
 	 * @return {@code true} if the accessor is a {@code RMIField}, otherwise
-	 * {@code false}
+	 *         {@code false}
 	 */
 	public boolean isField() {
 		return this instanceof RMIField;
 	}
 
+	/**
+	 * Gets this accessor as a field; used for quick chaining
+	 * 
+	 * @return the field representation if it is a field
+	 */
 	public RMIField asField() {
 		if (this.isField()) {
 			return (RMIField) this;
@@ -119,12 +137,17 @@ public abstract class Accessor implements java.io.Serializable {
 	 * {@link org.whired.ghost.net.reflection.RMIMethod}
 	 * 
 	 * @return {@code true} if the accessor is a {@code RMIMethod}, otherwise
-	 * {@code false}
+	 *         {@code false}
 	 */
 	public boolean isMethod() {
 		return this instanceof org.whired.ghost.net.reflection.RMIMethod;
 	}
 
+	/**
+	 * Gets this accessor as a method; used for quick chaining
+	 * 
+	 * @return the method representation if it is a field
+	 */
 	public RMIMethod asMethod() {
 		if (this.isMethod()) {
 			return (org.whired.ghost.net.reflection.RMIMethod) this;
@@ -155,7 +178,6 @@ public abstract class Accessor implements java.io.Serializable {
 			else {
 				throw new ClassCastException("First instruction must be a " + RMIClass.class.getName());
 			}
-			System.out.println(instruction.get(0).toString());
 			for (int i = 1; i < instruction.size(); i++) {
 				a = instruction.get(i);
 				if (a.isField()) {

@@ -5,7 +5,6 @@ import org.whired.ghost.net.model.player.event.PlayerListEventListener;
 import org.whired.ghost.net.packet.GhostPacket;
 
 /**
- * 
  * @author Whired
  */
 public interface GhostEventListener extends PlayerListEventListener {

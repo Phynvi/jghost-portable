@@ -22,9 +22,9 @@ public class CommandHandler {
 	 * 
 	 * @param input the input to parse and handle
 	 * @throws CommandMalformedException when the given input is in an invalid
-	 * format
+	 *         format
 	 * @throws CommandNotFoundException when the parsed command has not been
-	 * added to {@code commands}
+	 *         added to {@code commands}
 	 */
 	public void handleInput(String input) throws CommandMalformedException, CommandNotFoundException {
 		// Get rid of whitespace

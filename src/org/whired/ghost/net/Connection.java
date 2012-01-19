@@ -3,18 +3,16 @@ package org.whired.ghost.net;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.whired.ghost.constants.Vars;
+import org.whired.ghost.net.packet.DebugPacket;
 import org.whired.ghost.net.packet.GhostAuthenticationPacket;
 import org.whired.ghost.net.packet.PacketType;
-import org.whired.ghost.net.packet.UnhandledPacket;
 
 /**
- * @author Whired
- * 
- * A friendly middle layer between the connection protocols and the stream
- * wrappers. Keeps as much of the more advanced code as hidden as possible.
+ * @author Whired A friendly middle layer between the connection protocols and
+ *         the stream wrappers. Keeps as much of the more advanced code as
+ *         hidden as possible.
  */
 public abstract class Connection {
 
@@ -89,7 +87,7 @@ public abstract class Connection {
 	/**
 	 * Starts listening for and handling all incoming packets
 	 */
-	protected void startReceiving() {
+	public void startReceiving() {
 		Vars.getLogger().fine("Initiating new thread for packet listening..");
 		listenerThread = new Thread(new Runnable() {
 
@@ -99,7 +97,7 @@ public abstract class Connection {
 				while (true) {
 					try {
 						inputStream.expectingNewPacket = true;
-						handlePacket(inputStream.readByte(), inputStream.readByte());
+						handlePacket(inputStream.readByte());
 						inputStream.expectingNewPacket = false;
 					}
 					catch (SocketException e) {
@@ -109,9 +107,6 @@ public abstract class Connection {
 					catch (IOException ioe) {
 						break;
 					}
-					catch (ClassNotFoundException cnfe) {
-						endSession("RMI error");
-					}
 				}
 				Vars.getLogger().fine("Thread " + Thread.currentThread().getName() + " is exiting.");
 			}
@@ -119,80 +114,40 @@ public abstract class Connection {
 		listenerThread.start();
 	}
 
-	private void handlePacket(int packetId, int length) {
+	private void handlePacket(int packetId) {
+		Vars.getLogger().log(Level.FINE, "Received packet {0}", packetId);
 		if (expectingPassword) {
 			if (packetId == PacketType.AUTHENTICATION) {
 				GhostAuthenticationPacket ap = new GhostAuthenticationPacket();
-				ap.receive(this);
-				if (ap.password.equals(password)) {
-					Vars.getLogger().fine("Password matched, client accepted.");
-					expectingPassword = false;
-				}
-				else {
-					endSession("Password incorrect"); // expectingPassword
-												// = false;
+				if (ap.receive(this)) {
+					if (ap.password.equals(password)) {
+						Vars.getLogger().fine("Password matched, client accepted.");
+						try {
+							getOutputStream().writeByte(PacketType.AUTHENTICATE_SUCCESS);
+						}
+						catch (IOException e) {
+						}
+						expectingPassword = false;
+					}
+					else {
+						endSession("Password incorrect");
+					}
 				}
 			}
 			else {
-				endSession("Password expected, but not received"); // expectingPassword
-															// =
-															// false;
-			}
-		}
-		else if (packetId == 4) {
-			try {
-				System.out.println((String) inputStream.readObject());
-				Exception e;
-				if ((e = (Exception) inputStream.readObject()) != null) {
-					Vars.getLogger().warning(e.toString());
-					e.printStackTrace();
-				}
-			}
-			catch (Exception ex) {
-				Logger.getLogger(Connection.class.getName()).log(Level.WARNING, null, ex);
+				endSession("Password expected, but not received");
 			}
 		}
 		else {
 			Vars.getLogger().fine("Notifying receivable that external packet " + packetId + " has been received.");
-			if (!receivable.handlePacket(packetId, length, this)) {
-				new UnhandledPacket(length).receive(this);
-				Vars.getLogger().fine("Flushed unhandled packet " + packetId + " with length " + length);
+			try {
+				if (!receivable.handlePacket(packetId, this)) {
+					endSession("Packet " + packetId + " was not handled");
+				}
 			}
-		}
-	}
-
-	/**
-	 * // TODO fix these messy comments Sends a packet with the specified id
-	 * and payload
-	 * <p>
-	 * An example usage of this method might look like this:
-	 * 
-	 * <pre>
-	 * <code>
-	 * sendPacket(77, player.getName(), player.getIP());
-	 * // Or
-	 * sendPacket(15, player.getName(), player.getSkillLevel(0), player.getSkillLevel(1), player.getSkillLevel(2));
-	 * </code>
-	 * </pre>
-	 * 
-	 * Alternatively, {@link org.whired.ghost.net.packet.GhostPacket} can be
-	 * extended to make this process easier.
-	 * </p>
-	 * 
-	 * @param packetId the id of the packet to send
-	 * @param data the data (in correct order, separated by commas) to send
-	 */
-	public void sendPacket(int packetId, Object... data) {
-		try {
-			Vars.getLogger().fine("Sending packet " + packetId + ", which consists of " + data.length + " objects.");
-			outputStream.writeByte(packetId);
-			outputStream.writeByte(data.length);
-			for (Object obj : data) {
-				outputStream.writeObject(obj);
+			catch (IOException e) {
+				endSession("Error while handling packet " + packetId);
 			}
-		}
-		catch (Exception e) {
-			Vars.getLogger().warning("Unable to send packet " + packetId + ": " + e.toString());
 		}
 	}
 
@@ -228,19 +183,14 @@ public abstract class Connection {
 	 * Called then the session must be terminated
 	 */
 	protected void endSession(final String reason) {
+		new DebugPacket(Level.WARNING.intValue(), reason == null ? "Unspecified" : reason).send(this);
 		Vars.getLogger().log(Level.WARNING, "Termination requested [Reason: {0} - Target: {1}", new Object[] { reason != null ? reason + "]" : "unspecified]", this });
 		if (this.manager != null) {
 			this.manager.sessionEnded(reason);
 		}
-		synchronized (this) {
-			Vars.getLogger().fine("Lock acquired.");
-			removeOutputStream();
-			removeInputStream();
-			Vars.getLogger().fine("Notifying");
-			notify();
-			Vars.getLogger().fine("Notified");
-			Vars.getLogger().fine("Connection reset: " + reason);
-		}
+		removeOutputStream();
+		removeInputStream();
+		Vars.getLogger().fine("Connection reset: " + reason);
 	}
 
 	public void setEnforceTimeout(boolean b) {

@@ -12,6 +12,7 @@ import org.whired.ghost.net.SessionManager;
 import org.whired.ghost.net.WrappedInputStream;
 import org.whired.ghost.net.WrappedOutputStream;
 import org.whired.ghost.net.model.GhostFrame;
+import org.whired.ghost.net.packet.GhostAuthenticationPacket;
 
 /**
  * This class handles connections.
@@ -27,7 +28,7 @@ public class ClientConnection extends Connection {
 		Vars.getLogger().info("Identifying...");
 		sock.getOutputStream().write(48);
 		Vars.getLogger().info("Authenticating...");
-		super.sendPacket(0, passPhrase);
+		new GhostAuthenticationPacket(passPhrase).send(this);
 	}
 
 	public static Connection connect(String IP, int port, String password, GhostFrame frame) throws UnknownHostException, IOException, InvalidStateException {

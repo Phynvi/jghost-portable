@@ -24,7 +24,7 @@ public class Table {
 	 * @param tableName the name for the table
 	 * @param structure the structure
 	 * @param recreate whether or not to recreate the table if it already
-	 * exists
+	 *        exists
 	 */
 	public Table(Database database, String tableName, boolean recreate, Column[] columns) throws SQLException {
 		this.tableName = tableName;
@@ -53,8 +53,28 @@ public class Table {
 		database.executePreparedStatement(stmt);
 	}
 
+	public void insertAll(Column[] columns, Object[] values) throws SQLException {
+		ArrayList<String> names = new ArrayList<String>();
+		for (Column c : columns) {
+			names.add(c.getName());
+		}
+		String stmt = "insert into " + getTableName() + " (" + MySql.listToSql(names.toArray(new String[names.size()]), false) + ") values(" + MySql.listToSql(values, true) + ")";
+		Vars.getLogger().fine("Execute: " + stmt);
+		database.executePreparedStatement(stmt);
+	}
+
 	public void replace(String[] columnNames, Object[] values) throws SQLException {
 		String stmt = "replace into " + getTableName() + " (" + MySql.listToSql(columnNames, false) + ") values(" + MySql.listToSql(values, true) + ")";
+		Vars.getLogger().fine("Execute: " + stmt);
+		database.executePreparedStatement(stmt);
+	}
+
+	public void replaceAll(Column[] columns, Object[] values) throws SQLException {
+		ArrayList<String> names = new ArrayList<String>();
+		for (Column c : columns) {
+			names.add(c.getName());
+		}
+		String stmt = "replace into " + getTableName() + " (" + MySql.listToSql(names.toArray(new String[names.size()]), false) + ") values(" + MySql.listToSql(values, true) + ")";
 		Vars.getLogger().fine("Execute: " + stmt);
 		database.executePreparedStatement(stmt);
 	}

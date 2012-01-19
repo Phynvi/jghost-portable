@@ -1,6 +1,10 @@
 package org.whired.ghost.net.packet;
 
+import java.io.IOException;
+
 import org.whired.ghost.net.Connection;
+import org.whired.ghost.net.WrappedInputStream;
+import org.whired.ghost.net.WrappedOutputStream;
 
 /**
  * An movement packet
@@ -10,30 +14,49 @@ import org.whired.ghost.net.Connection;
 public class PlayerMovementPacket extends GhostPacket {
 
 	public String playerName;
-	public int newAbsX;
-	public int newAbsY;
+	public short newAbsX;
+	public short newAbsY;
 
 	public PlayerMovementPacket() {
 		super(PacketType.PLAYER_MOVEMENT);
+		this.setReceiveAction(new TransmitAction() {
+
+			@Override
+			public boolean onTransmit(Connection connection) {
+				try {
+					WrappedInputStream is = connection.getInputStream();
+					PlayerMovementPacket.this.playerName = is.readString();
+					PlayerMovementPacket.this.newAbsX = is.readShort();
+					PlayerMovementPacket.this.newAbsY = is.readShort();
+					return true;
+				}
+				catch (IOException e) {
+					return false;
+				}
+			}
+		});
 	}
 
-	@Override
-	public boolean receive(Connection connection) {
-		try {
-			this.playerName = connection.getInputStream().readString();
-			this.newAbsX = connection.getInputStream().readInt();
-			this.newAbsY = connection.getInputStream().readInt();
-			return true;
-		}
-		catch (Exception e) {
-			return false;
-		}
-	}
-
-	public boolean send(Connection connection, String name, int newAbsX, int newAbsY) {
-		this.playerName = name;
+	public PlayerMovementPacket(String playerName, short newAbsX, short newAbsY) {
+		super(PacketType.PLAYER_MOVEMENT);
+		this.playerName = playerName;
 		this.newAbsX = newAbsX;
 		this.newAbsY = newAbsY;
-		return sendUnchecked(connection, name, newAbsX, newAbsY);
+		this.setSendAction(new TransmitAction() {
+
+			@Override
+			public boolean onTransmit(Connection connection) {
+				try {
+					WrappedOutputStream os = connection.getOutputStream();
+					os.writeString(PlayerMovementPacket.this.playerName);
+					os.writeShort(PlayerMovementPacket.this.newAbsX);
+					os.writeShort(PlayerMovementPacket.this.newAbsY);
+					return true;
+				}
+				catch (IOException e) {
+					return false;
+				}
+			}
+		});
 	}
 }

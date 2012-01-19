@@ -39,12 +39,13 @@ public class ModuleHandler extends GhostEventAdapter {
 	 */
 	public final void registerModule(final Module module) {
 		module.setFrame(frame);
+		frame.getView().moduleAdded(module);
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				try {
 					Vars.getLogger().log(Level.INFO, "Registering and initializing module " + module.getModuleName());
-					frame.getView().moduleAdded(module);
+
 					module.load();
 				}
 				catch (Throwable t) {
@@ -69,7 +70,7 @@ public class ModuleHandler extends GhostEventAdapter {
 	 * 
 	 * @param name the name of the module
 	 * @return the {@link org.whired.ghostclient.ui.module.Module} for the
-	 * specified name, or {@code null} if the name was not matched
+	 *         specified name, or {@code null} if the name was not matched
 	 */
 	public Module moduleForName(String name) {
 		for (Module m : modules) {

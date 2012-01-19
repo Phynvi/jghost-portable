@@ -7,7 +7,6 @@ import org.whired.ghost.math.GhostMath;
 import org.whired.ghost.net.model.player.Player;
 
 /**
- * 
  * @author Whired
  */
 public class MapPlayer extends Player {

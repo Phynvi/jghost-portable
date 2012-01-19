@@ -8,7 +8,6 @@ import org.whired.ghostclient.client.module.Module;
 import org.whired.graph.LineGraph;
 
 /**
- * 
  * @author Whired
  */
 public class PlayerGraph extends LineGraph implements Module {

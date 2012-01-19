@@ -1,9 +1,12 @@
 package org.whired.ghostserver.server;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import org.whired.ghost.constants.Vars;
@@ -14,8 +17,8 @@ import org.whired.ghostserver.server.net.ServerConnection;
 public class Server implements Runnable {
 
 	private final int PORT_NUM;
-	private static final int MIN_THROTTLING_MS = 5000;
-	private final HashMap<SocketAddress, Long> throttlerList = new HashMap<SocketAddress, Long>();
+	private static final long MIN_THROTTLING_MS = 000;
+	private final HashMap<String, Long> throttlerList = new HashMap<String, Long>();
 	private ServerSocket ssock;
 	private final Receivable receivable;
 	private final String passPhrase;
@@ -42,18 +45,17 @@ public class Server implements Runnable {
 	 * </pre>
 	 * 
 	 * The above code would be close to the entry point of a server
-	 * application, where the RSPS server is initialized.
-	 * 
-	 * For information on how to send a packet using
+	 * application, where the RSPS server is initialized. For information on
+	 * how to send a packet using
 	 * {@link org.whired.ghostserver.Server#getConnection()}, see
 	 * {@link org.whired.ghost.net.Connection#sendPacket(int, java.lang.Object[])}
 	 * 
 	 * @param receivable the receivable that will handle incoming packets
 	 * @param passPhrase required by any connecting ghost clients. Must be at
-	 * least 6 characters with symbols/numerals or 12 characters without
+	 *        least 6 characters with symbols/numerals or 12 characters without
 	 * @throws IOException if the server cannot be initialized
 	 * @throws IllegalArgumentException if {@code passPhrase} does not meet the
-	 * specified criteria
+	 *         specified criteria
 	 */
 	public Server(Receivable receivable, String passPhrase) throws IOException, IllegalArgumentException {
 		this(43596, receivable, passPhrase);
@@ -80,20 +82,18 @@ public class Server implements Runnable {
 	 * </pre>
 	 * 
 	 * The above code would be close to the entry point of a server
-	 * application, where the RSPS server is initialized.
-	 * 
-	 * For information on how to send a packet using
+	 * application, where the RSPS server is initialized. For information on
+	 * how to send a packet using
 	 * {@link org.whired.ghostserver.Server#getConnection()}, see
 	 * {@link org.whired.ghost.net.Connection#sendPacket(int, java.lang.Object[])}
 	 * 
 	 * @param port the port the server will listen on
 	 * @param receivable the receivable that will handle incoming packets
 	 * @param passPhrase required by any connecting ghost clients. Must be at
-	 * least 6 characters with symbols/numerals or 12 characters without
+	 *        least 6 characters with symbols/numerals or 12 characters without
 	 * @throws IOException if the server cannot be initialized
 	 * @throws IllegalArgumentException if {@code passPhrase} does not meet the
-	 * specified criteria
-	 * 
+	 *         specified criteria
 	 */
 	public Server(int port, Receivable receivable, String passPhrase) throws IOException, IllegalArgumentException {
 		boolean canBeShort = false;
@@ -113,6 +113,28 @@ public class Server implements Runnable {
 		else {
 			throw new IllegalArgumentException("Password must be at least 6 characters with symbols/numerals or 12 characters without.");
 		}
+		final PrintStream con = new PrintStream(System.out);
+		OutputStream out = new OutputStream() {
+			@Override
+			public void write(int b) throws IOException {
+				String s = format(String.valueOf((char) b));
+				con.print(s);
+			}
+
+			@Override
+			public void write(byte[] b, int off, int len) throws IOException {
+				String s = format(new String(b, off, len));
+				con.print(s);
+			}
+
+			@Override
+			public void write(byte[] b) throws IOException {
+				write(b, 0, b.length);
+			}
+		};
+		PrintStream p = new PrintStream(out, true);
+		System.setOut(p);
+		System.setErr(p);
 	}
 
 	@Override
@@ -120,13 +142,12 @@ public class Server implements Runnable {
 		while (true) {
 			try {
 				Socket s = this.ssock.accept();
-				SocketAddress address = s.getRemoteSocketAddress();
+				InetAddress address = s.getInetAddress();
 				if (!isThrottling(address)) {
 					if (s.getInputStream().read() == 48) {
-						Vars.getLogger().fine(address + " was not present in throttlers list.");
 						this.connection = new ServerConnection(s, this.receivable, this.passPhrase);
 						Vars.getLogger().severe("Connection is now " + this.connection);
-						((ServerConnection) this.connection).startListening();
+						this.connection.startReceiving();
 						this.connection = null;
 						s.close();
 						Vars.getLogger().info("Dropped connection: Session ended");
@@ -156,13 +177,17 @@ public class Server implements Runnable {
 		return this.connection;
 	}
 
-	private boolean isThrottling(SocketAddress remoteSocketAddress) {
-		Long lastConnTime = this.throttlerList.get(remoteSocketAddress);
+	private boolean isThrottling(InetAddress address) {
+		Long lastConnTime = this.throttlerList.get(address.toString());
 		if (lastConnTime == null || System.currentTimeMillis() - lastConnTime.longValue() > MIN_THROTTLING_MS) {
-			Vars.getLogger().fine("Adding " + remoteSocketAddress + " as a throttlng connection.");
-			this.throttlerList.put(remoteSocketAddress, Long.valueOf(System.currentTimeMillis()));
+			Vars.getLogger().fine("Adding " + address.toString() + " as a throttling connection.");
+			this.throttlerList.put(address.toString(), Long.valueOf(System.currentTimeMillis()));
 			return false;
 		}
 		return true;
+	}
+
+	private final String format(String in) {
+		return !in.contains(System.getProperty("line.separator")) ? "[" + Vars.DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] System: " + in : in;
 	}
 }

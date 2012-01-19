@@ -1,31 +1,43 @@
 package org.whired.ghost.net;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.util.logging.Level;
 
 import org.whired.ghost.constants.Vars;
 
 /**
- * An easy-to-use OutputStream wrapper that provides methods to write to a
- * stream.
+ * Makes writing data to an {@link java.io.OutputStream} easy
  * 
  * @author Whired
  */
 public class WrappedOutputStream {
 
-	private java.io.OutputStream os = null;
+	private OutputStream os = null;
 
 	/**
-	 * Constructs the OutputStream wrapper
+	 * Creates a new wrapper for the specified output stream
 	 * 
 	 * @param os_ the OutputStream to wrap
 	 */
-	public WrappedOutputStream(java.io.OutputStream os_) {
-		this.os = os_;
+	public WrappedOutputStream(OutputStream os) {
+		this.os = os;
 	}
 
 	/**
-	 * Writes a byte[] to the stream
+	 * Writes a single byte to this stream
+	 * 
+	 * @param value the value of the byte to write
+	 * @throws java.io.IOException if the stream is invalid.
+	 */
+	public void writeByte(int value) throws java.io.IOException {
+		os.write(value);
+	}
+
+	/**
+	 * Writes a byte[] to this stream
 	 * 
 	 * @param b the byte array to write
 	 */
@@ -34,97 +46,68 @@ public class WrappedOutputStream {
 	}
 
 	/**
-	 * Writes a file to the stream.
+	 * Writes a boolean to this stream
 	 * 
-	 * @param theFile the file to attempt to write.
-	 */
-	public void writeFile(String theFile) throws IOException {
-		java.io.File f = new java.io.File(theFile);
-		if (!f.exists()) {
-			System.out.println("Could not write " + theFile + " because it does not exist.");
-			writeBoolean(false);
-			return;
-		}
-		writeBoolean(true);
-		writeString(f.getName());
-		writeInt((int) f.length());
-		java.io.InputStream is = new java.io.FileInputStream(f);
-		int size = 1024;
-		int sent = 0;
-		if (f.length() < size) {
-			size = (int) f.length();
-		}
-		byte[] chunk;
-		while (sent != f.length()) {
-			if (f.length() - sent < size) {
-				size = (int) f.length() - sent;
-			}
-			chunk = new byte[size];
-			sent += is.read(chunk, 0, size);
-			writeBytes(chunk);
-		}
-		try {
-			is.close();
-		}
-		catch (IOException ioe) {
-		}
-	}
-
-	/**
-	 * Writes a boolean to the stream.
-	 * 
-	 * @param bool the boolean to write.
+	 * @param bool the boolean to write
 	 */
 	public void writeBoolean(boolean bool) throws java.io.IOException {
-		writeObject(bool);
+		os.write(bool ? 1 : 0);
 	}
 
 	/**
-	 * Writes any Object to the stream.
+	 * Writes a short to this stream
 	 * 
-	 * @param obj the object to write.
+	 * @param value the short to write
 	 */
-	public void writeObject(Object obj) throws java.io.IOException {
-		java.io.ObjectOutputStream oos = new java.io.ObjectOutputStream(os);
-		oos.writeObject(obj);
-		oos.flush();
+	public void writeShort(short value) throws IOException {
+		writeBytes(ByteBuffer.allocate(2).putShort(value).array());
 	}
 
 	/**
-	 * Writes a byte to the stream.
+	 * Writes an integer to this stream
 	 * 
-	 * @param value the value of the byte to write.
-	 * @throws java.lang.IllegalArgumentException if the value is out of
-	 * bounds.
-	 * @throws java.io.IOException if the stream is invalid.
+	 * @param value the integer to write
 	 */
-	public void writeByte(int value) throws java.io.IOException {
-		// writeObject((byte)value);
-		os.write(value);
+	public void writeInt(int value) throws java.io.IOException {
+		writeBytes(ByteBuffer.allocate(4).putInt(value).array());
 	}
 
 	/**
-	 * Writes a plain text String to the stream.
+	 * Writes a long to this stream
 	 * 
-	 * @param str the String to write.
+	 * @param value the long to write
+	 */
+	public void writeLong(long value) throws IOException {
+		writeBytes(ByteBuffer.allocate(8).putLong(value).array());
+	}
+
+	/**
+	 * Writes a string to this stream. The given string will be encoded in
+	 * utf-8. If the string's size is greater than 256 bytes, it will
+	 * automatically be truncated.
+	 * 
+	 * @param str the string to write
 	 */
 	public void writeString(String str) throws java.io.IOException {
-		writeObject(str);
+		byte[] strBytes = str.getBytes(Constants.UTF_8);
+		if (strBytes.length > 256) {
+			Vars.getLogger().warning("String size greater than 256 bytes. Truncating.");
+			byte[] buf = new byte[256];
+			ByteBuffer out = ByteBuffer.wrap(buf);
+			CharBuffer in = CharBuffer.wrap(str.toCharArray());
+			Constants.UTF_8.newEncoder().encode(in, out, true);
+			str = new String(buf, 0, out.position(), Constants.UTF_8);
+			strBytes = new byte[out.position()];
+			System.arraycopy(buf, 0, strBytes, 0, strBytes.length);
+		}
+		writeByte(strBytes.length);
+		writeBytes(strBytes);
 	}
 
 	/**
-	 * Writes an int to the stream.
-	 * 
-	 * @param i the int to write.
+	 * Closes this stream
 	 */
-	public void writeInt(int i) throws java.io.IOException {
-		writeObject(i);
-	}
-
-	/**
-	 * Closes the stream when the session becomes invalid.
-	 */
-	public void closeStream() {
+	protected void closeStream() {
 		try {
 			this.os.close();
 			Vars.getLogger().fine("Native outputstream closed");

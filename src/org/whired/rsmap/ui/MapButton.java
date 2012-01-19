@@ -248,7 +248,7 @@ public abstract class MapButton {
 	 * 
 	 * @param point the point to test
 	 * @return {@code true} if {@code point} is within this button's bounds,
-	 * otherwise {@code false}
+	 *         otherwise {@code false}
 	 */
 	public boolean contains(Point point) {
 		return point.getX() >= this.getX() && point.getX() <= this.getWidth() + this.getX() && point.getY() >= this.getY() && point.getY() <= this.getHeight() + this.getY();

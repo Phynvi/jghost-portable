@@ -10,7 +10,6 @@ import org.whired.rsmap.ui.MapButton;
 import org.whired.rsmap.ui.RSMap;
 
 /**
- * 
  * @author Whired
  */
 public class PlayerRSMap extends RSMap {

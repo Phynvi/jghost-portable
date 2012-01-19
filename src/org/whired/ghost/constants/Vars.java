@@ -1,6 +1,7 @@
 package org.whired.ghost.constants;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +18,7 @@ public class Vars {
 	public final static String FS = System.getProperty("file.separator");
 	private final static String LOCAL_CODEBASE = ".ghost" + FS + "cache" + FS;
 	private final static Logger logger = LoggerFactory.create();
+	public final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("d/M k:mm");
 
 	public final static String getLocalCodebase() {
 		File f = new File(LOCAL_CODEBASE);

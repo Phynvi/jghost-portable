@@ -7,6 +7,7 @@ package org.whired.ghostclient.io.database;
  */
 public class Column {
 	private final String toString;
+	private final String name;
 
 	/**
 	 * Creates a new column with the specified name and type
@@ -16,6 +17,11 @@ public class Column {
 	 */
 	public Column(String name, String type) {
 		toString = name + " " + type;
+		this.name = name;
+	}
+
+	public String getName() {
+		return this.name;
 	}
 
 	@Override

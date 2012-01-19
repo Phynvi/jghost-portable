@@ -5,7 +5,6 @@ import java.util.HashSet;
 import org.whired.ghost.constants.Vars;
 import org.whired.ghost.net.model.GhostFrame;
 import org.whired.ghost.net.model.player.Player;
-import org.whired.ghost.net.model.player.Rank;
 import org.whired.ghost.net.model.player.RankHandler;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghostclient.client.command.CommandHandler;
@@ -26,7 +25,7 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 	private RankHandler rankHandler = new RankHandler();
 	private ModuleHandler moduleHandler;
 	private GhostClientView view;
-	private ClientPlayerList playerList = new ClientPlayerList(this) {
+	private final ClientPlayerList playerList = new ClientPlayerList(this) {
 
 		HashSet<Player> players = new HashSet<Player>();
 
@@ -84,6 +83,7 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 	/**
 	 * @return the rank handler
 	 */
+	@Override
 	public RankHandler getRankHandler() {
 		return rankHandler;
 	}
@@ -140,8 +140,8 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 		}
 	}
 
-	@Override
-	public Rank getRankForPlayer(Player player) {
-		return rankHandler.rankForLevel(player.getRights());
-	}
+	/*
+	 * @Override public Rank getRankForPlayer(Player player) { return
+	 * rankHandler.rankForLevel(player.getRights()); }
+	 */
 }

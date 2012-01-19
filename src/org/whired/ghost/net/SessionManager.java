@@ -11,7 +11,7 @@ import org.whired.ghost.net.event.SessionEventListener;
  */
 public class SessionManager {
 	private Connection connection;
-	private HashSet<SessionEventListener> listeners = new HashSet<SessionEventListener>();
+	private final HashSet<SessionEventListener> listeners = new HashSet<SessionEventListener>();
 
 	/**
 	 * Adds an event listener to this session manager
@@ -35,7 +35,7 @@ public class SessionManager {
 	 * Determines whether or not this session is open
 	 * 
 	 * @return {@code true} if there is currently a connection, otherwise
-	 * {@code false}
+	 *         {@code false}
 	 */
 	public boolean sessionIsOpen() {
 		return this.connection != null;
@@ -60,6 +60,12 @@ public class SessionManager {
 			throw new IllegalStateException("Connection already exists");
 		}
 		this.connection = connection;
+	}
+
+	/**
+	 * Invoked when the session is opened
+	 */
+	public void sessionOpened() {
 		for (SessionEventListener l : listeners) {
 			l.sessionOpened();
 		}
@@ -69,12 +75,17 @@ public class SessionManager {
 	 * Gets the current connection if one exists
 	 * 
 	 * @return the current {@link org.whired.ghost.net.Connection} if one
-	 * exists, otherwise {@code null}
+	 *         exists, otherwise {@code null}
 	 */
 	public Connection getConnection() {
 		return this.connection;
 	}
 
+	/**
+	 * Invoked when the session has eneded
+	 * 
+	 * @param reason the reason the session has ended
+	 */
 	protected void sessionEnded(String reason) {
 		this.connection = null;
 		for (SessionEventListener l : listeners) {
