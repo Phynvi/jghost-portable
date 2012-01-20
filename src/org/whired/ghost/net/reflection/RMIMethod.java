@@ -53,9 +53,8 @@ public class RMIMethod extends Accessor {
 					params[i] = Integer.TYPE;
 					System.out.println("Warning: Unboxed " + Integer.class.getName() + " to " + Integer.TYPE);
 				}
-				else if (this.paramTypeNames[i].equals("boolean")) {
+				else if (this.paramTypeNames[i].equals("boolean"))
 					params[i] = Boolean.TYPE;
-				}
 				else {
 					params[i] = Class.forName(this.paramTypeNames[i]);
 					if (Accessor.class.isAssignableFrom(params[i])) {

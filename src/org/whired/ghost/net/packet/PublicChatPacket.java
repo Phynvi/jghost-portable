@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.WrappedInputStream;
 import org.whired.ghost.net.WrappedOutputStream;
-import org.whired.ghost.net.model.player.Player;
+import org.whired.ghost.player.Player;
 
 /**
  * @author Whired

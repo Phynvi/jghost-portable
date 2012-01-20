@@ -21,9 +21,8 @@ public class ByteBuffer {
 
 	public String getString() {
 		int i = currentOffset;
-		while (buffer[currentOffset++] != 10) {
+		while (buffer[currentOffset++] != 10)
 			;
-		}
 		return new String(buffer, i, currentOffset - i - 1);
 	}
 

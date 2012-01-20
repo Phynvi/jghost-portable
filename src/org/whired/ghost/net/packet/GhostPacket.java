@@ -2,7 +2,7 @@ package org.whired.ghost.net.packet;
 
 import java.util.logging.Level;
 
-import org.whired.ghost.constants.Vars;
+import org.whired.ghost.Constants;
 import org.whired.ghost.net.Connection;
 
 /**
@@ -56,29 +56,26 @@ public class GhostPacket {
 			isReceived = true;
 			return onReceive.onTransmit(connection);
 		}
-		else if (isReceived) {
+		else if (isReceived)
 			throw new IllegalStateException("This packet has already been received");
-		}
 		return false;
 	}
 
 	public final boolean send(Connection connection) {
-		if (onSend != null) {
+		if (onSend != null)
 			try {
 				if (connection != null) {
 					connection.getOutputStream().writeByte(id);
 					return onSend.onTransmit(connection);
 				}
-				else {
-					Vars.getLogger().log(Level.WARNING, "Packet {0} not sent: No connection to remote", id);
-				}
+				else
+					Constants.getLogger().log(Level.WARNING, "Packet {0} not sent: No connection to remote", id);
 			}
 			catch (Throwable t) {
-				Vars.getLogger().log(Level.WARNING, "Packet {0} not sent: {1}", new Object[] { id, t });
-				Vars.getLogger().log(Level.FINE, "Exception details: ", t);
+				Constants.getLogger().log(Level.WARNING, "Packet {0} not sent: {1}", new Object[] { id, t });
+				Constants.getLogger().log(Level.FINE, "Exception details: ", t);
 				return false;
 			}
-		}
 		return false;
 	}
 

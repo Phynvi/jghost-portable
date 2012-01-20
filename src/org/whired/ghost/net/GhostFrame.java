@@ -1,18 +1,14 @@
-package org.whired.ghost.net.model;
+package org.whired.ghost.net;
 
 import java.io.IOException;
 import java.util.logging.Level;
 
-import org.whired.ghost.constants.Vars;
-import org.whired.ghost.net.Connection;
-import org.whired.ghost.net.PacketHandler;
-import org.whired.ghost.net.Receivable;
-import org.whired.ghost.net.SessionManager;
-import org.whired.ghost.net.model.player.PlayerList;
+import org.whired.ghost.Constants;
 import org.whired.ghost.net.packet.DebugPacket;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.packet.PublicChatPacket;
+import org.whired.ghost.player.PlayerList;
 import org.whired.ghostclient.client.user.GhostUser;
 
 /**
@@ -91,7 +87,7 @@ public abstract class GhostFrame implements Receivable, AbstractClient {
 	 */
 	@Override
 	public boolean handlePacket(int packetId, Connection connection) throws IOException {
-		Vars.getLogger().fine(this + " received packet " + packetId);
+		Constants.getLogger().fine(this + " received packet " + packetId);
 		switch (packetId) {
 		case PacketType.PUBLIC_CHAT:
 			PublicChatPacket pc = new PublicChatPacket();
@@ -102,26 +98,23 @@ public abstract class GhostFrame implements Receivable, AbstractClient {
 		break;
 		case PacketType.AUTHENTICATE_SUCCESS:
 			sessionManager.sessionOpened();
-			Vars.getLogger().info("Sucessfully connected");
+			Constants.getLogger().info("Sucessfully connected");
 		break;
 		case PacketType.DEBUG_MESSAGE:
 			DebugPacket dpacket = new DebugPacket();
 			if (dpacket.receive(connection)) {
-				Vars.getLogger().log(Level.parse(Integer.toString(dpacket.level)), "[REMOTE] " + dpacket.message);
+				Constants.getLogger().log(Level.parse(Integer.toString(dpacket.level)), "[REMOTE] " + dpacket.message);
 				packetReceived(dpacket);
 			}
 		break;
 		default: // Notify external
-			Vars.getLogger().fine("Pushing noninternal packet " + packetId + " to packet handler");
+			Constants.getLogger().fine("Pushing noninternal packet " + packetId + " to packet handler");
 			GhostPacket packet = getPacketHandler().get(packetId);
-			if (packet != null) {
-				if (packet.receive(connection)) {
+			if (packet != null)
+				if (packet.receive(connection))
 					packetReceived(packet);
-				}
-				else {
+				else
 					return false;
-				}
-			}
 		}
 		return true;
 	}

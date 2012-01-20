@@ -79,9 +79,8 @@ public class LinkingJTextPane extends JTextPane {
 	 * @param linkText the text of the link that was clicked
 	 */
 	private void fireLinkClicked(String linkText) {
-		for (LinkEventListener listener : linkEventListeners) {
+		for (LinkEventListener listener : linkEventListeners)
 			listener.linkClicked(linkText);
-		}
 	}
 
 	private void setUpListeners() {
@@ -91,9 +90,8 @@ public class LinkingJTextPane extends JTextPane {
 			public void mousePressed(java.awt.event.MouseEvent evt) {
 				if (evt.getButton() == MouseEvent.BUTTON1) {
 					String word;
-					if ((word = findWordAt(evt.getPoint())) != null) {
+					if ((word = findWordAt(evt.getPoint())) != null)
 						fireLinkClicked(word);
-					}
 				}
 			}
 
@@ -128,23 +126,20 @@ public class LinkingJTextPane extends JTextPane {
 	 * @param matches the matches to add
 	 */
 	public void addMatches(String[] matches) {
-		if (!caseSensitive) {
+		if (!caseSensitive)
 			matches = allToLower(matches);
-		}
 		this.matches.addAll(Arrays.asList(matches));
 	}
 
 	/**
-	 * Converts all strings in a given array to lowercase to maintain
-	 * case-insensitivity
+	 * Converts all strings in a given array to lowercase to maintain case-insensitivity
 	 * 
 	 * @param sourceArr the array to convert
 	 * @return the converted array
 	 */
 	private String[] allToLower(String[] sourceArr) {
-		for (int i = 0; i < sourceArr.length; i++) {
+		for (int i = 0; i < sourceArr.length; i++)
 			sourceArr[i] = sourceArr[i].toLowerCase();
-		}
 		return sourceArr;
 	}
 
@@ -158,9 +153,8 @@ public class LinkingJTextPane extends JTextPane {
 			String[] newMatches = allToLower(matches.toArray(new String[matches.size()]));
 			this.matches.addAll(Arrays.asList(newMatches));
 		}
-		else {
+		else
 			this.matches.addAll(matches);
-		}
 	}
 
 	/**
@@ -201,9 +195,8 @@ public class LinkingJTextPane extends JTextPane {
 			int firstOffs = Utilities.getWordStart(this, inOffs);
 			int lastOffs = Utilities.getWordEnd(this, firstOffs);
 			word = getStyledDocument().getText(firstOffs, lastOffs - firstOffs);
-			if (!caseSensitive) {
+			if (!caseSensitive)
 				word = word.toLowerCase();
-			}
 			if (word.length() > 0 && this.matches.contains(word)) {
 				if (curOffs[0] != firstOffs || curOffs[1] != lastOffs) {
 					clearUnderlines();

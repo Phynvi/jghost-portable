@@ -6,8 +6,7 @@ import java.awt.Point;
 import org.whired.rsmap.graphics.sprites.TextSprite;
 
 /**
- * Represents a button that can be added to the map. Contains basic button
- * functionality.
+ * Represents a button that can be added to the map. Contains basic button functionality.
  * 
  * @author Whired
  */
@@ -247,8 +246,7 @@ public abstract class MapButton {
 	 * Tests whether or not {@code point} lies within this button
 	 * 
 	 * @param point the point to test
-	 * @return {@code true} if {@code point} is within this button's bounds,
-	 *         otherwise {@code false}
+	 * @return {@code true} if {@code point} is within this button's bounds, otherwise {@code false}
 	 */
 	public boolean contains(Point point) {
 		return point.getX() >= this.getX() && point.getX() <= this.getWidth() + this.getX() && point.getY() >= this.getY() && point.getY() <= this.getHeight() + this.getY();

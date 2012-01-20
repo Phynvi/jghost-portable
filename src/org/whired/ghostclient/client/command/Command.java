@@ -23,8 +23,7 @@ public abstract class Command {
 	}
 
 	/**
-	 * Constructs a new {@code Command} with the specified command string and
-	 * no parameters
+	 * Constructs a new {@code Command} with the specified command string and no parameters
 	 * 
 	 * @param command the identifier for this command
 	 */
@@ -35,9 +34,7 @@ public abstract class Command {
 	/**
 	 * Invoked when a command must be handled
 	 * 
-	 * @param args the arguments for the command. If no arguments are parsed,
-	 *        this is {@code null}. Otherwise, each argument is guaranteed to
-	 *        have a {@code length} greater than zero.
+	 * @param args the arguments for the command. If no arguments are parsed, this is {@code null}. Otherwise, each argument is guaranteed to have a {@code length} greater than zero.
 	 */
 	public abstract boolean handle(String[] args);
 

@@ -2,11 +2,11 @@ package org.whired.ghostclient.client.settings;
 
 import java.util.logging.Level;
 
-import org.whired.ghost.constants.Vars;
-import org.whired.ghost.net.model.player.Player;
-import org.whired.ghostclient.io.database.Column;
-import org.whired.ghostclient.io.database.Database;
-import org.whired.ghostclient.io.database.Table;
+import org.whired.ghost.Constants;
+import org.whired.ghost.player.Player;
+import org.whired.ghostclient.io.sql.Column;
+import org.whired.ghostclient.io.sql.Database;
+import org.whired.ghostclient.io.sql.Table;
 
 /**
  * Contains methods for database transporting {@link SessionSettings}
@@ -51,24 +51,23 @@ public class SettingsFactory {
 					}
 				}
 				catch (Throwable t) {
-					Vars.getLogger().log(Level.WARNING, "Unable to load default connection for " + settings.getPlayer().getName(), t);
+					Constants.getLogger().log(Level.WARNING, "Unable to load default connection for " + settings.getPlayer().getName(), t);
 				}
-				Vars.getLogger().info("Session loaded");
+				Constants.getLogger().info("Session loaded");
 				return settings;
 			}
 		}
 		catch (Throwable t) {
-			Vars.getLogger().log(Level.WARNING, "Unable to load settings from database: ", t);
+			Constants.getLogger().log(Level.WARNING, "Unable to load settings from database: ", t);
 		}
-		Vars.getLogger().info("No session found, loading defaults");
+		Constants.getLogger().info("No session found, loading defaults");
 		return new SessionSettings(new Player("Admin", 6), 0);
 	}
 
 	private final static String DELIMITER = ", ";
 
 	/**
-	 * Decompresses a string array that has been compressed by
-	 * {@link #compressTabOrder(String[])}
+	 * Decompresses a string array that has been compressed by {@link #compressTabOrder(String[])}
 	 * 
 	 * @param compressed the compressed string to decompress
 	 * @return the decompressed string array
@@ -84,13 +83,11 @@ public class SettingsFactory {
 	 * @return the compressed string
 	 */
 	private static String compressTabOrder(String[] decompressed) {
-		if (decompressed.length == 0) {
+		if (decompressed.length == 0)
 			return "";
-		}
 		StringBuilder b = new StringBuilder();
-		for (String s : decompressed) {
+		for (String s : decompressed)
 			b.append(s).append(DELIMITER);
-		}
 		b.delete(b.lastIndexOf(DELIMITER), b.length());
 		return b.toString();
 	}
@@ -108,10 +105,10 @@ public class SettingsFactory {
 			user.replace(new String[] { "userId", "name", "pass", "rights", "taborder" }, new Object[] { settings.getUserId(), settings.getPlayer().getName(), "pass", settings.getPlayer().getRights(), compressTabOrder(settings.getTabOrder()) });
 			Table connection = new Table(db, CONNECTION_TABLE_NAME, CONNECTION_TABLE_COLUMNS);
 			connection.replace(new String[] { "userId", "ip", "port", "pass" }, new Object[] { settings.getUserId(), settings.defaultConnect[0], settings.defaultConnect[1], settings.defaultConnect[2] });
-			Vars.getLogger().info("Session saved");
+			Constants.getLogger().info("Session saved");
 		}
 		catch (Throwable t) {
-			Vars.getLogger().log(Level.WARNING, "Unable to save settings to database: ", t);
+			Constants.getLogger().log(Level.WARNING, "Unable to save settings to database: ", t);
 		}
 	}
 }

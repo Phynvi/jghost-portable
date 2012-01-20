@@ -51,26 +51,19 @@ public class CacheLoader {
 		byte[] out = null;
 		int i = 0;
 		nodeName = nodeName.toUpperCase();
-		for (int j = 0; j < nodeName.length(); j++) {
+		for (int j = 0; j < nodeName.length(); j++)
 			i = i * 61 + nodeName.charAt(j) - 32;
-		}
-		for (int k = 0; k < nodesLoaded; k++) {
+		for (int k = 0; k < nodesLoaded; k++)
 			if (anIntArray95[k] == i) {
-				if (out == null) {
+				if (out == null)
 					out = new byte[anIntArray96[k]];
-				}
-				if (!aBoolean99) {
+				if (!aBoolean99)
 					Class4.method73(out, anIntArray96[k], aByteArray93, anIntArray97[k], anIntArray98[k]);
-				}
-				else {
-					for (int l = 0; l < anIntArray96[k]; l++) {
+				else
+					for (int l = 0; l < anIntArray96[k]; l++)
 						out[l] = aByteArray93[anIntArray98[k] + l];
-					}
-
-				}
 				return out;
 			}
-		}
 
 		return null;
 	}

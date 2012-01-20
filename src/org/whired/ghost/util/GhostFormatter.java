@@ -1,4 +1,4 @@
-package org.whired.ghost.client.util;
+package org.whired.ghost.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-import org.whired.ghost.constants.Vars;
+import org.whired.ghost.Constants;
 
 public class GhostFormatter extends Formatter {
 
@@ -23,15 +23,13 @@ public class GhostFormatter extends Formatter {
 	public synchronized String format(LogRecord record) {
 		StringBuilder sb = new StringBuilder("[");
 		date.setTime(record.getMillis());
-		sb.append(Vars.DATE_FORMAT.format(date));
+		sb.append(Constants.DATE_FORMAT.format(date));
 		sb.append("] ");
 		String cn = record.getSourceClassName();
-		if (cn != null) {
+		if (cn != null)
 			sb.append(cn.substring(cn.lastIndexOf(".") + 1, cn.length()));
-		}
-		else {
+		else
 			sb.append(record.getLoggerName());
-		}
 		if (record.getSourceMethodName() != null) {
 			sb.append(".");
 			sb.append(record.getSourceMethodName());
@@ -42,7 +40,7 @@ public class GhostFormatter extends Formatter {
 		sb.append(": ");
 		sb.append(message);
 		sb.append(lineSeparator);
-		if (record.getThrown() != null) {
+		if (record.getThrown() != null)
 			try {
 				StringWriter sw = new StringWriter();
 				PrintWriter pw = new PrintWriter(sw);
@@ -52,7 +50,6 @@ public class GhostFormatter extends Formatter {
 			}
 			catch (Exception ex) {
 			}
-		}
 		return sb.toString();
 	}
 }

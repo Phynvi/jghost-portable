@@ -2,11 +2,11 @@ package org.whired.ghostclient.client;
 
 import java.util.HashSet;
 
-import org.whired.ghost.constants.Vars;
-import org.whired.ghost.net.model.GhostFrame;
-import org.whired.ghost.net.model.player.Player;
-import org.whired.ghost.net.model.player.RankHandler;
+import org.whired.ghost.Constants;
+import org.whired.ghost.net.GhostFrame;
 import org.whired.ghost.net.packet.GhostPacket;
+import org.whired.ghost.player.Player;
+import org.whired.ghost.player.RankHandler;
 import org.whired.ghostclient.client.command.CommandHandler;
 import org.whired.ghostclient.client.command.CommandMalformedException;
 import org.whired.ghostclient.client.command.CommandNotFoundException;
@@ -58,7 +58,7 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 		this.view = view;
 		super.setUser(user);
 		super.getSessionManager().addEventListener(this);
-		moduleHandler = new ModuleHandler(ModuleLoader.loadFromDisk(Vars.getLocalCodebase() + "modules" + Vars.FS, this.getUser().getSettings().getTabOrder()), this);
+		moduleHandler = new ModuleHandler(ModuleLoader.loadFromDisk(Constants.getLocalCodebase() + "modules" + Constants.FS, this.getUser().getSettings().getTabOrder()), this);
 	}
 
 	@Override
@@ -133,15 +133,14 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 			getCommandHandler().handleInput(command);
 		}
 		catch (CommandMalformedException ex) {
-			Vars.getLogger().warning("Command " + command + " malformed");
+			Constants.getLogger().warning("Command " + command + " malformed");
 		}
 		catch (CommandNotFoundException ex) {
-			Vars.getLogger().warning("Command " + command + " not found");
+			Constants.getLogger().warning("Command " + command + " not found");
 		}
 	}
 
 	/*
-	 * @Override public Rank getRankForPlayer(Player player) { return
-	 * rankHandler.rankForLevel(player.getRights()); }
+	 * @Override public Rank getRankForPlayer(Player player) { return rankHandler.rankForLevel(player.getRights()); }
 	 */
 }

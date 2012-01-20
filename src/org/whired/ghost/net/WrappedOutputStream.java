@@ -3,10 +3,10 @@ package org.whired.ghost.net;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.util.logging.Level;
 
-import org.whired.ghost.constants.Vars;
+import org.whired.ghost.Constants;
+import org.whired.ghost.util.JTF16Charset;
 
 /**
  * Makes writing data to an {@link java.io.OutputStream} easy
@@ -82,26 +82,17 @@ public class WrappedOutputStream {
 	}
 
 	/**
-	 * Writes a string to this stream. The given string will be encoded in
-	 * utf-8. If the string's size is greater than 256 bytes, it will
-	 * automatically be truncated.
+	 * Writes a string to this stream. The given string will be encoded in utf-8. If the string's size is greater than 256 bytes, it will automatically be truncated.
 	 * 
 	 * @param str the string to write
 	 */
 	public void writeString(String str) throws java.io.IOException {
-		byte[] strBytes = str.getBytes(Constants.UTF_8);
-		if (strBytes.length > 256) {
-			Vars.getLogger().warning("String size greater than 256 bytes. Truncating.");
-			byte[] buf = new byte[256];
-			ByteBuffer out = ByteBuffer.wrap(buf);
-			CharBuffer in = CharBuffer.wrap(str.toCharArray());
-			Constants.UTF_8.newEncoder().encode(in, out, true);
-			str = new String(buf, 0, out.position(), Constants.UTF_8);
-			strBytes = new byte[out.position()];
-			System.arraycopy(buf, 0, strBytes, 0, strBytes.length);
+		if (str.length() > 255) {
+			Constants.getLogger().warning("String size greater than 255 bytes. Truncating.");
 		}
-		writeByte(strBytes.length);
-		writeBytes(strBytes);
+		byte[] encoded = JTF16Charset.encode(str, 255);
+		writeByte(encoded.length);
+		writeBytes(encoded);
 	}
 
 	/**
@@ -110,10 +101,10 @@ public class WrappedOutputStream {
 	protected void closeStream() {
 		try {
 			this.os.close();
-			Vars.getLogger().fine("Native outputstream closed");
+			Constants.getLogger().fine("Native outputstream closed");
 		}
 		catch (Throwable t) {
-			Vars.getLogger().log(Level.SEVERE, "Unable to close outputstream: ", t);
+			Constants.getLogger().log(Level.SEVERE, "Unable to close outputstream: ", t);
 		}
 	}
 }

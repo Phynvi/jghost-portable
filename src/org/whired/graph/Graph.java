@@ -205,8 +205,7 @@ public abstract class Graph extends Component implements Plottable {
 	}
 
 	/**
-	 * @param autoscrolls sets whether or not this graph autoscrolls when data
-	 *        is added
+	 * @param autoscrolls sets whether or not this graph autoscrolls when data is added
 	 */
 	public void setAutoScrolls(boolean autoscrolls) {
 		this.autoScroll = autoscrolls;

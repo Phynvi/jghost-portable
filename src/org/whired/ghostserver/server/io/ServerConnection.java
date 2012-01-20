@@ -1,9 +1,9 @@
-package org.whired.ghostserver.server.net;
+package org.whired.ghostserver.server.io;
 
 import java.io.IOException;
 import java.net.Socket;
 
-import org.whired.ghost.constants.Vars;
+import org.whired.ghost.Constants;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.Receivable;
 import org.whired.ghost.net.WrappedInputStream;
@@ -23,7 +23,7 @@ public class ServerConnection extends Connection {
 	@Override
 	public void startReceiving() {
 		super.startReceiving();
-		Vars.getLogger().info("Session started with new client.");
+		Constants.getLogger().info("Session started with new client.");
 		validateSession();
 		try {
 			this.ssock.close();
@@ -37,9 +37,9 @@ public class ServerConnection extends Connection {
 	 */
 	public final synchronized void invalidateSession() {
 		sessionValid = false;
-		Vars.getLogger().fine("Notifying");
+		Constants.getLogger().fine("Notifying");
 		notify();
-		Vars.getLogger().fine("Notified");
+		Constants.getLogger().fine("Notified");
 	}
 
 	@Override
@@ -52,14 +52,13 @@ public class ServerConnection extends Connection {
 	 * Blocks until this session becomes invalid
 	 */
 	private final synchronized void validateSession() {
-		while (sessionValid) {
+		while (sessionValid)
 			try {
-				Vars.getLogger().fine("Lock is waiting for notification.");
+				Constants.getLogger().fine("Lock is waiting for notification.");
 				wait();
-				Vars.getLogger().fine("Lock notification received. No longer waiting.");
+				Constants.getLogger().fine("Lock notification received. No longer waiting.");
 			}
 			catch (InterruptedException e) {
 			}
-		}
 	}
 }

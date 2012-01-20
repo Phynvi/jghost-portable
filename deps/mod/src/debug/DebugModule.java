@@ -7,17 +7,17 @@ import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
 import javax.swing.BorderFactory;
-import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
-import javax.swing.JViewport;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Document;
 
-import org.whired.ghost.client.util.GhostFormatter;
-import org.whired.ghost.constants.Vars;
+import org.whired.ghost.Constants;
+import org.whired.ghost.util.GhostFormatter;
+import org.whired.ghostclient.awt.GhostScrollBarUI;
 import org.whired.ghostclient.client.GhostClientFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 import org.whired.ghostclient.client.module.Module;
@@ -42,14 +42,13 @@ public class DebugModule implements Module {
 		scrollPane.setViewportView(textPane);
 		scrollPane.setBorder(border);
 		scrollPane.setViewportBorder(border);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setOpaque(false);
-		scrollPane.getViewport().setScrollMode(JViewport.BLIT_SCROLL_MODE);
-		scrollPane.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
-		scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
 		scrollPane.getViewport().setOpaque(false);
+		scrollPane.getVerticalScrollBar().setUI(new GhostScrollBarUI(scrollPane.getVerticalScrollBar()));
+
 		final GhostFormatter formatter = new GhostFormatter();
-		Vars.getLogger().addHandler(new Handler() {
+		Constants.getLogger().addHandler(new Handler() {
 
 			@Override
 			public void publish(final LogRecord record) {
@@ -100,7 +99,7 @@ public class DebugModule implements Module {
 				scrollPane.autoscrollNext();
 				Document doc = textPane.getStyledDocument();
 				try {
-					doc.insertString(doc.getLength(), (!text.contains(System.getProperty("line.separator")) && !preFormatted) ? "[" + Vars.DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] System: " + text : text, null);
+					doc.insertString(doc.getLength(), !text.contains(System.getProperty("line.separator")) && !preFormatted ? "[" + Constants.DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] System: " + text : text, null);
 				}
 				catch (BadLocationException e) {
 				}

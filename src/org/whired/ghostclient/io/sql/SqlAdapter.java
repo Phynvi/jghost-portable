@@ -1,4 +1,4 @@
-package org.whired.ghostclient.io.database;
+package org.whired.ghostclient.io.sql;
 
 import java.sql.ResultSet;
 

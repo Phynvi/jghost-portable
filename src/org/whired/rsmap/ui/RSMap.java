@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.whired.ghost.constants.Vars;
+import org.whired.ghost.Constants;
 import org.whired.rsmap.graphics.OverviewArea;
 import org.whired.rsmap.graphics.RSCanvas;
 import org.whired.rsmap.graphics.TextRenderer;
@@ -80,23 +80,23 @@ public abstract class RSMap extends RSCanvas {
 		mb1.setTextSprite(defaultTextSprite);
 		addButton(mb1);
 
-		Vars.getLogger().info("Loading map from disk..");
+		Constants.getLogger().info("Loading map from disk..");
 		CacheLoader cacheLoader;
 		try {
 			cacheLoader = getMapLoader(new FileInputStream(cachePath));
 		}
 		catch (Throwable t) {
 			try {
-				Vars.getLogger().log(Level.WARNING, "External cache load fail, falling back to default: ", t);
+				Constants.getLogger().log(Level.WARNING, "External cache load fail, falling back to default: ", t);
 				cacheLoader = getMapLoader(this.getClass().getResourceAsStream("/org/whired/rsmap/resources/worldmap.dat"));
 			}
 			catch (Throwable t2) {
-				Vars.getLogger().log(Level.SEVERE, "Internal cache load fail, map not loaded", t2);
+				Constants.getLogger().log(Level.SEVERE, "Internal cache load fail, map not loaded", t2);
 				return;
 			}
 		}
 
-		Vars.getLogger().info("Map loaded. Rendering..");
+		Constants.getLogger().info("Map loaded. Rendering..");
 		ByteBuffer byteBuffer = new ByteBuffer(cacheLoader.loadNode("size.dat"));
 		mapStartX = byteBuffer.getShort();
 		mapStartY = byteBuffer.getShort();
@@ -152,37 +152,31 @@ public abstract class RSMap extends RSCanvas {
 		for (int i = 0; i < locations.length;) {
 			int k = (locations[i++] & 0xff) * 64 - mapStartX;
 			int l = (locations[i++] & 0xff) * 64 - mapStartY;
-			if (k > 0 && l > 0 && k + 64 < mapWidth && l + 64 < mapHeight) {
+			if (k > 0 && l > 0 && k + 64 < mapWidth && l + 64 < mapHeight)
 				for (int i1 = 0; i1 < 64; i1++) {
 					byte abyte4[] = mapObjects[i1 + k];
 					int l1 = mapHeight - l - 1;
 					for (int i2 = -64; i2 < 0; i2++) {
 						do {
 							int j = locations[i++] & 0xff;
-							if (j == 0) {
+							if (j == 0)
 								break;
-							}
-							if (j < 29) {
+							if (j < 29)
 								abyte4[l1] = (byte) j;
-							}
 						}
 						while (true);
 						l1--;
 					}
 
 				}
-			}
-			else {
-				for (int j1 = 0; j1 < 64; j1++) {
+			else
+				for (int j1 = 0; j1 < 64; j1++)
 					for (int k1 = -64; k1 < 0; k1++) {
 						byte byte0;
-						do {
+						do
 							byte0 = locations[i++];
-						}
 						while (byte0 != 0);
 					}
-				}
-			}
 		}
 	}
 
@@ -190,19 +184,16 @@ public abstract class RSMap extends RSCanvas {
 		for (int i = 0; i < abyte0.length;) {
 			int j = (abyte0[i++] & 0xff) * 64 - mapStartX;
 			int k = (abyte0[i++] & 0xff) * 64 - mapStartY;
-			if (j > 0 && k > 0 && j + 64 < mapWidth && k + 64 < mapHeight) {
+			if (j > 0 && k > 0 && j + 64 < mapWidth && k + 64 < mapHeight)
 				for (int l = 0; l < 64; l++) {
 					byte abyte2[] = abyte1[l + j];
 					int i1 = mapHeight - k - 1;
-					for (int j1 = -64; j1 < 0; j1++) {
+					for (int j1 = -64; j1 < 0; j1++)
 						abyte2[i1--] = abyte0[i++];
-					}
 
 				}
-			}
-			else {
+			else
 				i += 4096;
-			}
 		}
 
 	}
@@ -211,7 +202,7 @@ public abstract class RSMap extends RSCanvas {
 		for (int i = 0; i < abyte0.length;) {
 			int j = (abyte0[i++] & 0xff) * 64 - mapStartX;
 			int k = (abyte0[i++] & 0xff) * 64 - mapStartY;
-			if (j > 0 && k > 0 && j + 64 < mapWidth && k + 64 < mapHeight) {
+			if (j > 0 && k > 0 && j + 64 < mapWidth && k + 64 < mapHeight)
 				for (int l = 0; l < 64; l++) {
 					int ai1[] = anIntArrayArray118[l + j];
 					byte abyte2[] = aByteArrayArray119[l + j];
@@ -221,26 +212,21 @@ public abstract class RSMap extends RSCanvas {
 						if (byte0 != 0) {
 							abyte2[j1] = abyte0[i++];
 							int l1 = 0;
-							if (byte0 > 0) {
+							if (byte0 > 0)
 								l1 = anIntArray116[byte0];
-							}
 							ai1[j1--] = l1;
 						}
-						else {
+						else
 							ai1[j1--] = 0;
-						}
 					}
 
 				}
-			}
-			else {
+			else
 				for (int i1 = -4096; i1 < 0; i1++) {
 					byte byte1 = abyte0[i++];
-					if (byte1 != 0) {
+					if (byte1 != 0)
 						i++;
-					}
 				}
-			}
 		}
 
 	}
@@ -256,9 +242,8 @@ public abstract class RSMap extends RSCanvas {
 		for (int l = 5; l < mapWidth - 5; l++) {
 			byte abyte1[] = abyte0[l + 5];
 			byte abyte2[] = abyte0[l - 5];
-			for (int i1 = 0; i1 < mapHeight; i1++) {
+			for (int i1 = 0; i1 < mapHeight; i1++)
 				ai1[i1] += anIntArray115[abyte1[i1] & 0xff] - anIntArray115[abyte2[i1] & 0xff];
-			}
 
 			if (l > 10 && l < mapWidth - 10) {
 				int j1 = 0;
@@ -271,9 +256,8 @@ public abstract class RSMap extends RSCanvas {
 					j1 += (k2 >> 20) - (j2 >> 20);
 					k1 += (k2 >> 10 & 0x3ff) - (j2 >> 10 & 0x3ff);
 					l1 += (k2 & 0x3ff) - (j2 & 0x3ff);
-					if (l1 > 0) {
+					if (l1 > 0)
 						ai2[i2] = method17(j1 / 8533D, k1 / 8533D, l1 / 8533D);
-					}
 				}
 			}
 		}
@@ -293,58 +277,42 @@ public abstract class RSMap extends RSCanvas {
 		double d5 = d2;
 		if (d1 != 0.0D) {
 			double d6;
-			if (d2 < 0.5D) {
+			if (d2 < 0.5D)
 				d6 = d2 * (1.0D + d1);
-			}
-			else {
+			else
 				d6 = d2 + d1 - d2 * d1;
-			}
 			double d7 = 2D * d2 - d6;
 			double d8 = d + 0.33333333333333331D;
-			if (d8 > 1.0D) {
+			if (d8 > 1.0D)
 				d8--;
-			}
 			double d9 = d;
 			double d10 = d - 0.33333333333333331D;
-			if (d10 < 0.0D) {
+			if (d10 < 0.0D)
 				d10++;
-			}
-			if (6D * d8 < 1.0D) {
+			if (6D * d8 < 1.0D)
 				d3 = d7 + (d6 - d7) * 6D * d8;
-			}
-			else if (2D * d8 < 1.0D) {
+			else if (2D * d8 < 1.0D)
 				d3 = d6;
-			}
-			else if (3D * d8 < 2D) {
+			else if (3D * d8 < 2D)
 				d3 = d7 + (d6 - d7) * (0.66666666666666663D - d8) * 6D;
-			}
-			else {
+			else
 				d3 = d7;
-			}
-			if (6D * d9 < 1.0D) {
+			if (6D * d9 < 1.0D)
 				d4 = d7 + (d6 - d7) * 6D * d9;
-			}
-			else if (2D * d9 < 1.0D) {
+			else if (2D * d9 < 1.0D)
 				d4 = d6;
-			}
-			else if (3D * d9 < 2D) {
+			else if (3D * d9 < 2D)
 				d4 = d7 + (d6 - d7) * (0.66666666666666663D - d9) * 6D;
-			}
-			else {
+			else
 				d4 = d7;
-			}
-			if (6D * d10 < 1.0D) {
+			if (6D * d10 < 1.0D)
 				d5 = d7 + (d6 - d7) * 6D * d10;
-			}
-			else if (2D * d10 < 1.0D) {
+			else if (2D * d10 < 1.0D)
 				d5 = d6;
-			}
-			else if (3D * d10 < 2D) {
+			else if (3D * d10 < 2D)
 				d5 = d7 + (d6 - d7) * (0.66666666666666663D - d10) * 6D;
-			}
-			else {
+			else
 				d5 = d7;
-			}
 		}
 		int red = (int) (d3 * 256D);
 		int green = (int) (d4 * 256D);
@@ -370,9 +338,8 @@ public abstract class RSMap extends RSCanvas {
 		}
 
 		synchronized (RSMap.this) {
-			for (MapButton button : buttons) {
+			for (MapButton button : buttons)
 				button.draw();
-			}
 		}
 	}
 
@@ -401,18 +368,15 @@ public abstract class RSMap extends RSCanvas {
 					int l9 = l8 - i8;
 					if (l9 > 0) {
 						int l10 = ai1[j7 + y1];
-						if (l10 == 0) {
+						if (l10 == 0)
 							fillColor(pix, size, j3, i8, l3 - j3, l8 - i8, ai[j7 + y1]);
-						}
 						else {
 							byte byte0 = abyte0[j7 + y1];
 							int l11 = byte0 & 0xfc;
-							if (l11 == 0 || j4 <= 1 || l9 <= 1) {
+							if (l11 == 0 || j4 <= 1 || l9 <= 1)
 								fillColor(pix, size, j3, i8, j4, l9, l10);
-							}
-							else {
+							else
 								blendCorners(pix, size, i8 * size.width + j3, ai[j7 + y1], l10, j4, l9, l11 >> 2, byte0 & 3);
-							}
 						}
 					}
 				}
@@ -442,18 +406,15 @@ public abstract class RSMap extends RSCanvas {
 					int l9 = l8 - i8;
 					if (l9 > 0) {
 						int l10 = ai1[j7 + y1];
-						if (l10 == 0) {
+						if (l10 == 0)
 							fillColor(pix, size, j3, i8, l3 - j3, l8 - i8, ai[j7 + y1]);
-						}
 						else {
 							byte byte0 = abyte0[j7 + y1];
 							int l11 = byte0 & 0xfc;
-							if (l11 == 0 || j4 <= 1 || l9 <= 1) {
+							if (l11 == 0 || j4 <= 1 || l9 <= 1)
 								fillColor(pix, size, j3, i8, j4, l9, l10);
-							}
-							else {
+							else
 								blendCorners(pix, size, i8 * size.width + j3, ai[j7 + y1], l10, j4, l9, l11 >> 2, byte0 & 3);
-							}
 						}
 					}
 				}
@@ -461,9 +422,8 @@ public abstract class RSMap extends RSCanvas {
 			}
 		}
 
-		if (x2 - x1 > size.width) {
+		if (x2 - x1 > size.width)
 			return;
-		}
 
 		// Draws walls, doors, fences, etc.
 		for (int i4 = 0; i4 < localMapWidth; i4++) {
@@ -480,36 +440,28 @@ public abstract class RSMap extends RSCanvas {
 						int i12 = abyte1[i9 + y1] & 0xff;
 						if (i12 != 0) {
 							int k12;
-							if (i6 == 1) {
+							if (i6 == 1)
 								k12 = k4;
-							}
-							else {
+							else
 								k12 = i5 - 1;
-							}
 							int j13;
-							if (k11 == 1) {
+							if (k11 == 1)
 								j13 = i10;
-							}
-							else {
+							else
 								j13 = i11 - 1;
-							}
 							int i14 = 0xcccccc;
 							if (i12 >= 5 && i12 <= 8 || i12 >= 13 && i12 <= 16 || i12 >= 21 && i12 <= 24 || i12 == 27 || i12 == 28) {
 								i14 = 0xcc0000;
 								i12 -= 4;
 							}
-							if (i12 == 1) {
+							if (i12 == 1)
 								renderVerticalLine(k4, i10, k11, i14);
-							}
-							else if (i12 == 2) {
+							else if (i12 == 2)
 								renderHorizontalLine(k4, i10, i6, i14);
-							}
-							else if (i12 == 3) {
+							else if (i12 == 3)
 								renderVerticalLine(k12, i10, k11, i14);
-							}
-							else if (i12 == 4) {
+							else if (i12 == 4)
 								renderHorizontalLine(k4, j13, i6, i14);
-							}
 							else if (i12 == 9) {
 								renderVerticalLine(k4, i10, k11, 0xffffff);
 								renderHorizontalLine(k4, i10, i6, i14);
@@ -526,28 +478,20 @@ public abstract class RSMap extends RSCanvas {
 								renderVerticalLine(k4, i10, k11, 0xffffff);
 								renderHorizontalLine(k4, j13, i6, i14);
 							}
-							else if (i12 == 17) {
+							else if (i12 == 17)
 								renderHorizontalLine(k4, i10, 1, i14);
-							}
-							else if (i12 == 18) {
+							else if (i12 == 18)
 								renderHorizontalLine(k12, i10, 1, i14);
-							}
-							else if (i12 == 19) {
+							else if (i12 == 19)
 								renderHorizontalLine(k12, j13, 1, i14);
-							}
-							else if (i12 == 20) {
+							else if (i12 == 20)
 								renderHorizontalLine(k4, j13, 1, i14);
-							}
-							else if (i12 == 25) {
-								for (int j14 = 0; j14 < k11; j14++) {
+							else if (i12 == 25)
+								for (int j14 = 0; j14 < k11; j14++)
 									renderHorizontalLine(k4 + j14, j13 - j14, 1, i14);
-								}
-							}
-							else if (i12 == 26) {
-								for (int k14 = 0; k14 < k11; k14++) {
+							else if (i12 == 26)
+								for (int k14 = 0; k14 < k11; k14++)
 									renderHorizontalLine(k4 + k14, i10 + k14, 1, i14);
-								}
-							}
 						}
 					}
 				}
@@ -555,7 +499,7 @@ public abstract class RSMap extends RSCanvas {
 		}
 
 		synchronized (RSCanvas.class) {
-			for (Sprite s : mapSprites) {
+			for (Sprite s : mapSprites)
 				if (s.isRelativeToMap) {
 					Point loc = s.location;
 					int px = loc.x - mapStartX;
@@ -569,10 +513,8 @@ public abstract class RSMap extends RSCanvas {
 					int adjustedY = getHeight() * (l6 - y1) / (y2 - y1);
 					s.drawSprite(adjustedX - s.getWidth() / 2, adjustedY, this);
 				}
-				else {
+				else
 					s.drawSprite(s.location.x, s.location.y, this);
-				}
-			}
 		}
 	}
 
@@ -631,12 +573,11 @@ public abstract class RSMap extends RSCanvas {
 	@Override
 	public boolean clicked(Point p) {
 		synchronized (RSMap.this) {
-			for (MapButton b : buttons) {
+			for (MapButton b : buttons)
 				if (b.contains(p)) {
 					b.clicked();
 					return true;
 				}
-			}
 			return false;
 		}
 	}
@@ -679,16 +620,13 @@ public abstract class RSMap extends RSCanvas {
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if (e.getWheelRotation() > 0) {
-			if (currentZoomLevel - 0.5D > 1) {
+			if (currentZoomLevel - 0.5D > 1)
 				currentZoomLevel -= 0.5D;
-			}
-			else {
+			else
 				currentZoomLevel = 1;
-			}
 		}
-		else {
+		else
 			currentZoomLevel += 0.5D;
-		}
 		adjustOverview();
 		repaint();
 	}
@@ -698,18 +636,14 @@ public abstract class RSMap extends RSCanvas {
 		int l1 = overviewCenterY - (int) (super.getHeight() / currentZoomLevel);
 		int i2 = overviewCenterX + (int) (super.getWidth() / currentZoomLevel);
 		int k2 = overviewCenterY + (int) (super.getHeight() / currentZoomLevel);
-		if (l < 48) {
+		if (l < 48)
 			overviewCenterX = 48 + (int) (super.getWidth() / currentZoomLevel);
-		}
-		if (l1 < 48) {
+		if (l1 < 48)
 			overviewCenterY = 48 + (int) (super.getHeight() / currentZoomLevel);
-		}
-		if (i2 > mapWidth - 48) {
+		if (i2 > mapWidth - 48)
 			overviewCenterX = mapWidth - 48 - (int) (super.getWidth() / currentZoomLevel);
-		}
-		if (k2 > mapHeight - 48) {
+		if (k2 > mapHeight - 48)
 			overviewCenterY = mapHeight - 48 - (int) (super.getHeight() / currentZoomLevel);
-		}
 	}
 
 	@Override
@@ -743,14 +677,14 @@ public abstract class RSMap extends RSCanvas {
 	private Font loadPackagedFont(String name) {
 		try {
 			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("/org/whired/rsmap/resources/" + name + ".ttf")).deriveFont(9F);
-			Vars.getLogger().log(Level.INFO, "Loaded font: {0}", name);
+			Constants.getLogger().log(Level.INFO, "Loaded font: {0}", name);
 			return f;
 		}
 		catch (Throwable t) {
 			String safeFontName = "SansSerif";
-			Vars.getLogger().log(Level.WARNING, "Error loading font: " + name, t);
+			Constants.getLogger().log(Level.WARNING, "Error loading font: " + name, t);
 			Font f = new Font(safeFontName, Font.PLAIN, 10);
-			Vars.getLogger().log(Level.INFO, "Loaded safe font: {0}", safeFontName);
+			Constants.getLogger().log(Level.INFO, "Loaded safe font: {0}", safeFontName);
 			return f;
 		}
 	}

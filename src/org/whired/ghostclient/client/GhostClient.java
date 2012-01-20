@@ -1,9 +1,9 @@
 package org.whired.ghostclient.client;
 
+import org.whired.ghost.net.AbstractClient;
 import org.whired.ghost.net.SessionManager;
-import org.whired.ghost.net.model.AbstractClient;
-import org.whired.ghost.net.model.player.Player;
-import org.whired.ghost.net.model.player.RankHandler;
+import org.whired.ghost.player.Player;
+import org.whired.ghost.player.RankHandler;
 import org.whired.ghostclient.client.settings.SessionSettings;
 
 /**

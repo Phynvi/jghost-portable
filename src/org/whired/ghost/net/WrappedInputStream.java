@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import org.whired.ghost.constants.Vars;
+import org.whired.ghost.Constants;
 import org.whired.ghost.net.Connection.DisconnectCallback;
+import org.whired.ghost.util.JTF16Charset;
 
 /**
  * Makes reading data from an {@link java.io.InputStream} easy
@@ -35,8 +36,7 @@ public class WrappedInputStream {
 	 * Reads a single byte from this stream
 	 * 
 	 * @return the value of the byte that was read
-	 * @throws IOException when the end of the stream is reached, or the stream
-	 *         cannot be read from
+	 * @throws IOException when the end of the stream is reached, or the stream cannot be read from
 	 */
 	public int readByte() throws IOException {
 		int x = is.read();
@@ -52,15 +52,13 @@ public class WrappedInputStream {
 	 * 
 	 * @param length the number of bytes to read
 	 * @return the bytes that were read
-	 * @throws IOException when the end of the stream is reached, or the stream
-	 *         cannot be read from
+	 * @throws IOException when the end of the stream is reached, or the stream cannot be read from
 	 */
 	public byte[] readBytes(int length) throws IOException {
 		byte[] buf = new byte[length];
 		int read = 0;
-		while ((read += is.read(buf)) < length) {
+		while ((read += is.read(buf)) < length)
 			;
-		}
 		return buf;
 	}
 
@@ -106,8 +104,9 @@ public class WrappedInputStream {
 	 * @return the string that was read
 	 */
 	public String readString() throws java.io.IOException {
-		byte[] strBytes = readBytes(is.read());
-		return new String(strBytes, 0, strBytes.length, Constants.UTF_8);
+		String s = JTF16Charset.decode(readBytes(is.read()));
+		Constants.getLogger().info("Received str: " + s);
+		return s;
 	}
 
 	/** Sets the SessionManager for this stream */
@@ -118,11 +117,10 @@ public class WrappedInputStream {
 	/** Closes this stream when the session becomes invalid */
 	private void closeStream() {
 		try {
-			this.is.close();
-			Vars.getLogger().fine("Native inputstream closed.");
+			Constants.getLogger().fine("Native inputstream closed.");
 		}
 		catch (Exception e) {
-			Vars.getLogger().warning("Unable to close inputstream:");
+			Constants.getLogger().warning("Unable to close inputstream:");
 			e.printStackTrace();
 		}
 	}
@@ -130,6 +128,6 @@ public class WrappedInputStream {
 	/** Work to do before destroying this object */
 	public void destruct() {
 		closeStream();
-		Vars.getLogger().fine("Destruct complete.");
+		Constants.getLogger().fine("Destruct complete.");
 	}
 }

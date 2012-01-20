@@ -56,9 +56,8 @@ public class Line {
 	 */
 	public Line(Color color, Point[] points) {
 		this.color = color;
-		for (Point p : points) {
+		for (Point p : points)
 			addPoint(p);
-		}
 	}
 
 	/**
@@ -67,9 +66,8 @@ public class Line {
 	 * @param points the points that will make up this line
 	 */
 	public Line(Point[] points) {
-		for (Point p : points) {
+		for (Point p : points)
 			addPoint(p);
-		}
 	}
 
 	/**
@@ -97,21 +95,17 @@ public class Line {
 	 */
 	public synchronized void addPoint(Point point) {
 		points.add(point);
-		if (point.x > maxX) {
+		if (point.x > maxX)
 			maxX = point.x;
-		}
-		if (point.y > maxY) {
+		if (point.y > maxY)
 			maxY = point.y;
-		}
-		if (point.y < minY) {
+		if (point.y < minY)
 			minY = point.y;
-		}
 		requestRedraw();
 	}
 
 	/**
-	 * Adds a point at the next maximum x-coordinate with the given
-	 * y-coordinate
+	 * Adds a point at the next maximum x-coordinate with the given y-coordinate
 	 * 
 	 * @param y the y-coordinate of the new point
 	 * @return the point that was plotted
@@ -135,21 +129,17 @@ public class Line {
 			maxX = -1;
 			maxY = 0;
 			for (Point p : points) {
-				if (p.x > maxX) {
+				if (p.x > maxX)
 					maxX = p.x;
-				}
-				if (p.y > maxY) {
+				if (p.y > maxY)
 					maxY = p.y;
-				}
 			}
 		}
 		if (point.y == minY) {
 			minY = Integer.MAX_VALUE;
-			for (Point p : points) {
-				if (p.y < minY) {
+			for (Point p : points)
+				if (p.y < minY)
 					minY = p.y;
-				}
-			}
 		}
 		requestRedraw();
 	}
@@ -213,8 +203,7 @@ public class Line {
 	 * Requests that the owner of this line, if any, is redrawn
 	 */
 	private void requestRedraw() {
-		if (this.owner != null) {
+		if (this.owner != null)
 			this.owner.repaint();
-		}
 	}
 }

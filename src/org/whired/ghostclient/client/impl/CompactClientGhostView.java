@@ -7,6 +7,7 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -34,6 +35,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -46,9 +48,11 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import org.whired.ghost.constants.Vars;
-import org.whired.ghost.net.model.player.Player;
-import org.whired.ghost.net.model.player.Rank;
+import org.whired.ghost.Constants;
+import org.whired.ghost.player.Player;
+import org.whired.ghost.player.Rank;
+import org.whired.ghostclient.awt.GhostScrollBarUI;
+import org.whired.ghostclient.awt.RoundedBorder;
 import org.whired.ghostclient.client.GhostClient;
 import org.whired.ghostclient.client.GhostClientView;
 import org.whired.ghostclient.client.module.Module;
@@ -59,6 +63,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 	private JLabel lblConnection;
 	private final Color highlight = new Color(99, 130, 191, 120);
 	private final Color transparent = new Color(0, 0, 0, 0);
+	private final Font ghostFont = new Font("SansSerif", Font.PLAIN, 9);
 
 	private final DefaultListModel mdlPlayerList = new DefaultListModel();
 	private GhostClient model;
@@ -77,14 +82,13 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 				}
 				catch (Exception e) {
-					Vars.getLogger().warning("Error setting Metal look and feel:");
+					Constants.getLogger().warning("Error setting Metal look and feel:");
 					e.printStackTrace();
 				}
 				try {
-					Font f = new Font("SansSerif", Font.PLAIN, 9);
-					Font f2 = f.deriveFont(10F);
-					UIManager.put("ToolTip.font", f);
-					UIManager.put("OptionPane.messageFont", f);
+					Font f2 = ghostFont.deriveFont(10F);
+					UIManager.put("ToolTip.font", ghostFont);
+					UIManager.put("OptionPane.messageFont", ghostFont);
 					UIManager.put("Label.foreground", Color.WHITE);
 					UIManager.put("TabbedPane.foreground", Color.WHITE);
 					UIManager.put("TextField.caretForeground", Color.WHITE);
@@ -93,25 +97,24 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					UIManager.put("TextPane.foreground", Color.WHITE);
 					UIManager.put("TextPane.selectionBackground", highlight);
 					UIManager.put("TextPane.selectionForeground", Color.WHITE);
-					UIManager.put("List.font", f);
-					UIManager.put("Button.font", f);
-					UIManager.put("Label.font", f);
-					UIManager.put("ComboBox.font", f);
+					UIManager.put("List.font", ghostFont);
+					UIManager.put("Button.font", ghostFont);
+					UIManager.put("Label.font", ghostFont);
+					UIManager.put("ComboBox.font", ghostFont);
 					UIManager.put("Tree.font", f2);
 					UIManager.put("TextArea.font", f2);
-					UIManager.put("TextPane.font", f);
+					UIManager.put("TextPane.font", ghostFont);
 					UIManager.put("TextField.font", f2);
-					UIManager.put("Menu.font", f);
-					UIManager.put("MenuItem.font", f);
-					UIManager.put("TabbedPane.font", f);
-					UIManager.put("ScrollBar.width", 10);
+					UIManager.put("Menu.font", ghostFont);
+					UIManager.put("MenuItem.font", ghostFont);
+					UIManager.put("TabbedPane.font", ghostFont);
+					UIManager.put("ScrollBar.width", 8);
 					UIManager.put("TabbedPane.contentAreaColor", new Color(0, 0, 0, 0));
-					UIManager.put("TabbedPane.contentBorderInsets", new Insets(1, 1, 1, 1));
-					UIManager.put("TabbedPane.selected", new Color(0, 0, 0, 0));
-					// UIManager.put("TabbedPane.tabsOpaque", false);
+					UIManager.put("TabbedPane.contentBorderInsets", new Insets(4, 0, 0, 4));
+					UIManager.put("TabbedPane.selected", transparent);
 				}
 				catch (Exception e) {
-					Vars.getLogger().warning("Error while overriding look and feel:");
+					Constants.getLogger().warning("Error while overriding look and feel:");
 					e.printStackTrace();
 				}
 				setTitle("GHOST lite");
@@ -126,14 +129,14 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				});
 
 				Border emptyBorder = BorderFactory.createEmptyBorder();
-				Border lineBorder = BorderFactory.createLineBorder(new Color(99, 130, 191), 1);
+				Border lineBorder = new RoundedBorder(new Color(99, 130, 191));
 
 				JLabel imageLabel = new JLabel();
 				try {
 					imageLabel.setIcon(new ImageIcon(this.getClass().getResource("resources/blueleaf.jpg")));
 				}
 				catch (Exception e) {
-					Vars.getLogger().log(Level.WARNING, "Error while loading graphical resources:", e);
+					Constants.getLogger().log(Level.WARNING, "Error while loading graphical resources:", e);
 				}
 
 				textInput = new JTextField();
@@ -188,98 +191,98 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				});
 				textInput.setOpaque(false);
 				textInput.setBorder(lineBorder);
-				textInput.setBounds(104, 483, 530, 14);
+				textInput.setBounds(144, 483, 490, 14);
 
 				lblConnection = new JLabel("Disconnected");
 				lblConnection.setOpaque(true);
 				lblConnection.setBackground(transparent);
 				lblConnection.setBorder(lineBorder);
 				lblConnection.setHorizontalAlignment(SwingConstants.CENTER);
-				lblConnection.setBounds(635, 483, 63, 14);
 				lblConnection.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				lblConnection.setBounds(635, 483, 63, 14);
+
 				lblConnection.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						if (model.getSessionManager().sessionIsOpen()) {
 							model.handleCommand("disconnect");
 						}
-						else {
-							if (e.getButton() == MouseEvent.BUTTON1) {
-								final JDialog jd = new JDialog();
-								jd.setTitle("Connect");
-								final JTextField connectInput = new JTextField();
-								final JTextField portInput = new JTextField();
-								final JPasswordField passwordInput = new JPasswordField();
-								final JOptionPane jo = new JOptionPane(new Object[] { "Enter IP, port, and password.", connectInput, portInput, passwordInput }, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[] { "OK", "Cancel" }, "OK");
-								jd.setContentPane(jo);
-								jd.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-								jd.addWindowListener(new WindowAdapter() {
+						else if (e.getButton() == MouseEvent.BUTTON1) {
+							final JDialog jd = new JDialog();
+							jd.setTitle("Connect");
+							final JTextField connectInput = new JTextField();
+							final JTextField portInput = new JTextField();
+							final JPasswordField passwordInput = new JPasswordField();
+							final JOptionPane jo = new JOptionPane(new Object[] { "Enter IP, port, and password.", connectInput, portInput, passwordInput }, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[] { "OK", "Cancel" }, "OK");
+							jd.setContentPane(jo);
+							jd.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+							jd.addWindowListener(new WindowAdapter() {
 
-									@Override
-									public void windowClosing(WindowEvent we) {
-										jo.setValue(JOptionPane.CLOSED_OPTION);
-									}
-								});
-								jo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+								@Override
+								public void windowClosing(WindowEvent we) {
+									jo.setValue(JOptionPane.CLOSED_OPTION);
+								}
+							});
+							jo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
 
-									@Override
-									public void propertyChange(java.beans.PropertyChangeEvent e) {
-										String prop = e.getPropertyName();
-										if (isVisible() && e.getSource() == jo && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
-											Object value = jo.getValue();
-											if (value == JOptionPane.UNINITIALIZED_VALUE) {
+								@Override
+								public void propertyChange(java.beans.PropertyChangeEvent e) {
+									String prop = e.getPropertyName();
+									if (isVisible() && e.getSource() == jo && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
+										Object value = jo.getValue();
+										if (value == JOptionPane.UNINITIALIZED_VALUE) {
+											return;
+										}
+										jo.setValue(JOptionPane.UNINITIALIZED_VALUE);
+										if (value.equals("OK")) {
+											String IP = connectInput.getText();
+											String port = portInput.getText();
+											String password = new String(passwordInput.getPassword());
+											if (IP.length() == 0 || port.length() == 0 || password.length() == 0) {
+												JOptionPane.showMessageDialog(jd, "Not all fields were filled out properly", "Error", JOptionPane.ERROR_MESSAGE);
 												return;
 											}
-											jo.setValue(JOptionPane.UNINITIALIZED_VALUE);
-											if (value.equals("OK")) {
-												String IP = connectInput.getText();
-												String port = portInput.getText();
-												String password = new String(passwordInput.getPassword());
-												if (IP.length() == 0 || port.length() == 0 || password.length() == 0) {
-													JOptionPane.showMessageDialog(jd, "Not all fields were filled out properly", "Error", JOptionPane.ERROR_MESSAGE);
-													return;
-												}
-												try {
-													port = "" + Integer.parseInt(portInput.getText());
-												}
-												catch (Exception err) {
-													JOptionPane.showMessageDialog(jd, "The port must be numeric!", "Error", JOptionPane.ERROR_MESSAGE);
-													portInput.setText(null);
-													portInput.requestFocusInWindow();
-													return;
-												}
-												if (!IP.contains(".") && !IP.toLowerCase().equals("localhost")) {
-													JOptionPane.showMessageDialog(jd, "The IP entered was invalid.", "Error", JOptionPane.ERROR_MESSAGE);
-													connectInput.setText(null);
-													connectInput.requestFocusInWindow();
-													return;
-												}
-												jd.dispose();
-												model.handleCommand("connect " + IP + " " + port + " " + password);
+											try {
+												port = "" + Integer.parseInt(portInput.getText());
 											}
-											else {
-												jd.dispose();
+											catch (Exception err) {
+												JOptionPane.showMessageDialog(jd, "The port must be numeric!", "Error", JOptionPane.ERROR_MESSAGE);
+												portInput.setText(null);
+												portInput.requestFocusInWindow();
+												return;
 											}
+											if (!IP.contains(".") && !IP.toLowerCase().equals("localhost")) {
+												JOptionPane.showMessageDialog(jd, "The IP entered was invalid.", "Error", JOptionPane.ERROR_MESSAGE);
+												connectInput.setText(null);
+												connectInput.requestFocusInWindow();
+												return;
+											}
+											jd.dispose();
+											model.handleCommand("connect " + IP + " " + port + " " + password);
+										}
+										else {
+											jd.dispose();
 										}
 									}
-								});
-								jd.setResizable(false);
-								jd.pack();
-								jd.setLocationRelativeTo(CompactClientGhostView.this);
-								jd.setModal(true);
-								jd.setVisible(true);
-								connectInput.requestFocusInWindow();
-							}
-							else if (e.getButton() == MouseEvent.BUTTON3) {
-								model.handleCommand("connect");
-							}
+								}
+							});
+							jd.setResizable(false);
+							jd.pack();
+							jd.setLocationRelativeTo(CompactClientGhostView.this);
+							jd.setModal(true);
+							jd.setVisible(true);
+							connectInput.requestFocusInWindow();
+						}
+						else if (e.getButton() == MouseEvent.BUTTON3) {
+							model.handleCommand("connect");
 						}
 					}
 				});
 
 				final JLabel lblPlayerCount = new JLabel("Players: 0");
+				lblPlayerCount.setBorder(lineBorder);
 				lblPlayerCount.setHorizontalAlignment(SwingConstants.CENTER);
-				lblPlayerCount.setBounds(3, 0, 100, 15);
+				lblPlayerCount.setBounds(3, 1, 140, 15);
 
 				final JList compPlayerList = new JList();
 				compPlayerList.setCellRenderer(new DefaultListCellRenderer() {
@@ -302,13 +305,14 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 							public void paint(Graphics g) {
 								if (isSelected) {
 									g.setColor(highlight);
-									g.fillRect(0, 0, this.getWidth(), this.getHeight());
-									g.drawRect(1, 1, this.getWidth() - 2, this.getHeight() - 2);
+									((java.awt.Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+									g.fillRoundRect(0, 0, this.getWidth() - 1, this.getHeight(), 5, 5);
+									g.drawRoundRect(0, 0, this.getWidth() - 2, this.getHeight() - 1, 5, 5);
 								}
 								super.paint(g);
 								if (playerRank != null) {
 									Icon i = playerRank.getIcon();
-									i.paintIcon(this, g, getWidth() - i.getIconWidth(), this.getHeight() / 2 - i.getIconHeight() / 2);
+									i.paintIcon(this, g, getWidth() - i.getIconWidth() - 1, this.getHeight() / 2 - i.getIconHeight() / 2);
 								}
 								g.dispose();
 							}
@@ -316,6 +320,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 						if (player != null && playerRank != null) {
 							label.setToolTipText(player.getName() + " - " + playerRank.getTitle());
 						}
+						label.setFont(ghostFont);
 						return label;
 					}
 				});
@@ -357,21 +362,27 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				});
 				compPlayerList.setModel(mdlPlayerList);
 				JScrollPane scrlPlayerList = new JScrollPane();
-				scrlPlayerList.setBounds(3, 15, 100, 451);
+				scrlPlayerList.setBounds(3, 15, 140, 453);
 				scrlPlayerList.setViewportView(compPlayerList);
-				scrlPlayerList.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+				scrlPlayerList.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 				scrlPlayerList.getViewport().setOpaque(false);
 				scrlPlayerList.setOpaque(false);
+				scrlPlayerList.getVerticalScrollBar().setUI(new GhostScrollBarUI(scrlPlayerList.getVerticalScrollBar()));
 				compPlayerList.setOpaque(false);
 				scrlPlayerList.setBorder(lineBorder);
 				compPlayerList.setBorder(emptyBorder);
 
-				JRoundedButton btnRestart = new JRoundedButton("Restart");
-				btnRestart.setBounds(2, 482, 101, 16);
+				JLabel btnRestart = new JLabel("Restart");
+				btnRestart.setBounds(3, 483, 140, 14);
+				btnRestart.setBorder(lineBorder);
+				btnRestart.setOpaque(true);
+				btnRestart.setBackground(transparent);
+				btnRestart.setHorizontalAlignment(SwingConstants.CENTER);
+				btnRestart.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
 				tabbedPane = new GhostTabbedPane();
 				tabbedPane.setTabPlacement(SwingConstants.BOTTOM);
-				tabbedPane.setBounds(104, 2, 594, 482);
+				tabbedPane.setBounds(144, 0, 554, 484);
 				tabbedPane.addChangeListener(new ChangeListener() {
 
 					@Override
@@ -396,7 +407,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				tabbedPane.setBackground(transparent);
 
 				final JTextField textSearch = new JTextField();
-				textSearch.setBounds(3, 467, 100, 14);
+				textSearch.setBounds(3, 467, 140, 14);
 				textSearch.setOpaque(false);
 				textSearch.setBorder(lineBorder);
 				textSearch.setText("Search..");
@@ -417,9 +428,9 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 						if (search.length() > 0) {
 							Object[] elems = new Object[mdlPlayerList.size()];
 							mdlPlayerList.copyInto(elems);
-							for (int i = 0; i < elems.length; i++) {
-								if (elems[i].toString().toLowerCase().contains(search.toLowerCase())) {
-									compPlayerList.setSelectedValue(elems[i], true);
+							for (Object elem : elems) {
+								if (elem.toString().toLowerCase().contains(search.toLowerCase())) {
+									compPlayerList.setSelectedValue(elem, true);
 									break;
 								}
 							}

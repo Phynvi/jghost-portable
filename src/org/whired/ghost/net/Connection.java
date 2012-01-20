@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.logging.Level;
 
-import org.whired.ghost.constants.Vars;
+import org.whired.ghost.Constants;
 import org.whired.ghost.net.packet.DebugPacket;
 import org.whired.ghost.net.packet.GhostAuthenticationPacket;
 import org.whired.ghost.net.packet.PacketType;
 
 /**
- * @author Whired A friendly middle layer between the connection protocols and
- *         the stream wrappers. Keeps as much of the more advanced code as
- *         hidden as possible.
+ * @author Whired A friendly middle layer between the connection protocols and the stream wrappers. Keeps as much of the more advanced code as hidden as possible.
  */
 public abstract class Connection {
 
@@ -61,7 +59,7 @@ public abstract class Connection {
 				endSession(reason);
 			}
 		});
-		Vars.getLogger().fine("Running");
+		Constants.getLogger().fine("Running");
 	}
 
 	protected interface DisconnectCallback {
@@ -88,13 +86,13 @@ public abstract class Connection {
 	 * Starts listening for and handling all incoming packets
 	 */
 	public void startReceiving() {
-		Vars.getLogger().fine("Initiating new thread for packet listening..");
+		Constants.getLogger().fine("Initiating new thread for packet listening..");
 		listenerThread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				Vars.getLogger().log(Level.FINE, "Listening for incoming packets on {0}", Thread.currentThread().getName());
-				while (true) {
+				Constants.getLogger().log(Level.FINE, "Listening for incoming packets on {0}", Thread.currentThread().getName());
+				while (true)
 					try {
 						inputStream.expectingNewPacket = true;
 						handlePacket(inputStream.readByte());
@@ -107,21 +105,20 @@ public abstract class Connection {
 					catch (IOException ioe) {
 						break;
 					}
-				}
-				Vars.getLogger().fine("Thread " + Thread.currentThread().getName() + " is exiting.");
+				Constants.getLogger().fine("Thread " + Thread.currentThread().getName() + " is exiting.");
 			}
 		}, "Packet Receiver");
 		listenerThread.start();
 	}
 
 	private void handlePacket(int packetId) {
-		Vars.getLogger().log(Level.FINE, "Received packet {0}", packetId);
+		Constants.getLogger().log(Level.FINE, "Received packet {0}", packetId);
 		if (expectingPassword) {
 			if (packetId == PacketType.AUTHENTICATION) {
 				GhostAuthenticationPacket ap = new GhostAuthenticationPacket();
-				if (ap.receive(this)) {
+				if (ap.receive(this))
 					if (ap.password.equals(password)) {
-						Vars.getLogger().fine("Password matched, client accepted.");
+						Constants.getLogger().fine("Password matched, client accepted.");
 						try {
 							getOutputStream().writeByte(PacketType.AUTHENTICATE_SUCCESS);
 						}
@@ -129,21 +126,17 @@ public abstract class Connection {
 						}
 						expectingPassword = false;
 					}
-					else {
+					else
 						endSession("Password incorrect");
-					}
-				}
 			}
-			else {
+			else
 				endSession("Password expected, but not received");
-			}
 		}
 		else {
-			Vars.getLogger().fine("Notifying receivable that external packet " + packetId + " has been received.");
+			Constants.getLogger().fine("Notifying receivable that external packet " + packetId + " has been received.");
 			try {
-				if (!receivable.handlePacket(packetId, this)) {
+				if (!receivable.handlePacket(packetId, this))
 					endSession("Packet " + packetId + " was not handled");
-				}
 			}
 			catch (IOException e) {
 				endSession("Error while handling packet " + packetId);
@@ -155,7 +148,7 @@ public abstract class Connection {
 	 * Closes and releases the output stream
 	 */
 	private void removeOutputStream() {
-		Vars.getLogger().fine("Removing outputStream. Thread: " + Thread.currentThread().getName());
+		Constants.getLogger().fine("Removing outputStream. Thread: " + Thread.currentThread().getName());
 		this.outputStream.closeStream();
 	}
 
@@ -163,20 +156,19 @@ public abstract class Connection {
 	 * Closes and releases the input stream
 	 */
 	private void removeInputStream() {
-		Vars.getLogger().fine("Removing inputStream. Thread: " + Thread.currentThread().getName());
+		Constants.getLogger().fine("Removing inputStream. Thread: " + Thread.currentThread().getName());
 		this.inputStream.destruct();
 	}
 
 	/**
-	 * Sets a password that must be received in order for the session to
-	 * continue
+	 * Sets a password that must be received in order for the session to continue
 	 * 
 	 * @param newPass the password that must be matched
 	 */
 	protected void setPassword(String newPass) {
 		this.password = newPass;
 		this.expectingPassword = true;
-		Vars.getLogger().info("Password request acknowledged. Password is now expected.");
+		Constants.getLogger().info("Password request acknowledged. Password is now expected.");
 	}
 
 	/**
@@ -184,13 +176,12 @@ public abstract class Connection {
 	 */
 	protected void endSession(final String reason) {
 		new DebugPacket(Level.WARNING.intValue(), reason == null ? "Unspecified" : reason).send(this);
-		Vars.getLogger().log(Level.WARNING, "Termination requested [Reason: {0} - Target: {1}", new Object[] { reason != null ? reason + "]" : "unspecified]", this });
-		if (this.manager != null) {
+		Constants.getLogger().log(Level.WARNING, "Termination requested [Reason: {0} - Target: {1}", new Object[] { reason != null ? reason + "]" : "unspecified]", this });
+		if (this.manager != null)
 			this.manager.sessionEnded(reason);
-		}
 		removeOutputStream();
 		removeInputStream();
-		Vars.getLogger().fine("Connection reset: " + reason);
+		Constants.getLogger().fine("Connection reset: " + reason);
 	}
 
 	public void setEnforceTimeout(boolean b) {

@@ -5,7 +5,7 @@ import java.awt.Point;
 import java.util.HashMap;
 
 import org.whired.ghost.math.GhostMath;
-import org.whired.ghost.net.model.player.Player;
+import org.whired.ghost.player.Player;
 import org.whired.rsmap.ui.MapButton;
 import org.whired.rsmap.ui.RSMap;
 
@@ -14,7 +14,7 @@ import org.whired.rsmap.ui.RSMap;
  */
 public class PlayerRSMap extends RSMap {
 
-	private HashMap<String, MapPlayer> players = new HashMap<String, MapPlayer>();
+	private final HashMap<String, MapPlayer> players = new HashMap<String, MapPlayer>();
 	private boolean showLocations = false;
 	private boolean showNames = false;
 	private MapPlayer selectedPlayer = null;
@@ -84,15 +84,14 @@ public class PlayerRSMap extends RSMap {
 			Point loc = null;
 			for (Point lh : selectedPlayer.getLocationHistory()) {
 				lh = mapToPixel(lh);
-				if (loc != null) {
+				if (loc != null)
 					renderLine(loc.x, loc.y, lh.x, lh.y, 0xffffff);
-				}
 				loc = lh;
 			}
 			Point c = mapToPixel(selectedPlayer.getLocation());
 			renderLine(loc.x, loc.y, c.x, c.y, 0xff0000);
 		}
-		if (showLocations || showNames) {
+		if (showLocations || showNames)
 			for (MapPlayer p : players.values()) {
 				Point loc = mapToPixel(p.getLocation());
 				if (showNames) {
@@ -103,32 +102,27 @@ public class PlayerRSMap extends RSMap {
 				if (showLocations) {
 					for (Point lh : p.getLocationHistory()) {
 						lh = mapToPixel(lh);
-						if (loc != null) {
+						if (loc != null)
 							renderLine(loc.x, loc.y, lh.x, lh.y, 0xffffff);
-						}
 						loc = lh;
 					}
 					Point c = mapToPixel(p.getLocation());
 					renderLine(loc.x, loc.y, c.x, c.y, 0xff0000);
 				}
 			}
-		}
 		Point p = mapToPixel(new Point(2460, 3000));
 		renderPoint(p.x, p.y, 0xff00ff);
 	}
 
 	public MapPlayer findPlayerNearest(Point mapCoord) {
 		MapPlayer nearest = null;
-		for (MapPlayer pl : players.values()) {
+		for (MapPlayer pl : players.values())
 			if (nearest != null) {
-				if (GhostMath.getDistance(pl.getLocation(), mapCoord) < GhostMath.getDistance(nearest.getLocation(), mapCoord)) {
+				if (GhostMath.getDistance(pl.getLocation(), mapCoord) < GhostMath.getDistance(nearest.getLocation(), mapCoord))
 					nearest = pl;
-				}
 			}
-			else {
+			else
 				nearest = pl;
-			}
-		}
 		return nearest;
 	}
 

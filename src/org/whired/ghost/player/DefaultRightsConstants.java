@@ -1,4 +1,4 @@
-package org.whired.ghost.net.model.player;
+package org.whired.ghost.player;
 
 /**
  * Constants for default rights

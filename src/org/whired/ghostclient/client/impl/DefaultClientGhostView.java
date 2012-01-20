@@ -49,9 +49,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import org.whired.ghost.constants.Vars;
-import org.whired.ghost.net.model.player.Player;
-import org.whired.ghost.net.model.player.Rank;
+import org.whired.ghost.Constants;
+import org.whired.ghost.player.Player;
+import org.whired.ghost.player.Rank;
 import org.whired.ghostclient.client.GhostClient;
 import org.whired.ghostclient.client.GhostClientView;
 import org.whired.ghostclient.client.module.Module;
@@ -157,9 +157,8 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 				String prop = e.getPropertyName();
 				if (isVisible() && e.getSource() == jo && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
 					Object value = jo.getValue();
-					if (value == JOptionPane.UNINITIALIZED_VALUE) {
+					if (value == JOptionPane.UNINITIALIZED_VALUE)
 						return;
-					}
 					jo.setValue(JOptionPane.UNINITIALIZED_VALUE);
 					if (value.equals("OK")) {
 						String IP = connectInput.getText();
@@ -187,9 +186,8 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 						jd.dispose();
 						controller.handleCommand("connect " + IP + " " + port + " " + password);
 					}
-					else {
+					else
 						jd.dispose();
-					}
 				}
 			}
 		});
@@ -222,7 +220,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 		}
 		catch (Exception e) {
-			Vars.getLogger().warning("Error setting Metal look and feel:");
+			Constants.getLogger().warning("Error setting Metal look and feel:");
 			e.printStackTrace();
 		}
 		try {
@@ -249,7 +247,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 
 		}
 		catch (Exception e) {
-			Vars.getLogger().warning("Error while overriding look and feel:");
+			Constants.getLogger().warning("Error while overriding look and feel:");
 			e.printStackTrace();
 		}
 	}
@@ -266,7 +264,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			imageLabel.setIcon(new ImageIcon(this.getClass().getResource("resources/interfacetest.png")));
 		}
 		catch (Exception e) {
-			Vars.getLogger().warning("Error while loading graphical resources:");
+			Constants.getLogger().warning("Error while loading graphical resources:");
 			e.printStackTrace();
 		}
 		lblState = new JLabel("Disconnected");
@@ -280,9 +278,8 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			@Override
 			public void run() {
 				LinkedList<String> tabs = new LinkedList<String>();
-				for (int i = 0; i < jTabbedPane1.getTabCount(); i++) {
+				for (int i = 0; i < jTabbedPane1.getTabCount(); i++)
 					tabs.add(jTabbedPane1.getTitleAt(i));
-				}
 				controller.getSettings().setTabOrder(tabs.toArray(new String[tabs.size()]));
 			}
 		};
@@ -297,9 +294,8 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			public void mouseClicked(MouseEvent e) {
 				Object x = playerListComponent.getSelectedValue();
 				if (e.getClickCount() == 1) {
-					if (x != null) {
+					if (x != null)
 						controller.getPlayerList().playerSelected((Player) x);
-					}
 				}
 				else if (e.getClickCount() == 2) {
 					chatInput.setText("/pm " + x + " ");
@@ -339,9 +335,8 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 						g.dispose();
 					}
 				};
-				if (player != null && playerRank != null) {
+				if (player != null && playerRank != null)
 					label.setToolTipText(player.getName() + " - " + playerRank.getTitle());
-				}
 				return label;
 			}
 		});
@@ -468,20 +463,17 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			@Override
 			public void keyPressed(KeyEvent ke) {
 				if (ke.getKeyCode() == 38) {
-					if (historyIndex > 1) {
+					if (historyIndex > 1)
 						historyIndex--;
-					}
 					chatInput.setText(chatHistory.get(historyIndex));
 				}
-				else if (ke.getKeyCode() == 40) {
+				else if (ke.getKeyCode() == 40)
 					if (historyIndex < chatHistory.size() + 1) {
 						historyIndex++;
 						chatInput.setText(chatHistory.get(historyIndex));
 					}
-					else {
+					else
 						chatInput.setText(null);
-					}
-				}
 			}
 		});
 		chatInput.addActionListener(new ActionListener() {
@@ -491,28 +483,22 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 				String message = chatInput.getText();
 				chatInput.setText("");
 				if (!message.equals("")) {
-					if (!message.startsWith("/")) {
+					if (!message.startsWith("/"))
 						controller.displayPublicChat(controller.getUserPlayer(), message);
-					}
-					else {
+					else
 						controller.handleCommand(message.substring(1, message.length()));
-					}
 					if (historyIndex > 250) {
 						historyIndex = 1;
 						chatHistory.clear();
 					}
-					if (chatHistory.isEmpty()) {
+					if (chatHistory.isEmpty())
 						historyIndex = 1;
-					}
-					else {
+					else
 						historyIndex = chatHistory.size() + 1;
-					}
-					if (chatHistory.get(historyIndex - 1) == null || !chatHistory.get(historyIndex - 1).equalsIgnoreCase(message)) {
+					if (chatHistory.get(historyIndex - 1) == null || !chatHistory.get(historyIndex - 1).equalsIgnoreCase(message))
 						chatHistory.put(historyIndex++, message);
-					}
-					else {
-						Vars.getLogger().fine("History match, input not saved");
-					}
+					else
+						Constants.getLogger().fine("History match, input not saved");
 				}
 			}
 		});
@@ -669,9 +655,8 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	public void displayModuleNotification(Module module) {
 		int bgTab = jTabbedPane1.indexOfComponent(module.getComponent());
 		int selTab = jTabbedPane1.getSelectedIndex();
-		if (bgTab != -1 && selTab != -1 && selTab != bgTab && jTabbedPane1.getForegroundAt(bgTab) != Color.red) {
+		if (bgTab != -1 && selTab != -1 && selTab != bgTab && jTabbedPane1.getForegroundAt(bgTab) != Color.red)
 			jTabbedPane1.setForegroundAt(bgTab, Color.red);
-		}
 	}
 
 	@Override

@@ -42,9 +42,8 @@ public class TextSprite extends Sprite {
 		this.charValues = new int[256];
 		for (int i = 0; i < 256; i++) {
 			int j = ACCEPTABLE_CHARS.indexOf(i);
-			if (j == -1) {
+			if (j == -1)
 				j = 74;
-			}
 			charValues[i] = j * 9;
 		}
 		this.text = text;
@@ -53,15 +52,13 @@ public class TextSprite extends Sprite {
 		spritePixels = new int[0x186a0]; // 100,000
 		yOffset = 855;
 
-		for (int j = 0; j < 95; j++) {
+		for (int j = 0; j < 95; j++)
 			copyCharPixels(font, ACCEPTABLE_CHARS.charAt(j), j, false, component);
-		}
 
 		// This bit shrinks down spritePixels
 		int abyte0[] = new int[yOffset];
-		for (int i1 = 0; i1 < yOffset; i1++) {
+		for (int i1 = 0; i1 < yOffset; i1++)
 			abyte0[i1] = spritePixels[i1];
-		}
 		spritePixels = abyte0;
 	}
 
@@ -86,9 +83,8 @@ public class TextSprite extends Sprite {
 			i2 += i3 * k1;
 			scanOffset += i3 * canvas.getWidth();
 		}
-		if (adjustedY + l1 >= canvas.endY) {
+		if (adjustedY + l1 >= canvas.endY)
 			l1 -= adjustedY + l1 - canvas.endY + 1;
-		}
 		if (adjustedX < canvas.startX) {
 			int j3 = canvas.startX - adjustedX;
 			k1 -= j3;
@@ -104,19 +100,16 @@ public class TextSprite extends Sprite {
 			l2 += k3;
 			k2 += k3;
 		}
-		if (k1 > 0 && l1 > 0) {
+		if (k1 > 0 && l1 > 0)
 			drawLetter(canvas.pixels, spritePixels, hexRGB, i2, scanOffset, k1, l1, k2, l2);
-		}
 	}
 
 	private void parseAndRenderString(int x, int y, RSCanvas canvas) {
 		int lineCount = 1;
 		String string = getText();
-		for (int i13 = 0; i13 < string.length(); i13++) {
-			if (string.charAt(i13) == '/') {
+		for (int i13 = 0; i13 < string.length(); i13++)
+			if (string.charAt(i13) == '/')
 				lineCount++;
-			}
-		}
 		y -= method40() * (lineCount - 1) / 2;
 		y += getStringHeight() / 2;
 		do {
@@ -171,17 +164,13 @@ public class TextSprite extends Sprite {
 
 	private int getStringWidth(String s) {
 		int i = 0;
-		for (int j = 0; j < s.length(); j++) {
-			if (s.charAt(j) == '@' && j + 4 < s.length() && s.charAt(j + 4) == '@') {
+		for (int j = 0; j < s.length(); j++)
+			if (s.charAt(j) == '@' && j + 4 < s.length() && s.charAt(j + 4) == '@')
 				j += 4;
-			}
-			else if (s.charAt(j) == '~' && j + 4 < s.length() && s.charAt(j + 4) == '~') {
+			else if (s.charAt(j) == '~' && j + 4 < s.length() && s.charAt(j + 4) == '~')
 				j += 4;
-			}
-			else {
+			else
 				i += spritePixels[charValues[s.charAt(j)] + 7];
-			}
-		}
 		return i;
 	}
 
@@ -193,19 +182,16 @@ public class TextSprite extends Sprite {
 		FontMetrics metrics = component.getFontMetrics(font);
 		int i_0_ = metrics.charWidth(c);
 		int i_1_ = i_0_;
-		if (bool) {
+		if (bool)
 			try {
-				if (c == '/') {
+				if (c == '/')
 					bool = false;
-				}
-				if (c == 'f' || c == 't' || c == 'w' || c == 'v' || c == 'k' || c == 'x' || c == 'y' || c == 'A' || c == 'V' || c == 'W') {
+				if (c == 'f' || c == 't' || c == 'w' || c == 'v' || c == 'k' || c == 'x' || c == 'y' || c == 'A' || c == 'V' || c == 'W')
 					i_0_++;
-				}
 			}
 			catch (Exception exception) {
 				exception.printStackTrace();
 			}
-		}
 		int i_2_ = metrics.getMaxAscent();
 		int i_3_ = metrics.getMaxAscent() + metrics.getMaxDescent();
 		int i_4_ = metrics.getHeight();
@@ -216,9 +202,8 @@ public class TextSprite extends Sprite {
 		graphics.setColor(Color.white);
 		graphics.setFont(font);
 		graphics.drawString(c + "", 0, i_2_);
-		if (bool) {
+		if (bool)
 			graphics.drawString(c + "", 1, i_2_);
-		}
 		int[] is = new int[i_0_ * i_3_];
 		PixelGrabber pixelgrabber = new PixelGrabber(image, 0, 0, i_0_, i_3_, is, 0, i_0_);
 		try {
@@ -232,7 +217,7 @@ public class TextSprite extends Sprite {
 		int i_6_ = 0;
 		int i_7_ = i_0_;
 		int i_8_ = i_3_;
-		while_0_: for (int i_9_ = 0; i_9_ < i_3_; i_9_++) {
+		while_0_: for (int i_9_ = 0; i_9_ < i_3_; i_9_++)
 			for (int i_10_ = 0; i_10_ < i_0_; i_10_++) {
 				int i_11_ = is[i_10_ + i_9_ * i_0_];
 				if ((i_11_ & 16777215) != 0) {
@@ -240,8 +225,7 @@ public class TextSprite extends Sprite {
 					break while_0_;
 				}
 			}
-		}
-		while_1_: for (int i_12_ = 0; i_12_ < i_0_; i_12_++) {
+		while_1_: for (int i_12_ = 0; i_12_ < i_0_; i_12_++)
 			for (int i_13_ = 0; i_13_ < i_3_; i_13_++) {
 				int i_14_ = is[i_12_ + i_13_ * i_0_];
 				if ((i_14_ & 16777215) != 0) {
@@ -249,8 +233,7 @@ public class TextSprite extends Sprite {
 					break while_1_;
 				}
 			}
-		}
-		while_2_: for (int i_15_ = i_3_ - 1; i_15_ >= 0; i_15_--) {
+		while_2_: for (int i_15_ = i_3_ - 1; i_15_ >= 0; i_15_--)
 			for (int i_16_ = 0; i_16_ < i_0_; i_16_++) {
 				int i_17_ = is[i_16_ + i_15_ * i_0_];
 				if ((i_17_ & 16777215) != 0) {
@@ -258,8 +241,7 @@ public class TextSprite extends Sprite {
 					break while_2_;
 				}
 			}
-		}
-		while_3_: for (int i_18_ = i_0_ - 1; i_18_ >= 0; i_18_--) {
+		while_3_: for (int i_18_ = i_0_ - 1; i_18_ >= 0; i_18_--)
 			for (int i_19_ = 0; i_19_ < i_3_; i_19_++) {
 				int i_20_ = is[i_18_ + i_19_ * i_0_];
 				if ((i_20_ & 16777215) != 0) {
@@ -267,7 +249,6 @@ public class TextSprite extends Sprite {
 					break while_3_;
 				}
 			}
-		}
 		spritePixels[i * 9] = (byte) (yOffset / 16384);
 		spritePixels[i * 9 + 1] = (byte) (yOffset / 128 & 127);
 		spritePixels[i * 9 + 2] = (byte) (yOffset & 127);
@@ -277,12 +258,11 @@ public class TextSprite extends Sprite {
 		spritePixels[i * 9 + 6] = (byte) (i_2_ - i_6_);
 		spritePixels[i * 9 + 7] = (byte) i_1_;
 		spritePixels[i * 9 + 8] = (byte) i_4_;
-		for (int i_21_ = i_6_; i_21_ < i_8_; i_21_++) {
+		for (int i_21_ = i_6_; i_21_ < i_8_; i_21_++)
 			for (int i_22_ = i_5_; i_22_ < i_7_; i_22_++) {
 				int i_23_ = is[i_22_ + i_21_ * i_0_] & 255;
 				spritePixels[yOffset++] = (byte) i_23_;
 			}
-		}
 	}
 
 	private void drawLetter(int ai[], int abyte0[], int i, int j, int k, int l, int i1, int j1, int k1) {
@@ -291,40 +271,29 @@ public class TextSprite extends Sprite {
 			l = -(l & 3);
 			for (int i2 = -i1; i2 < 0; i2++) {
 				for (int j2 = l1; j2 < 0; j2++) {
-					if (abyte0[j++] != 0) {
+					if (abyte0[j++] != 0)
 						ai[k++] = i;
-					}
-					else {
+					else
 						k++;
-					}
-					if (abyte0[j++] != 0) {
+					if (abyte0[j++] != 0)
 						ai[k++] = i;
-					}
-					else {
+					else
 						k++;
-					}
-					if (abyte0[j++] != 0) {
+					if (abyte0[j++] != 0)
 						ai[k++] = i;
-					}
-					else {
+					else
 						k++;
-					}
-					if (abyte0[j++] != 0) {
+					if (abyte0[j++] != 0)
 						ai[k++] = i;
-					}
-					else {
+					else
 						k++;
-					}
 				}
 
-				for (int k2 = l; k2 < 0; k2++) {
-					if (abyte0[j++] != 0) {
+				for (int k2 = l; k2 < 0; k2++)
+					if (abyte0[j++] != 0)
 						ai[k++] = i;
-					}
-					else {
+					else
 						k++;
-					}
-				}
 
 				k += j1;
 				j += k1;

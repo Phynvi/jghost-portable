@@ -29,8 +29,7 @@ public interface Module extends Serializable {
 	public Component getComponent();
 
 	/**
-	 * Invoked when the frame that uses this module is adding it; implementing
-	 * module should save {@code frame} as a reference
+	 * Invoked when the frame that uses this module is adding it; implementing module should save {@code frame} as a reference
 	 */
 	public void setFrame(GhostClientFrame frame);
 
@@ -40,9 +39,7 @@ public interface Module extends Serializable {
 	public GhostEventAdapter getEventListener();
 
 	/**
-	 * Invoked after the module is initialized to set the location of this
-	 * module on the disk. This value should be saved if remote resources need
-	 * to be loaded.
+	 * Invoked after the module is initialized to set the location of this module on the disk. This value should be saved if remote resources need to be loaded.
 	 * 
 	 * @param path the path to save
 	 */

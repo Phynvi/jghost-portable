@@ -1,7 +1,7 @@
 package org.whired.ghostclient.client.event;
 
-import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.packet.GhostPacket;
+import org.whired.ghost.player.Player;
 
 /**
  * Contains empty methods for receiving ghost events

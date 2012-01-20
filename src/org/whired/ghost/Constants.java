@@ -1,4 +1,4 @@
-package org.whired.ghost.constants;
+package org.whired.ghost;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -6,14 +6,14 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.whired.ghost.client.util.GhostFormatter;
+import org.whired.ghost.util.GhostFormatter;
 
 /**
  * A collection of configurations
  * 
  * @author Whired
  */
-public class Vars {
+public class Constants {
 
 	public final static String FS = System.getProperty("file.separator");
 	private final static String LOCAL_CODEBASE = ".ghost" + FS + "cache" + FS;
@@ -22,9 +22,8 @@ public class Vars {
 
 	public final static String getLocalCodebase() {
 		File f = new File(LOCAL_CODEBASE);
-		if (!f.exists()) {
+		if (!f.exists())
 			f.mkdirs();
-		}
 		return f.getAbsolutePath() + FS;
 	}
 
@@ -58,9 +57,8 @@ public class Vars {
 			logger.warning("warning");
 			logger.severe("severe");
 		}
-		else {
+		else
 			logger.setLevel(Level.INFO);
-		}
 		logger.info("Logger level is now: " + logger.getLevel());
 	}
 

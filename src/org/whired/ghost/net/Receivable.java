@@ -3,8 +3,7 @@ package org.whired.ghost.net;
 import java.io.IOException;
 
 /**
- * Used to provide applicable the means to handle information that is received
- * from a network stream.
+ * Used to provide applicable the means to handle information that is received from a network stream.
  * 
  * @author Whired
  */

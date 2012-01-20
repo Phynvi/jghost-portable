@@ -1,8 +1,8 @@
 package org.whired.ghostclient.client;
 
-import org.whired.ghost.net.model.GhostFrame;
-import org.whired.ghost.net.model.player.Player;
-import org.whired.ghost.net.model.player.PlayerList;
+import org.whired.ghost.net.GhostFrame;
+import org.whired.ghost.player.Player;
+import org.whired.ghost.player.PlayerList;
 
 /**
  * @author Whired

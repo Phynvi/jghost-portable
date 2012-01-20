@@ -34,8 +34,7 @@ public class SessionManager {
 	/**
 	 * Determines whether or not this session is open
 	 * 
-	 * @return {@code true} if there is currently a connection, otherwise
-	 *         {@code false}
+	 * @return {@code true} if there is currently a connection, otherwise {@code false}
 	 */
 	public boolean sessionIsOpen() {
 		return this.connection != null;
@@ -56,9 +55,8 @@ public class SessionManager {
 	 * @param connection the connection to set
 	 */
 	public void setConnection(Connection connection) {
-		if (sessionIsOpen()) {
+		if (sessionIsOpen())
 			throw new IllegalStateException("Connection already exists");
-		}
 		this.connection = connection;
 	}
 
@@ -66,16 +64,14 @@ public class SessionManager {
 	 * Invoked when the session is opened
 	 */
 	public void sessionOpened() {
-		for (SessionEventListener l : listeners) {
+		for (SessionEventListener l : listeners)
 			l.sessionOpened();
-		}
 	}
 
 	/**
 	 * Gets the current connection if one exists
 	 * 
-	 * @return the current {@link org.whired.ghost.net.Connection} if one
-	 *         exists, otherwise {@code null}
+	 * @return the current {@link org.whired.ghost.net.Connection} if one exists, otherwise {@code null}
 	 */
 	public Connection getConnection() {
 		return this.connection;
@@ -88,8 +84,7 @@ public class SessionManager {
 	 */
 	protected void sessionEnded(String reason) {
 		this.connection = null;
-		for (SessionEventListener l : listeners) {
+		for (SessionEventListener l : listeners)
 			l.sessionClosed(reason);
-		}
 	}
 }

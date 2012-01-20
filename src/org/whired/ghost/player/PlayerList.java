@@ -1,9 +1,9 @@
-package org.whired.ghost.net.model.player;
+package org.whired.ghost.player;
 
 import java.util.HashSet;
 
-import org.whired.ghost.net.model.GhostFrame;
-import org.whired.ghost.net.model.player.event.PlayerListEventListener;
+import org.whired.ghost.net.GhostFrame;
+import org.whired.ghost.player.event.PlayerListEventListener;
 
 /**
  * A list of players
@@ -25,16 +25,14 @@ public abstract class PlayerList implements PlayerListEventListener {
 	 * @param player the player to add
 	 */
 	public void addPlayer(Player player) {
-		for (PlayerListEventListener l : listeners) {
+		for (PlayerListEventListener l : listeners)
 			l.playerAdded(player);
-		}
 		playerAdded(player);
 	}
 
 	public void removePlayer(Player player) {
-		for (PlayerListEventListener l : listeners) {
+		for (PlayerListEventListener l : listeners)
 			l.playerRemoved(player);
-		}
 		playerRemoved(player);
 	}
 

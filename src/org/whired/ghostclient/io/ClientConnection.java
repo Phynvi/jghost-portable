@@ -1,17 +1,17 @@
-package org.whired.ghost.client.net;
+package org.whired.ghostclient.io;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import org.whired.ghost.constants.Vars;
+import org.whired.ghost.Constants;
 import org.whired.ghost.net.Connection;
+import org.whired.ghost.net.GhostFrame;
 import org.whired.ghost.net.InvalidStateException;
 import org.whired.ghost.net.Receivable;
 import org.whired.ghost.net.SessionManager;
 import org.whired.ghost.net.WrappedInputStream;
 import org.whired.ghost.net.WrappedOutputStream;
-import org.whired.ghost.net.model.GhostFrame;
 import org.whired.ghost.net.packet.GhostAuthenticationPacket;
 
 /**
@@ -21,13 +21,13 @@ public class ClientConnection extends Connection {
 
 	public ClientConnection(Socket sock, Receivable r, SessionManager manager, String passPhrase) throws IOException {
 		super(new WrappedInputStream(sock.getInputStream()), new WrappedOutputStream(sock.getOutputStream()), r, manager);
-		Vars.getLogger().info("Connected");
+		Constants.getLogger().info("Connected");
 		super.setEnforceTimeout(false);
 		super.startReceiving();
-		Vars.getLogger().info("Listening for incoming data");
-		Vars.getLogger().info("Identifying...");
+		Constants.getLogger().info("Listening for incoming data");
+		Constants.getLogger().info("Identifying...");
 		sock.getOutputStream().write(48);
-		Vars.getLogger().info("Authenticating...");
+		Constants.getLogger().info("Authenticating...");
 		new GhostAuthenticationPacket(passPhrase).send(this);
 	}
 
@@ -37,8 +37,7 @@ public class ClientConnection extends Connection {
 			ClientConnection ccon = new ClientConnection(s, frame, frame.getSessionManager(), password);
 			return ccon;
 		}
-		else {
+		else
 			throw new InvalidStateException("Connection to server already exists");
-		}
 	}
 }

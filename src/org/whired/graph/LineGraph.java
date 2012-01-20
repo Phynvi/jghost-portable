@@ -23,12 +23,10 @@ public class LineGraph extends Graph {
 
 		@Override
 		public void mouseWheelMoved(MouseWheelEvent e) {
-			if (e.getWheelRotation() > 0) {
+			if (e.getWheelRotation() > 0)
 				shift(-1);
-			}
-			else {
+			else
 				shift(1);
-			}
 			repaint();
 		}
 	};
@@ -65,9 +63,8 @@ public class LineGraph extends Graph {
 
 		double widthScale = getWidthScale();
 		float unitsPerView = (float) (this.getWidth() / widthScale);
-		if (isAutoScroll() && unitsPerView - getVisibleX() <= 0 && !isPanning) {
+		if (isAutoScroll() && unitsPerView - getVisibleX() <= 0 && !isPanning)
 			xOffset++;
-		}
 		Graphics2D g = (Graphics2D) graphics;
 		g.setColor(getBackground());
 		g.fillRect(0, 0, getWidth(), getHeight());
@@ -109,22 +106,19 @@ public class LineGraph extends Graph {
 
 			for (int i = xOffset; i < l.getPoints().length; i++) {
 				// Stop plotting if these points are out of range
-				if (i - xOffset > unitsPerView) {
+				if (i - xOffset > unitsPerView)
 					break;
-				}
 
 				Point realPt = new Point(i - xOffset, l.getPoints()[i].y);
 				Point scaledPt = new Point(realPt.x, realPt.y - minY);
 
 				// Draw points
-				if (showPointXLabel() || showPointYLabel()) {
+				if (showPointXLabel() || showPointYLabel())
 					g.drawString(showPointXLabel() && showPointYLabel() ? "(" + realPt.x + ", " + realPt.y + ")" : showPointXLabel() ? Integer.toString(realPt.x) : showPointYLabel() ? Integer.toString(realPt.y) : "", (int) (scaledPt.x * widthScale + 4), getHeight() - (int) (scaledPt.y * heightScale) - 4);
-				}
 				Point pt = new Point((int) (scaledPt.x * widthScale), getHeight() - (int) (scaledPt.y * heightScale));
 
-				if (lastPoint != null) {
+				if (lastPoint != null)
 					g.drawLine(lastPoint.x, lastPoint.y - 2, pt.x, pt.y - 2);
-				}
 				lastPoint = pt;
 			}
 		}
@@ -151,11 +145,9 @@ public class LineGraph extends Graph {
 	 */
 	public int getMinY() {
 		int minY = Integer.MAX_VALUE;
-		for (Line l : lines) {
-			if (l.getMinY() < minY) {
+		for (Line l : lines)
+			if (l.getMinY() < minY)
 				minY = l.getMinY();
-			}
-		}
 		return minY;
 	}
 
@@ -167,17 +159,14 @@ public class LineGraph extends Graph {
 	public int getMinVisibleY() {
 		int minY = Integer.MAX_VALUE;
 		int curMax = xOffset + (int) (getWidth() / getWidthScale());
-		for (Line l : lines) {
+		for (Line l : lines)
 			for (int i = xOffset; i < l.getPointCount(); i++) {
-				if (i > curMax) {
+				if (i > curMax)
 					break;
-				}
 				int y = l.getPoints()[i].y;
-				if (y < minY) {
+				if (y < minY)
 					minY = y;
-				}
 			}
-		}
 		return minY;
 	}
 
@@ -188,11 +177,9 @@ public class LineGraph extends Graph {
 	 */
 	public int getMaxY() {
 		int maxY = 0;
-		for (Line l : lines) {
-			if (l.getMaxY() > maxY) {
+		for (Line l : lines)
+			if (l.getMaxY() > maxY)
 				maxY = l.getMaxY();
-			}
-		}
 		return maxY;
 	}
 
@@ -205,9 +192,8 @@ public class LineGraph extends Graph {
 		int maxX = 0;
 		for (Line l : lines) {
 			int x = l.getPointCount();
-			if (x > maxX) {
+			if (x > maxX)
 				maxX = x;
-			}
 		}
 		return maxX;
 	}
@@ -224,17 +210,14 @@ public class LineGraph extends Graph {
 	public int getMaxVisibleY() {
 		int maxY = Integer.MIN_VALUE;
 		int curMax = xOffset + (int) (getWidth() / getWidthScale());
-		for (Line l : lines) {
+		for (Line l : lines)
 			for (int i = xOffset; i < l.getPointCount(); i++) {
-				if (i > curMax) {
+				if (i > curMax)
 					break;
-				}
 				int y = l.getPoints()[i].y;
-				if (y > maxY) {
+				if (y > maxY)
 					maxY = y;
-				}
 			}
-		}
 		return maxY;
 	}
 
@@ -252,8 +235,7 @@ public class LineGraph extends Graph {
 	}
 
 	/**
-	 * Shifts this graph's view by the specified amount of pixels, or the
-	 * maximum amount possible if {@code amount} exceeds it.
+	 * Shifts this graph's view by the specified amount of pixels, or the maximum amount possible if {@code amount} exceeds it.
 	 * 
 	 * @param amt the amount, in points, to shift this graph's view
 	 */
@@ -265,9 +247,8 @@ public class LineGraph extends Graph {
 				xOffset += amt;
 				isPanning = true;
 			}
-			else {
+			else
 				isPanning = false;
-			}
 		}
 		else {
 			xOffset = xOffset + amt < 0 ? 0 : xOffset + amt;

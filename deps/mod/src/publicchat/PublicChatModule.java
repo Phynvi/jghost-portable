@@ -1,15 +1,18 @@
 import java.awt.Component;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
-import org.whired.ghost.constants.Vars;
-import org.whired.ghost.net.model.player.Player;
+import org.whired.ghost.Constants;
+import org.whired.ghost.player.Player;
+import org.whired.ghostclient.awt.GhostScrollBarUI;
 import org.whired.ghostclient.client.GhostClientFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 import org.whired.ghostclient.client.impl.LinkEventListener;
@@ -18,14 +21,15 @@ import org.whired.ghostclient.client.module.Module;
 
 /**
  * A default public chat module
+ * 
  * @author Whired
  */
 public class PublicChatModule extends LinkingJTextPane implements Module {
 
 	private GhostClientFrame frame;
 	private final String name = "Chat";
-	private JScrollPane scrollPane = new JScrollPane();
-	
+	private final JScrollPane scrollPane = new JScrollPane();
+
 	private final LinkEventListener linkListener = new LinkEventListener() {
 
 		@Override
@@ -38,15 +42,15 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 
 		@Override
 		public void playerAdded(Player player) {
-			Vars.getLogger().info("Adding match: "+player.getName());
+			Constants.getLogger().info("Adding match: " + player.getName());
 			addMatch(player.getName());
 		}
-		
+
 		@Override
 		public void playerRemoved(Player player) {
 			removeMatch(player.getName());
 		}
-		
+
 		@Override
 		public void publicMessageLogged(Player from, String message) {
 			Icon i = frame.getRankHandler().rankForLevel(from.getRights()).getIcon();
@@ -78,7 +82,8 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 		this.setBorder(border);
 		scrollPane.setBorder(border);
 		scrollPane.setViewportBorder(border);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.getVerticalScrollBar().setUI(new GhostScrollBarUI(scrollPane.getVerticalScrollBar()));
 		scrollPane.setOpaque(false);
 		scrollPane.getViewport().setOpaque(false);
 	}

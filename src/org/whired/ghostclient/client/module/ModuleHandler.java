@@ -5,9 +5,9 @@ import java.util.logging.Level;
 
 import javax.swing.SwingUtilities;
 
-import org.whired.ghost.constants.Vars;
-import org.whired.ghost.net.model.player.Player;
+import org.whired.ghost.Constants;
 import org.whired.ghost.net.packet.GhostPacket;
+import org.whired.ghost.player.Player;
 import org.whired.ghostclient.client.GhostClientFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 
@@ -23,9 +23,8 @@ public class ModuleHandler extends GhostEventAdapter {
 
 	public ModuleHandler(Module[] initialModules, final GhostClientFrame frame) {
 		this.frame = frame;
-		for (Module m : initialModules) {
+		for (Module m : initialModules)
 			registerModule(m);
-		}
 	}
 
 	public ModuleHandler(final GhostClientFrame frame) {
@@ -44,12 +43,12 @@ public class ModuleHandler extends GhostEventAdapter {
 			@Override
 			public void run() {
 				try {
-					Vars.getLogger().log(Level.INFO, "Registering and initializing module " + module.getModuleName());
+					Constants.getLogger().log(Level.INFO, "Registering and initializing module " + module.getModuleName());
 
 					module.load();
 				}
 				catch (Throwable t) {
-					Vars.getLogger().log(Level.WARNING, "Error while registering module: ", t);
+					Constants.getLogger().log(Level.WARNING, "Error while registering module: ", t);
 				}
 			}
 		});
@@ -69,15 +68,12 @@ public class ModuleHandler extends GhostEventAdapter {
 	 * Gets a module by its name
 	 * 
 	 * @param name the name of the module
-	 * @return the {@link org.whired.ghostclient.ui.module.Module} for the
-	 *         specified name, or {@code null} if the name was not matched
+	 * @return the {@link org.whired.ghostclient.ui.module.Module} for the specified name, or {@code null} if the name was not matched
 	 */
 	public Module moduleForName(String name) {
-		for (Module m : modules) {
-			if (m.getModuleName().equals(name)) {
+		for (Module m : modules)
+			if (m.getModuleName().equals(name))
 				return m;
-			}
-		}
 		return null;
 	}
 
@@ -85,9 +81,8 @@ public class ModuleHandler extends GhostEventAdapter {
 	public void packetReceived(GhostPacket packet) {
 		for (Module m : modules) {
 			GhostEventAdapter a = m.getEventListener();
-			if (a != null) {
+			if (a != null)
 				a.packetReceived(packet);
-			}
 		}
 	}
 
@@ -95,9 +90,8 @@ public class ModuleHandler extends GhostEventAdapter {
 	public void playerAdded(Player player) {
 		for (Module m : modules) {
 			GhostEventAdapter a = m.getEventListener();
-			if (a != null) {
+			if (a != null)
 				a.playerAdded(player);
-			}
 		}
 	}
 
@@ -105,9 +99,8 @@ public class ModuleHandler extends GhostEventAdapter {
 	public void playerRemoved(Player player) {
 		for (Module m : modules) {
 			GhostEventAdapter a = m.getEventListener();
-			if (a != null) {
+			if (a != null)
 				a.playerRemoved(player);
-			}
 		}
 	}
 
@@ -115,9 +108,8 @@ public class ModuleHandler extends GhostEventAdapter {
 	public void privateMessageLogged(Player from, Player to, String message) {
 		for (Module m : modules) {
 			GhostEventAdapter a = m.getEventListener();
-			if (a != null) {
+			if (a != null)
 				a.privateMessageLogged(from, to, message);
-			}
 		}
 	}
 
@@ -125,9 +117,8 @@ public class ModuleHandler extends GhostEventAdapter {
 	public void publicMessageLogged(Player from, String message) {
 		for (Module m : modules) {
 			GhostEventAdapter a = m.getEventListener();
-			if (a != null) {
+			if (a != null)
 				a.publicMessageLogged(from, message);
-			}
 		}
 	}
 }

@@ -1,6 +1,6 @@
-package org.whired.ghost.net.model.player.event;
+package org.whired.ghost.player.event;
 
-import org.whired.ghost.net.model.player.Player;
+import org.whired.ghost.player.Player;
 
 /**
  * Listens for events pertaining to the player list

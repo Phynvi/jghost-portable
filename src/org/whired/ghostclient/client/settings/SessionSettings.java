@@ -2,7 +2,7 @@ package org.whired.ghostclient.client.settings;
 
 import java.io.Serializable;
 
-import org.whired.ghost.net.model.player.Player;
+import org.whired.ghost.player.Player;
 
 public class SessionSettings implements Serializable {
 

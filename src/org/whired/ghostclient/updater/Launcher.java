@@ -15,7 +15,7 @@ import java.util.zip.ZipFile;
 
 import javax.swing.SwingUtilities;
 
-import org.whired.ghost.constants.Vars;
+import org.whired.ghost.Constants;
 import org.whired.ghostclient.io.HttpClient;
 import org.whired.ghostclient.updater.ui.UpdaterFrame;
 
@@ -42,7 +42,7 @@ public class Launcher implements Runnable {
 	/**
 	 * Where the packages are saved
 	 */
-	private static final String LOCAL_CODEBASE = Vars.getLocalCodebase();
+	private static final String LOCAL_CODEBASE = Constants.getLocalCodebase();
 	/**
 	 * The entry point of the main application
 	 */
@@ -96,32 +96,28 @@ public class Launcher implements Runnable {
 				return;
 			}
 			form.log("Modules updated! Unpacking..");
-			File f = new File(LOCAL_CODEBASE + "modules" + Vars.FS);
-			if (!f.exists()) {
+			File f = new File(LOCAL_CODEBASE + "modules" + Constants.FS);
+			if (!f.exists())
 				f.mkdirs();
-			}
 			try {
 				ZipFile zipFile = new ZipFile(zipped);
 				Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
 				while (enumeration.hasMoreElements()) {
 					ZipEntry zipEntry = enumeration.nextElement();
 
-					if (zipEntry.isDirectory()) {
-						new File(f.getAbsolutePath() + Vars.FS + zipEntry.getName()).mkdir();
-					}
+					if (zipEntry.isDirectory())
+						new File(f.getAbsolutePath() + Constants.FS + zipEntry.getName()).mkdir();
 					else {
-						File tf = new File(f.getAbsolutePath() + Vars.FS + zipEntry.getName());
-						if (!tf.getParentFile().exists()) {
+						File tf = new File(f.getAbsolutePath() + Constants.FS + zipEntry.getName());
+						if (!tf.getParentFile().exists())
 							tf.getParentFile().mkdirs();
-						}
 
 						BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(zipEntry));
 						int size;
 						byte[] buffer = new byte[2048];
-						BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f.getAbsolutePath() + Vars.FS + zipEntry.getName()), buffer.length);
-						while ((size = bis.read(buffer, 0, buffer.length)) != -1) {
+						BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f.getAbsolutePath() + Constants.FS + zipEntry.getName()), buffer.length);
+						while ((size = bis.read(buffer, 0, buffer.length)) != -1)
 							bos.write(buffer, 0, size);
-						}
 						bos.flush();
 						bos.close();
 						bis.close();
@@ -150,9 +146,8 @@ public class Launcher implements Runnable {
 		String remoteHash = getRemoteHash(remoteUrl);
 		String localHash = getLocalHash(destFile);
 		boolean match = localHash != null && remoteHash.toLowerCase().equals(localHash.toLowerCase());
-		if (match) {
+		if (match)
 			throw new UpdateNotFoundException();
-		}
 		File file = null;
 		while (!match) {
 			form.log("Update found.");
@@ -193,9 +188,8 @@ public class Launcher implements Runnable {
 		BufferedReader br = new BufferedReader(new InputStreamReader(HttpClient.getStream(url + ".MD5")));
 		StringBuilder sb = new StringBuilder();
 		String line;
-		while ((line = br.readLine()) != null) {
+		while ((line = br.readLine()) != null)
 			sb.append(line);
-		}
 		return sb.toString();
 	}
 
@@ -213,9 +207,8 @@ public class Launcher implements Runnable {
 			int bytesRead;
 			byte[] buffer = new byte[1024];
 			bis = new BufferedInputStream(new FileInputStream(file));
-			while ((bytesRead = bis.read(buffer)) != -1) {
+			while ((bytesRead = bis.read(buffer)) != -1)
 				md.update(buffer, 0, bytesRead);
-			}
 			bis.close();
 			return toHexString(md.digest());
 		}
@@ -223,9 +216,8 @@ public class Launcher implements Runnable {
 		} // Swallow irrelevant exceptions
 		finally {
 			try {
-				if (bis != null) {
+				if (bis != null)
 					bis.close();
-				}
 			}
 			catch (IOException ex) {
 			}

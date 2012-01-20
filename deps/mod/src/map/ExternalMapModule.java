@@ -3,10 +3,10 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.whired.ghost.net.model.player.Player;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.packet.PlayerMovementPacket;
+import org.whired.ghost.player.Player;
 import org.whired.ghostclient.client.GhostClientFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 import org.whired.ghostclient.client.module.Module;

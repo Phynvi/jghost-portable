@@ -30,11 +30,9 @@ public class PacketHandler {
 	 * @param packets the packets to register
 	 */
 	public void registerPackets(GhostPacket[] packets) {
-		if (packets != null) {
-			for (GhostPacket packet : packets) {
+		if (packets != null)
+			for (GhostPacket packet : packets)
 				this.packets.put(packet.getId(), packet);
-			}
-		}
 	}
 
 	/**

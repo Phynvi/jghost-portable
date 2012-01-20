@@ -1,9 +1,9 @@
-package org.whired.ghostserver.server.model;
+package org.whired.ghostserver.server;
 
-import org.whired.ghost.net.model.GhostFrame;
-import org.whired.ghost.net.model.player.Player;
-import org.whired.ghost.net.model.player.PlayerList;
+import org.whired.ghost.net.GhostFrame;
 import org.whired.ghost.net.reflection.Accessor;
+import org.whired.ghost.player.Player;
+import org.whired.ghost.player.PlayerList;
 
 /**
  * A player list that provides access to the remote frame
@@ -40,6 +40,6 @@ public class RemotePlayerList extends PlayerList {
 
 	@Override
 	public Player[] getPlayers() {
-		throw new UnsupportedOperationException("Remote not supported yet.");
+		throw new UnsupportedOperationException("Remote not supported yet.");// TODO
 	}
 }

@@ -1,9 +1,9 @@
-package org.whired.ghost.net.model;
+package org.whired.ghost.net;
 
 import java.util.logging.Level;
 
 import org.whired.ghost.net.event.SessionEventListener;
-import org.whired.ghost.net.model.player.Player;
+import org.whired.ghost.player.Player;
 
 /**
  * @author Whired

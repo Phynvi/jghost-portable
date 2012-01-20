@@ -14,15 +14,13 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 
 /**
- * A rounded version of a JButton. Intended modernize the look and feel of the
- * original JButton.
+ * A rounded version of a JButton. Intended modernize the look and feel of the original JButton.
  * 
  * @author Whired
  */
 public class JRoundedButton extends JButton {
 	/**
-	 * Creates a rounded button with text and size
-	 * preferredWidth*preferredHeight.
+	 * Creates a rounded button with text and size preferredWidth*preferredHeight.
 	 * 
 	 * @param text the text to display on the rounded button
 	 * @param preferredWidth the preferred width of the rounded button
@@ -56,8 +54,7 @@ public class JRoundedButton extends JButton {
 	}
 
 	/**
-	 * Creates a rounded button where properties are taken from the Action
-	 * supplied.
+	 * Creates a rounded button where properties are taken from the Action supplied.
 	 * 
 	 * @param a the Action used to specify the new rounded button
 	 */
@@ -98,12 +95,10 @@ public class JRoundedButton extends JButton {
 		g2.setClip(finalClip);
 		super.paintComponent(g2);
 		Color[] gradients;
-		if (getModel().isRollover()) {
+		if (getModel().isRollover())
 			gradients = new Color[] { new Color(184, 207, 229), new Color(122, 138, 153), new Color(184, 207, 229) };
-		}
-		else {
+		else
 			gradients = new Color[] { new Color(122, 138, 153) };
-		}
 		for (int i = 0; i < gradients.length; i++) {
 			arc -= 2;
 			g2.setColor(gradients[i]);

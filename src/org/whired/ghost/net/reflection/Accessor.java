@@ -99,20 +99,16 @@ public abstract class Accessor {
 	}
 
 	public RMIClass asClass() {
-		if (this.isClass()) {
+		if (this.isClass())
 			return (RMIClass) this;
-		}
-		else {
+		else
 			throw new ClassCastException(this.getName() + " is not a " + RMIClass.class.getName());
-		}
 	}
 
 	/**
-	 * Checks to see if this accessor is a
-	 * {@link org.whired.ghost.net.reflection.RMIField}
+	 * Checks to see if this accessor is a {@link org.whired.ghost.net.reflection.RMIField}
 	 * 
-	 * @return {@code true} if the accessor is a {@code RMIField}, otherwise
-	 *         {@code false}
+	 * @return {@code true} if the accessor is a {@code RMIField}, otherwise {@code false}
 	 */
 	public boolean isField() {
 		return this instanceof RMIField;
@@ -124,20 +120,16 @@ public abstract class Accessor {
 	 * @return the field representation if it is a field
 	 */
 	public RMIField asField() {
-		if (this.isField()) {
+		if (this.isField())
 			return (RMIField) this;
-		}
-		else {
+		else
 			throw new ClassCastException(this.getName() + " is not a " + RMIField.class.getName());
-		}
 	}
 
 	/**
-	 * Checks to see if this accessor is a
-	 * {@link org.whired.ghost.net.reflection.RMIMethod}
+	 * Checks to see if this accessor is a {@link org.whired.ghost.net.reflection.RMIMethod}
 	 * 
-	 * @return {@code true} if the accessor is a {@code RMIMethod}, otherwise
-	 *         {@code false}
+	 * @return {@code true} if the accessor is a {@code RMIMethod}, otherwise {@code false}
 	 */
 	public boolean isMethod() {
 		return this instanceof org.whired.ghost.net.reflection.RMIMethod;
@@ -149,12 +141,10 @@ public abstract class Accessor {
 	 * @return the method representation if it is a field
 	 */
 	public RMIMethod asMethod() {
-		if (this.isMethod()) {
+		if (this.isMethod())
 			return (org.whired.ghost.net.reflection.RMIMethod) this;
-		}
-		else {
+		else
 			throw new ClassCastException(this.getName() + " is not a " + RMIMethod.class.getName());
-		}
 	}
 
 	/**
@@ -172,12 +162,10 @@ public abstract class Accessor {
 		if (instruction.size() > 1) {
 			Class<?> cls;
 			Accessor a = instruction.get(0);
-			if (a.isClass()) {
+			if (a.isClass())
 				cls = a.asClass().getDeclaringClass();
-			}
-			else {
+			else
 				throw new ClassCastException("First instruction must be a " + RMIClass.class.getName());
-			}
 			for (int i = 1; i < instruction.size(); i++) {
 				a = instruction.get(i);
 				if (a.isField()) {
@@ -192,9 +180,8 @@ public abstract class Accessor {
 				}
 			}
 		}
-		else {
+		else
 			throw new InvocationTargetException(new RuntimeException("Instructions not complete"));
-		}
 		return curObj;
 	}
 }

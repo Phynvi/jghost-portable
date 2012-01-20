@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.util.LinkedList;
 
 import org.whired.ghost.math.GhostMath;
-import org.whired.ghost.net.model.player.Player;
+import org.whired.ghost.player.Player;
 
 /**
  * @author Whired
@@ -12,12 +12,11 @@ import org.whired.ghost.net.model.player.Player;
 public class MapPlayer extends Player {
 
 	private int threshold = 20;
-	private LinkedList<Point> locations = new LinkedList<Point>();
+	private final LinkedList<Point> locations = new LinkedList<Point>();
 	private int trackingPrecision = 20;
 
 	/**
-	 * Sets the tracking precision for this player. Any distance less than the
-	 * specified number will be ignored
+	 * Sets the tracking precision for this player. Any distance less than the specified number will be ignored
 	 * 
 	 * @param precision the precision of tracking
 	 */
@@ -26,9 +25,7 @@ public class MapPlayer extends Player {
 	}
 
 	/**
-	 * Sets the threshold for tracking this player. Any move quantity greater
-	 * than the specified number will result in the first queued move being
-	 * removed.
+	 * Sets the threshold for tracking this player. Any move quantity greater than the specified number will result in the first queued move being removed.
 	 * 
 	 * @param threshold the tracking threshold
 	 */
@@ -40,9 +37,8 @@ public class MapPlayer extends Player {
 		Point last = locations.size() > 0 ? locations.getLast() : null;
 		if (last == null || GhostMath.getDistance(last, location) >= trackingPrecision) {
 			locations.addLast(location);
-			if (locations.size() >= threshold) {
+			if (locations.size() >= threshold)
 				locations.removeFirst();
-			}
 		}
 	}
 

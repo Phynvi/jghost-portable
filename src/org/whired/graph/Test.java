@@ -43,12 +43,10 @@ public class Test {
 						int i = (int) (Math.random() * 5);
 						int m = (int) (Math.random() * 2);
 						if ((int) (Math.random() * 2) == 0) {
-							if (lastPlr > 5) {
+							if (lastPlr > 5)
 								lastPlr -= i;
-							}
-							if (lastMod > 1) {
+							if (lastMod > 1)
 								lastMod -= m;
-							}
 						}
 						else {
 							lastPlr += i;

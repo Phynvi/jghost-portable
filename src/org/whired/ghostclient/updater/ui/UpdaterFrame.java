@@ -1,11 +1,8 @@
 package org.whired.ghostclient.updater.ui;
 
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -19,7 +16,8 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
+
+import org.whired.ghostclient.awt.RoundedBorder;
 
 /**
  * The frame for the updater
@@ -139,31 +137,6 @@ public class UpdaterFrame extends JFrame {
 
 	public boolean downloadModules() {
 		return box.isSelected();
-	}
-
-	private static class RoundedBorder implements Border {
-
-		private final int radius;
-		private final Insets insets = new Insets(2, 2, 2, 2);
-
-		RoundedBorder(int radius) {
-			this.radius = radius;
-		}
-
-		@Override
-		public Insets getBorderInsets(Component c) {
-			return insets;
-		}
-
-		@Override
-		public boolean isBorderOpaque() {
-			return true;
-		}
-
-		@Override
-		public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-			g.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
-		}
 	}
 
 	/**

@@ -31,8 +31,7 @@ public class JAutoScrollPane extends JScrollPane {
 	private boolean notFromUser = true;
 
 	/**
-	 * Notifies this scroll pane that it should autoscroll on the next
-	 * adjustment
+	 * Notifies this scroll pane that it should autoscroll on the next adjustment
 	 */
 	public void autoscrollNext() {
 		try {
@@ -59,14 +58,12 @@ public class JAutoScrollPane extends JScrollPane {
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				if (notFromUser) {
-					if (wasAtBottom) {
+					if (wasAtBottom)
 						brm.setValue(brm.getMaximum());
-					}
 					notFromUser = false;
 				}
-				else {
-					wasAtBottom = ((brm.getValue() + brm.getExtent()) == brm.getMaximum());
-				}
+				else
+					wasAtBottom = brm.getValue() + brm.getExtent() == brm.getMaximum();
 			}
 		});
 	}

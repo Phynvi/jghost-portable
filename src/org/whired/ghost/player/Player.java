@@ -1,4 +1,4 @@
-package org.whired.ghost.net.model.player;
+package org.whired.ghost.player;
 
 import java.awt.Point;
 import java.io.Serializable;
@@ -65,19 +65,15 @@ public class Player implements Serializable {
 		for (int i = 0; i < getName().length() && i < 12; i++) {
 			char c = getName().charAt(i);
 			l *= 37L;
-			if (c >= 'A' && c <= 'Z') {
+			if (c >= 'A' && c <= 'Z')
 				l += 1 + c - 65;
-			}
-			else if (c >= 'a' && c <= 'z') {
+			else if (c >= 'a' && c <= 'z')
 				l += 1 + c - 97;
-			}
-			else if (c >= '0' && c <= '9') {
+			else if (c >= '0' && c <= '9')
 				l += 27 + c - 48;
-			}
 		}
-		while (l % 37L == 0L && l != 0L) {
+		while (l % 37L == 0L && l != 0L)
 			l /= 37L;
-		}
 		return l;
 	}
 
@@ -114,12 +110,10 @@ public class Player implements Serializable {
 	 * @param rights the rights to set (-128 to 127)
 	 */
 	public void setRights(int rights) {
-		if (rights > 127) {
+		if (rights > 127)
 			rights = 127;
-		}
-		if (rights < 0) {
+		if (rights < 0)
 			rights = 0;
-		}
 		this.rights = (byte) rights;
 	}
 
