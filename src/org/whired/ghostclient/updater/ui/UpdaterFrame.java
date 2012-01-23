@@ -122,9 +122,8 @@ public class UpdaterFrame extends JFrame {
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 
-		if (lafError != null) {
+		if (lafError != null)
 			log("Error while setting look and feel: " + lafError.toString());
-		}
 	}
 
 	public void setOnUpdate(Runnable onUpdate) {

@@ -11,7 +11,6 @@ import org.whired.ghost.net.InvalidStateException;
 import org.whired.ghost.net.Receivable;
 import org.whired.ghost.net.SessionManager;
 import org.whired.ghost.net.WrappedInputStream;
-import org.whired.ghost.net.WrappedOutputStream;
 import org.whired.ghost.net.packet.GhostAuthenticationPacket;
 
 /**
@@ -20,9 +19,8 @@ import org.whired.ghost.net.packet.GhostAuthenticationPacket;
 public class ClientConnection extends Connection {
 
 	public ClientConnection(Socket sock, Receivable r, SessionManager manager, String passPhrase) throws IOException {
-		super(new WrappedInputStream(sock.getInputStream()), new WrappedOutputStream(sock.getOutputStream()), r, manager);
+		super(sock, r, manager);
 		Constants.getLogger().info("Connected");
-		super.setEnforceTimeout(false);
 		super.startReceiving();
 		Constants.getLogger().info("Listening for incoming data");
 		Constants.getLogger().info("Identifying...");
@@ -39,5 +37,20 @@ public class ClientConnection extends Connection {
 		}
 		else
 			throw new InvalidStateException("Connection to server already exists");
+	}
+
+	@Override
+	protected void readPacket(WrappedInputStream inputStream) throws IOException {
+		// For now there's not much ClientConnection needs to check up on
+		// may change in future
+		int packetId = inputStream.readByte();
+		try {
+			Constants.getLogger().fine("Notifying receivable that external packet " + packetId + " has been received.");
+			if (!receivable.handlePacket(packetId, this))
+				endSession("Packet " + packetId + " was not handled");
+		}
+		catch (IOException e) {
+			endSession("Error while handling packet " + packetId);
+		}
 	}
 }

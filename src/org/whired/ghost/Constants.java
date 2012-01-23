@@ -31,9 +31,9 @@ public class Constants {
 
 		private final static Logger create() {
 			Logger logger = Logger.getLogger("org.whired.ghost");
-			logger.setLevel(Level.ALL);
+			logger.setLevel(Level.INFO);
 			ConsoleHandler ch = new ConsoleHandler();
-			ch.setLevel(Level.ALL);
+			ch.setLevel(Level.INFO);
 			ch.setFormatter(new GhostFormatter());
 			logger.addHandler(ch);
 			logger.setUseParentHandlers(false);

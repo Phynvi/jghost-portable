@@ -1,7 +1,4 @@
 import java.awt.Component;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketType;
@@ -67,37 +64,6 @@ public class ExternalMapModule extends PlayerRSMap implements Module {
 	@Override
 	public void load() {
 		loadMap(resourcePath + System.getProperty("file.separator") + "worldmap.dat");
-		final ArrayList<Player> lplayers = new ArrayList<Player>();
-		for (int i = 0; i < 5; i++) {
-			lplayers.add(addPlayer(new Player("Player-" + i, 3, 2460, 3090)));
-		}
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				while (true) {
-					for (Player player : lplayers) {
-						int randX = (int) (Math.random() * 4);
-						int randY = (int) (Math.random() * 4);
-						int neg = (int) (Math.random() * 2);
-						if (neg == 0) {
-							randX *= -1;
-							randY *= -1;
-						}
-						player.setLocation(player.getLocation().x + randX, player.getLocation().y + randY);
-						playerMoved(player);
-
-					}
-					repaint();
-					try {
-						Thread.sleep(1000);
-					}
-					catch (InterruptedException ex) {
-						Logger.getLogger(ExternalMapModule.class.getName()).log(Level.SEVERE, null, ex);
-					}
-				}
-			}
-		}).start();
 	}
 
 	@Override

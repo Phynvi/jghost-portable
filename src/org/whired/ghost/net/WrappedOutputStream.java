@@ -3,7 +3,6 @@ package org.whired.ghost.net;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
 
 import org.whired.ghost.Constants;
 import org.whired.ghost.util.JTF16Charset;
@@ -87,9 +86,8 @@ public class WrappedOutputStream {
 	 * @param str the string to write
 	 */
 	public void writeString(String str) throws java.io.IOException {
-		if (str.length() > 255) {
+		if (str.length() > 255)
 			Constants.getLogger().warning("String size greater than 255 bytes. Truncating.");
-		}
 		byte[] encoded = JTF16Charset.encode(str, 255);
 		writeByte(encoded.length);
 		writeBytes(encoded);
@@ -101,10 +99,8 @@ public class WrappedOutputStream {
 	protected void closeStream() {
 		try {
 			this.os.close();
-			Constants.getLogger().fine("Native outputstream closed");
 		}
-		catch (Throwable t) {
-			Constants.getLogger().log(Level.SEVERE, "Unable to close outputstream: ", t);
+		catch (IOException e) {
 		}
 	}
 }

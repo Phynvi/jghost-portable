@@ -78,13 +78,11 @@ public class SessionManager {
 	}
 
 	/**
-	 * Invoked when the session has eneded
-	 * 
-	 * @param reason the reason the session has ended
+	 * Invoked when the session has ended
 	 */
-	protected void sessionEnded(String reason) {
+	protected void sessionEnded() {
 		this.connection = null;
 		for (SessionEventListener l : listeners)
-			l.sessionClosed(reason);
+			l.sessionClosed();
 	}
 }

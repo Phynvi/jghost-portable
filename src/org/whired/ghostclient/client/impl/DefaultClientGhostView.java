@@ -639,7 +639,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	}
 
 	@Override
-	public void sessionClosed(String reason) {
+	public void sessionClosed() {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override

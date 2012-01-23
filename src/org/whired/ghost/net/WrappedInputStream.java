@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import org.whired.ghost.Constants;
-import org.whired.ghost.net.Connection.DisconnectCallback;
 import org.whired.ghost.util.JTF16Charset;
 
 /**
@@ -15,13 +14,7 @@ import org.whired.ghost.util.JTF16Charset;
  */
 public class WrappedInputStream {
 	/** The InputStream to wrap */
-	private InputStream is = null;
-	/** Ensures that timeouts do not occur during inactivity */
-	public boolean expectingNewPacket = false;
-	/** Whether or not to enforce an idle timeout */
-	public boolean enforceTimeout = true;
-	/** The callback to notify when this stream is disconnected */
-	private DisconnectCallback disconnectCallback;
+	private final InputStream is;
 
 	/**
 	 * Creates a new wrapper for the specified input stream
@@ -31,7 +24,7 @@ public class WrappedInputStream {
 	public WrappedInputStream(InputStream is) {
 		this.is = is;
 	}
-
+	
 	/**
 	 * Reads a single byte from this stream
 	 * 
@@ -41,7 +34,6 @@ public class WrappedInputStream {
 	public int readByte() throws IOException {
 		int x = is.read();
 		if (x == -1) {
-			disconnectCallback.disconnected("End of stream");
 			throw new IOException("End of stream");
 		}
 		return x;
@@ -65,7 +57,7 @@ public class WrappedInputStream {
 	/**
 	 * Reads a boolean from this stream
 	 * 
-	 * @return bool the boolean that was read
+	 * @return the boolean that was read
 	 */
 	public boolean readBoolean() throws java.io.IOException {
 		return is.read() >= 1;
@@ -105,29 +97,17 @@ public class WrappedInputStream {
 	 */
 	public String readString() throws java.io.IOException {
 		String s = JTF16Charset.decode(readBytes(is.read()));
-		Constants.getLogger().info("Received str: " + s);
 		return s;
 	}
 
-	/** Sets the SessionManager for this stream */
-	protected void setDisconnectCallback(DisconnectCallback c) {
-		this.disconnectCallback = c;
-	}
-
-	/** Closes this stream when the session becomes invalid */
-	private void closeStream() {
+	/**
+	 * Closes this stream
+	 */
+	protected void closeStream() {
 		try {
-			Constants.getLogger().fine("Native inputstream closed.");
+			is.close();
 		}
-		catch (Exception e) {
-			Constants.getLogger().warning("Unable to close inputstream:");
-			e.printStackTrace();
+		catch (IOException e) {
 		}
-	}
-
-	/** Work to do before destroying this object */
-	public void destruct() {
-		closeStream();
-		Constants.getLogger().fine("Destruct complete.");
 	}
 }

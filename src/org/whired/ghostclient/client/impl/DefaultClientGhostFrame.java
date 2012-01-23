@@ -44,9 +44,8 @@ public class DefaultClientGhostFrame extends GhostClientFrame {
 	}
 
 	@Override
-	public void sessionClosed(String reason) {
-		Constants.getLogger().log(Level.INFO, "Session closed: {0}", reason);
-		getView().sessionClosed(reason);
+	public void sessionClosed() {
+		getView().sessionClosed();
 	}
 
 	@Override

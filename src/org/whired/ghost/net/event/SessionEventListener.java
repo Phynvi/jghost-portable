@@ -14,5 +14,5 @@ public interface SessionEventListener {
 	/**
 	 * Invoked when a connection has been broken
 	 */
-	public void sessionClosed(String reason);
+	public void sessionClosed();
 }

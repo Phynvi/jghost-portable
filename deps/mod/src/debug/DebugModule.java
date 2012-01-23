@@ -30,8 +30,25 @@ import org.whired.ghostclient.client.module.Module;
 public class DebugModule implements Module {
 
 	private final JAutoScrollPane scrollPane = new JAutoScrollPane();
+	// private final JScrollPane scrollPane = new JScrollPane();
 	private final JTextPane textPane = new JTextPane();
 	private GhostClientFrame frame;
+	private final OutputStream out = new OutputStream() {
+		@Override
+		public void write(int b) throws IOException {
+			updateTextArea(String.valueOf((char) b), false);
+		}
+
+		@Override
+		public void write(byte[] b, int off, int len) throws IOException {
+			updateTextArea(new String(b, off, len), false);
+		}
+
+		@Override
+		public void write(byte[] b) throws IOException {
+			write(b, 0, b.length);
+		}
+	};
 
 	public DebugModule() {
 		((DefaultCaret) textPane.getCaret()).setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
@@ -52,9 +69,8 @@ public class DebugModule implements Module {
 
 			@Override
 			public void publish(final LogRecord record) {
-				if (isLoggable(record)) {
+				if (isLoggable(record))
 					updateTextArea(formatter.format(record), true);
-				}
 			}
 
 			@Override
@@ -65,22 +81,7 @@ public class DebugModule implements Module {
 			public void close() throws SecurityException {
 			}
 		});
-		OutputStream out = new OutputStream() {
-			@Override
-			public void write(int b) throws IOException {
-				updateTextArea(String.valueOf((char) b), false);
-			}
 
-			@Override
-			public void write(byte[] b, int off, int len) throws IOException {
-				updateTextArea(new String(b, off, len), false);
-			}
-
-			@Override
-			public void write(byte[] b) throws IOException {
-				write(b, 0, b.length);
-			}
-		};
 		PrintStream p = new PrintStream(out, true);
 		System.setOut(p);
 		System.setErr(p);
@@ -103,9 +104,8 @@ public class DebugModule implements Module {
 				}
 				catch (BadLocationException e) {
 				}
-				if (frame != null) {
+				if (frame != null)
 					frame.getView().displayModuleNotification(DebugModule.this);
-				}
 			}
 		});
 	}

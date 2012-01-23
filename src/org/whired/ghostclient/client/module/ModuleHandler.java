@@ -1,5 +1,6 @@
 package org.whired.ghostclient.client.module;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.logging.Level;
 
@@ -38,13 +39,29 @@ public class ModuleHandler extends GhostEventAdapter {
 	 */
 	public final void registerModule(final Module module) {
 		module.setFrame(frame);
-		frame.getView().moduleAdded(module);
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						frame.getView().moduleAdded(module);
+					}
+					catch (Throwable t) {
+						Constants.getLogger().log(Level.WARNING, "Error while registering module: ", t);
+					}
+				}
+			});
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+			return;
+		}
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				try {
+					frame.getView().moduleAdded(module);
 					Constants.getLogger().log(Level.INFO, "Registering and initializing module " + module.getModuleName());
-
 					module.load();
 				}
 				catch (Throwable t) {

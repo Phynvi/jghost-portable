@@ -1,4 +1,5 @@
 import java.awt.Component;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -6,7 +7,9 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
@@ -28,7 +31,7 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 
 	private GhostClientFrame frame;
 	private final String name = "Chat";
-	private final JScrollPane scrollPane = new JScrollPane();
+	private final JAutoScrollPane scrollPane = new JAutoScrollPane();
 
 	private final LinkEventListener linkListener = new LinkEventListener() {
 
@@ -52,31 +55,35 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 		}
 
 		@Override
-		public void publicMessageLogged(Player from, String message) {
-			Icon i = frame.getRankHandler().rankForLevel(from.getRights()).getIcon();
-			try {
-				Style iconOnly = getStyledDocument().getStyle("iconOnly");
-				if (iconOnly == null) {
-					iconOnly = getStyledDocument().addStyle("iconOnly", null);
+		public void publicMessageLogged(final Player from, final String message) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					scrollPane.autoscrollNext();
+					Icon i = frame.getRankHandler().rankForLevel(from.getRights()).getIcon();
+					try {
+						Style iconOnly = getStyledDocument().getStyle("iconOnly");
+						StyleConstants.setIcon(iconOnly, i);
+						getStyledDocument().insertString(getStyledDocument().getLength(), "[" + Constants.DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] ", null);
+						getStyledDocument().insertString(getStyledDocument().getLength(), " ", iconOnly);
+						StringBuilder b = new StringBuilder().append(from.getName()).append(": ").append(message).append("\n");
+						getStyledDocument().insertString(getStyledDocument().getLength(), b.toString(), null);
+						frame.getView().displayModuleNotification(PublicChatModule.this);
+					}
+					catch (Exception e) {
+						Logger.getLogger(Module.class.getName()).log(Level.SEVERE, "Unable to display chat:", e);
+					}
 				}
-				StyleConstants.setIcon(iconOnly, i);
-				getStyledDocument().insertString(getStyledDocument().getLength(), " ", iconOnly);
-				StyleConstants.setBold(getInputAttributes(), true);
-				getStyledDocument().insertString(getStyledDocument().getLength(), from.getName(), getInputAttributes());
-				getStyledDocument().insertString(getStyledDocument().getLength(), ": " + message + "\n", null);
-				frame.getView().displayModuleNotification(PublicChatModule.this);
-			}
-			catch (Exception e) {
-				Logger.getLogger(Module.class.getName()).log(Level.SEVERE, "Unable to display chat:", e);
-			}
+			});
 		}
 	};
 
 	public PublicChatModule() {
 		super(false);
+		((DefaultCaret) this.getCaret()).setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 		this.setEditable(false);
 		this.addLinkEventListener(linkListener);
 		this.setOpaque(false);
+		this.getStyledDocument().addStyle("iconOnly", null);
 		scrollPane.setViewportView(this);
 		Border border = BorderFactory.createEmptyBorder();
 		this.setBorder(border);
@@ -87,7 +94,7 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 		scrollPane.setOpaque(false);
 		scrollPane.getViewport().setOpaque(false);
 	}
-
+	
 	@Override
 	public Component getComponent() {
 		return this.scrollPane;

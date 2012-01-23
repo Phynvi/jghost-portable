@@ -63,8 +63,8 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 	private JLabel lblConnection;
 	private final Color highlight = new Color(99, 130, 191, 120);
 	private final Color transparent = new Color(0, 0, 0, 0);
-	private final Font ghostFont = new Font("SansSerif", Font.PLAIN, 9);
-
+	private Font ghostFontSmall = new Font("SansSerif", Font.PLAIN, 9);
+	private Font ghostFontMedium = ghostFontSmall.deriveFont(10F);
 	private final DefaultListModel mdlPlayerList = new DefaultListModel();
 	private GhostClient model;
 	private final LinkedList<String> inputHistory = new LinkedList<String>();
@@ -86,9 +86,10 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					e.printStackTrace();
 				}
 				try {
-					Font f2 = ghostFont.deriveFont(10F);
-					UIManager.put("ToolTip.font", ghostFont);
-					UIManager.put("OptionPane.messageFont", ghostFont);
+					ghostFontSmall = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/ubuntu.ttf")).deriveFont(9F);
+					ghostFontMedium = ghostFontSmall.deriveFont(10F);
+					UIManager.put("ToolTip.font", ghostFontSmall);
+					UIManager.put("OptionPane.messageFont", ghostFontSmall);
 					UIManager.put("Label.foreground", Color.WHITE);
 					UIManager.put("TabbedPane.foreground", Color.WHITE);
 					UIManager.put("TextField.caretForeground", Color.WHITE);
@@ -97,20 +98,20 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					UIManager.put("TextPane.foreground", Color.WHITE);
 					UIManager.put("TextPane.selectionBackground", highlight);
 					UIManager.put("TextPane.selectionForeground", Color.WHITE);
-					UIManager.put("List.font", ghostFont);
-					UIManager.put("Button.font", ghostFont);
-					UIManager.put("Label.font", ghostFont);
-					UIManager.put("ComboBox.font", ghostFont);
-					UIManager.put("Tree.font", f2);
-					UIManager.put("TextArea.font", f2);
-					UIManager.put("TextPane.font", ghostFont);
-					UIManager.put("TextField.font", f2);
-					UIManager.put("Menu.font", ghostFont);
-					UIManager.put("MenuItem.font", ghostFont);
-					UIManager.put("TabbedPane.font", ghostFont);
+					UIManager.put("List.font", ghostFontSmall);
+					UIManager.put("Button.font", ghostFontSmall);
+					UIManager.put("Label.font", ghostFontSmall);
+					UIManager.put("ComboBox.font", ghostFontSmall);
+					UIManager.put("Tree.font", ghostFontMedium);
+					UIManager.put("TextArea.font", ghostFontSmall);
+					UIManager.put("TextPane.font", ghostFontSmall);
+					UIManager.put("TextField.font", ghostFontSmall);
+					UIManager.put("Menu.font", ghostFontSmall);
+					UIManager.put("MenuItem.font", ghostFontSmall);
+					UIManager.put("TabbedPane.font", ghostFontSmall);
 					UIManager.put("ScrollBar.width", 8);
 					UIManager.put("TabbedPane.contentAreaColor", new Color(0, 0, 0, 0));
-					UIManager.put("TabbedPane.contentBorderInsets", new Insets(4, 0, 0, 4));
+					UIManager.put("TabbedPane.contentBorderInsets", new Insets(4, 2, 0, 4));
 					UIManager.put("TabbedPane.selected", transparent);
 				}
 				catch (Exception e) {
@@ -145,24 +146,19 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					@Override
 					public void keyPressed(KeyEvent ke) {
 						if (ke.getKeyCode() == 38) {
-							if (historyIndex < inputHistory.size()) {
+							if (historyIndex < inputHistory.size())
 								historyIndex++;
-							}
-							if (inputHistory.size() > 0) {
+							if (inputHistory.size() > 0)
 								textInput.setText(inputHistory.get(inputHistory.size() - historyIndex));
-							}
 						}
 						else if (ke.getKeyCode() == 40) {
-							if (historyIndex > 0) {
+							if (historyIndex > 0)
 								historyIndex--;
-							}
 							int sz = inputHistory.size();
-							if (sz - historyIndex < sz) {
+							if (sz - historyIndex < sz)
 								textInput.setText(inputHistory.get(inputHistory.size() - historyIndex));
-							}
-							else {
+							else
 								textInput.setText(null);
-							}
 						}
 					}
 				});
@@ -173,16 +169,13 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 						String message = textInput.getText();
 						textInput.setText("");
 						if (!message.equals("")) {
-							if (!message.startsWith("/")) {
+							if (!message.startsWith("/"))
 								model.displayPublicChat(model.getUserPlayer(), message);
-							}
-							else {
+							else if(message.length() > 1)
 								model.handleCommand(message.substring(1, message.length()));
-							}
 							if (inputHistory.size() == 0 || !inputHistory.getLast().equalsIgnoreCase(message)) {
-								if (inputHistory.size() > 50) {
+								if (inputHistory.size() > 50)
 									inputHistory.removeFirst();
-								}
 								inputHistory.addLast(message);
 							}
 							historyIndex = 0;
@@ -191,7 +184,9 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				});
 				textInput.setOpaque(false);
 				textInput.setBorder(lineBorder);
-				textInput.setBounds(144, 483, 490, 14);
+				textInput.setBounds(138, 484, 496, 14);
+				textInput.setMargin(new Insets(0, 2, 0, 2));
+				textInput.setFont(ghostFontSmall);
 
 				lblConnection = new JLabel("Disconnected");
 				lblConnection.setOpaque(true);
@@ -199,14 +194,13 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				lblConnection.setBorder(lineBorder);
 				lblConnection.setHorizontalAlignment(SwingConstants.CENTER);
 				lblConnection.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				lblConnection.setBounds(635, 483, 63, 14);
+				lblConnection.setBounds(635, 484, 63, 14);
 
 				lblConnection.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
-						if (model.getSessionManager().sessionIsOpen()) {
+						if (model.getSessionManager().sessionIsOpen())
 							model.handleCommand("disconnect");
-						}
 						else if (e.getButton() == MouseEvent.BUTTON1) {
 							final JDialog jd = new JDialog();
 							jd.setTitle("Connect");
@@ -230,9 +224,8 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 									String prop = e.getPropertyName();
 									if (isVisible() && e.getSource() == jo && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
 										Object value = jo.getValue();
-										if (value == JOptionPane.UNINITIALIZED_VALUE) {
+										if (value == JOptionPane.UNINITIALIZED_VALUE)
 											return;
-										}
 										jo.setValue(JOptionPane.UNINITIALIZED_VALUE);
 										if (value.equals("OK")) {
 											String IP = connectInput.getText();
@@ -260,9 +253,8 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 											jd.dispose();
 											model.handleCommand("connect " + IP + " " + port + " " + password);
 										}
-										else {
+										else
 											jd.dispose();
-										}
 									}
 								}
 							});
@@ -273,16 +265,15 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 							jd.setVisible(true);
 							connectInput.requestFocusInWindow();
 						}
-						else if (e.getButton() == MouseEvent.BUTTON3) {
+						else if (e.getButton() == MouseEvent.BUTTON3)
 							model.handleCommand("connect");
-						}
 					}
 				});
 
 				final JLabel lblPlayerCount = new JLabel("Players: 0");
 				lblPlayerCount.setBorder(lineBorder);
 				lblPlayerCount.setHorizontalAlignment(SwingConstants.CENTER);
-				lblPlayerCount.setBounds(3, 1, 140, 15);
+				lblPlayerCount.setBounds(0, 0, 137, 16);
 
 				final JList compPlayerList = new JList();
 				compPlayerList.setCellRenderer(new DefaultListCellRenderer() {
@@ -317,10 +308,9 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 								g.dispose();
 							}
 						};
-						if (player != null && playerRank != null) {
+						if (player != null && playerRank != null)
 							label.setToolTipText(player.getName() + " - " + playerRank.getTitle());
-						}
-						label.setFont(ghostFont);
+						label.setFont(ghostFontSmall);
 						return label;
 					}
 				});
@@ -329,9 +319,8 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					public void mouseClicked(MouseEvent e) {
 						Object x = compPlayerList.getSelectedValue();
 						if (e.getClickCount() == 1) {
-							if (x != null) {
+							if (x != null)
 								model.getPlayerList().playerSelected((Player) x);
-							}
 						}
 						else if (e.getClickCount() == 2) {
 							textInput.setText("/pm " + x + " ");
@@ -362,9 +351,8 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				});
 				compPlayerList.setModel(mdlPlayerList);
 				JScrollPane scrlPlayerList = new JScrollPane();
-				scrlPlayerList.setBounds(3, 15, 140, 453);
+				scrlPlayerList.setBounds(0, 15, 137, 453);
 				scrlPlayerList.setViewportView(compPlayerList);
-				scrlPlayerList.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 				scrlPlayerList.getViewport().setOpaque(false);
 				scrlPlayerList.setOpaque(false);
 				scrlPlayerList.getVerticalScrollBar().setUI(new GhostScrollBarUI(scrlPlayerList.getVerticalScrollBar()));
@@ -373,7 +361,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				compPlayerList.setBorder(emptyBorder);
 
 				JLabel btnRestart = new JLabel("Restart");
-				btnRestart.setBounds(3, 483, 140, 14);
+				btnRestart.setBounds(0, 484, 137, 14);
 				btnRestart.setBorder(lineBorder);
 				btnRestart.setOpaque(true);
 				btnRestart.setBackground(transparent);
@@ -382,15 +370,14 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 
 				tabbedPane = new GhostTabbedPane();
 				tabbedPane.setTabPlacement(SwingConstants.BOTTOM);
-				tabbedPane.setBounds(144, 0, 554, 484);
+				tabbedPane.setBounds(136, 0, 565, 484);
 				tabbedPane.addChangeListener(new ChangeListener() {
 
 					@Override
 					public void stateChanged(ChangeEvent evt) {
 						int idx = tabbedPane.getSelectedIndex();
-						if (idx != -1) {
+						if (idx != -1)
 							tabbedPane.setBackgroundAt(idx, transparent);
-						}
 					}
 				});
 				tabbedPane.tabsReordered = new Runnable() {
@@ -398,16 +385,15 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					@Override
 					public void run() {
 						LinkedList<String> tabs = new LinkedList<String>();
-						for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+						for (int i = 0; i < tabbedPane.getTabCount(); i++)
 							tabs.add(tabbedPane.getTitleAt(i));
-						}
 						model.getSettings().setTabOrder(tabs.toArray(new String[tabs.size()]));
 					}
 				};
 				tabbedPane.setBackground(transparent);
 
 				final JTextField textSearch = new JTextField();
-				textSearch.setBounds(3, 467, 140, 14);
+				textSearch.setBounds(0, 467, 137, 14);
 				textSearch.setOpaque(false);
 				textSearch.setBorder(lineBorder);
 				textSearch.setText("Search..");
@@ -428,12 +414,11 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 						if (search.length() > 0) {
 							Object[] elems = new Object[mdlPlayerList.size()];
 							mdlPlayerList.copyInto(elems);
-							for (Object elem : elems) {
+							for (Object elem : elems)
 								if (elem.toString().toLowerCase().contains(search.toLowerCase())) {
 									compPlayerList.setSelectedValue(elem, true);
 									break;
 								}
-							}
 						}
 					}
 				});
@@ -446,11 +431,16 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 						if (ke.getKeyCode() == KeyEvent.VK_ENTER && sel != -1 && search.length() > 0) {
 							Object[] elems = new Object[mdlPlayerList.size()];
 							mdlPlayerList.copyInto(elems);
-							for (int i = sel + 1; i < elems.length; i++) {
-								if (elems[i].toString().toLowerCase().contains(search.toLowerCase())) {
-									compPlayerList.setSelectedValue(elems[i], true);
-									break;
-								}
+							outer: while (true) {
+								for (int i = sel + 1; i < elems.length; i++)
+									if (elems[i].toString().toLowerCase().contains(search.toLowerCase())) {
+										compPlayerList.setSelectedValue(elems[i], true);
+										break outer;
+									}
+								if (sel > 0)
+									sel = -1;
+								else
+									break outer;
 							}
 						}
 					}
@@ -500,7 +490,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 	}
 
 	@Override
-	public void sessionClosed(String reason) {
+	public void sessionClosed() {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
@@ -565,9 +555,8 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 			public void run() {
 				int bgTab = tabbedPane.indexOfComponent(module.getComponent());
 				int selTab = tabbedPane.getSelectedIndex();
-				if (bgTab != -1 && selTab != -1 && selTab != bgTab && tabbedPane.getBackgroundAt(bgTab) != highlight) {
+				if (bgTab != -1 && selTab != -1 && selTab != bgTab && tabbedPane.getBackgroundAt(bgTab) != highlight)
 					tabbedPane.setBackgroundAt(bgTab, highlight);
-				}
 			}
 		});
 	}

@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.whired.ghost.Constants;
 import org.whired.ghost.net.Connection;
@@ -17,13 +18,13 @@ import org.whired.ghostserver.server.io.ServerConnection;
 public class Server implements Runnable {
 
 	private final int PORT_NUM;
-	private static final long MIN_THROTTLING_MS = 000;
+	private static final long MIN_THROTTLING_MS = 25000;
 	private final HashMap<String, Long> throttlerList = new HashMap<String, Long>();
 	private ServerSocket ssock;
 	private final Receivable receivable;
 	private final String passPhrase;
 	private Connection connection;
-
+	
 	/**
 	 * Creates a new ghost server on the default port of {@code 43596}
 	 * <p>
@@ -90,8 +91,8 @@ public class Server implements Runnable {
 			this.PORT_NUM = port;
 			this.receivable = receivable;
 			this.passPhrase = passPhrase;
-			this.ssock = new ServerSocket(this.PORT_NUM);
-			new Thread(this, "ServerAccepter").start();
+			this.ssock = new ServerSocket(this.PORT_NUM, 50);
+			new Thread(this, "ClientAccepter").start();
 		}
 		else
 			throw new IllegalArgumentException("Password must be at least 6 characters with symbols/numerals or 12 characters without.");
@@ -126,26 +127,23 @@ public class Server implements Runnable {
 				Socket s = this.ssock.accept();
 				InetAddress address = s.getInetAddress();
 				if (!isThrottling(address)) {
+					throttlerList.remove(address);
+					s.setSoTimeout(400);
 					if (s.getInputStream().read() == 48) {
 						this.connection = new ServerConnection(s, this.receivable, this.passPhrase);
-						Constants.getLogger().severe("Connection is now " + this.connection);
 						this.connection.startReceiving();
 						this.connection = null;
 						s.close();
-						Constants.getLogger().info("Dropped connection: Session ended");
 					}
 					else {
 						s.close();
-						Constants.getLogger().info("Dropped connection: Invalid opcode (expected 48)");
 					}
 				}
 				else {
 					s.close();
-					Constants.getLogger().info("Dropped connection: Client is throttling");
 				}
 			}
 			catch (IOException ioe) {
-				Constants.getLogger().info("Dropped connection: " + ioe.getMessage());
 			}
 	}
 
@@ -157,11 +155,30 @@ public class Server implements Runnable {
 	public Connection getConnection() {
 		return this.connection;
 	}
-
+	
 	private boolean isThrottling(InetAddress address) {
-		Long lastConnTime = this.throttlerList.get(address.toString());
-		if (lastConnTime == null || System.currentTimeMillis() - lastConnTime.longValue() > MIN_THROTTLING_MS) {
-			Constants.getLogger().fine("Adding " + address.toString() + " as a throttling connection.");
+		boolean toReturn = addAndCheck(address.toString());
+		if(throttlerList.size() > 50) {
+			Iterator<String> it = throttlerList.keySet().iterator();
+			while(it.hasNext()) {
+				String key = it.next();
+				if(hasExpired(key)) {
+					it.remove();
+				}
+			}
+		}
+		return toReturn;
+	}
+	
+	boolean hasExpired(String address) {
+		Long lastConnTime = this.throttlerList.get(address);
+		if (lastConnTime == null || System.currentTimeMillis() - lastConnTime.longValue() > MIN_THROTTLING_MS)
+			return true;
+		return false;
+	}
+	
+	private boolean addAndCheck(String address) {
+		if(hasExpired(address)) {
 			this.throttlerList.put(address.toString(), Long.valueOf(System.currentTimeMillis()));
 			return false;
 		}

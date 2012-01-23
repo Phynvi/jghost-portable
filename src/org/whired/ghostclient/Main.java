@@ -47,7 +47,7 @@ public class Main {
 			public boolean handle(String[] args) {
 				Connection c = client.getModel().getSessionManager().getConnection();
 				if (c != null) {
-					client.getModel().getSessionManager().removeConnection("User requested.");
+					client.getModel().getSessionManager().removeConnection("User requested");
 					return true;
 				}
 				else {
@@ -177,10 +177,5 @@ public class Main {
 		} });
 		client.getModel().getRankHandler().registerRanks(new Rank[] { new Rank(DefaultRightsConstants.PLAYER, "Player", new ImageIcon(client.getClass().getResource("resources/player.png"))), new Rank(DefaultRightsConstants.VETERAN, "Veteran", new ImageIcon(client.getClass().getResource("resources/veteran.png"))), new Rank(DefaultRightsConstants.DONATOR, "Donator", new ImageIcon(client.getClass().getResource("resources/donator.png"))), new Rank(DefaultRightsConstants.DEVELOPER, "Developer", new ImageIcon(client.getClass().getResource("resources/developer.png"))), new Rank(DefaultRightsConstants.MODERATOR, "Moderator", new ImageIcon(client.getClass().getResource("resources/moderator.png"))), new Rank(DefaultRightsConstants.ADMINISTRATOR, "Administrator", new ImageIcon(client.getClass().getResource("resources/administrator.png"))), new Rank(DefaultRightsConstants.OWNER, "Owner", new ImageIcon(client.getClass().getResource("resources/owner.png"))) });
 		client.getModel().getPacketHandler().registerPacket(new AccessorPacket());
-		/*
-		 * new Thread(new Runnable() {
-		 * 
-		 * @Override public void run() { try { while (true) { client.getModel().getCommandHandler().handleInput( "connect localhost 43596 wrongpassword"); client.getModel().getCommandHandler().handleInput("disconnect"); } } catch (Throwable t) { t.printStackTrace(); } } }).start();
-		 */
 	}
 }

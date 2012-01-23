@@ -38,13 +38,14 @@
 		<jar destfile="${server.jar}" filesetmanifest="skip" update="true" basedir="bin" includes="org/whired/ghostserver/** org/whired/ghost/**" />
 
 		<delete file="${modules.zip}" />
-		<zip destfile="${modules.zip}">
+		<zip destfile="${modules.zip}" duplicate="preserve">
 			<zipfileset dir="deps/mod/bin" />
+			<zipfileset dir="deps/mod/src" />
 		</zip>
 		<checksum file="${modules.zip}" />
-		
+
 		<copy todir=".ghost/cache/modules">
-		    <fileset dir="deps/mod/bin"/>
-		  </copy>
+			<fileset dir="deps/mod/bin" />
+		</copy>
 	</target>
 </project>

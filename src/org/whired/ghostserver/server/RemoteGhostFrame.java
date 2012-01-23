@@ -53,7 +53,7 @@ public class RemoteGhostFrame extends GhostFrame {
 	}
 
 	@Override
-	public void sessionClosed(String reason) {
-		Constants.getLogger().info("Session closed: " + reason);
+	public void sessionClosed() {
+		Constants.getLogger().info("Session closed");
 	}
 }

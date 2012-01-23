@@ -7,29 +7,24 @@ import org.whired.ghost.Constants;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.Receivable;
 import org.whired.ghost.net.WrappedInputStream;
-import org.whired.ghost.net.WrappedOutputStream;
+import org.whired.ghost.net.packet.GhostAuthenticationPacket;
+import org.whired.ghost.net.packet.PacketType;
 
 public class ServerConnection extends Connection {
 
-	private final Socket ssock;
 	private boolean sessionValid = true;
-
-	public ServerConnection(Socket sock, Receivable receivable, String passPhrase) throws IOException {
-		super(new WrappedInputStream(sock.getInputStream()), new WrappedOutputStream(sock.getOutputStream()), receivable);
-		setPassword(passPhrase);
-		this.ssock = sock;
+	private boolean expectingPassword = true;
+	private final String password;
+	private final int HOUR = 60000*60;
+	public ServerConnection(Socket sock, Receivable receivable, String password) throws IOException {
+		super(sock, receivable);
+		this.password = password;
 	}
 
 	@Override
 	public void startReceiving() {
 		super.startReceiving();
-		Constants.getLogger().info("Session started with new client.");
 		validateSession();
-		try {
-			this.ssock.close();
-		}
-		catch (IOException ioe) {
-		}
 	}
 
 	/**
@@ -37,9 +32,7 @@ public class ServerConnection extends Connection {
 	 */
 	public final synchronized void invalidateSession() {
 		sessionValid = false;
-		Constants.getLogger().fine("Notifying");
 		notify();
-		Constants.getLogger().fine("Notified");
 	}
 
 	@Override
@@ -54,11 +47,43 @@ public class ServerConnection extends Connection {
 	private final synchronized void validateSession() {
 		while (sessionValid)
 			try {
-				Constants.getLogger().fine("Lock is waiting for notification.");
 				wait();
-				Constants.getLogger().fine("Lock notification received. No longer waiting.");
 			}
 			catch (InterruptedException e) {
 			}
+	}
+
+	@Override
+	protected void readPacket(WrappedInputStream inputStream) throws IOException {
+		socket.setSoTimeout(expectingPassword ? 1000 : 72*HOUR);
+		int packetId = inputStream.readByte();
+		if (expectingPassword) {
+			if (packetId == PacketType.AUTHENTICATION) {
+				GhostAuthenticationPacket ap = new GhostAuthenticationPacket();
+				if (ap.receive(this))
+					if (ap.password.equals(password)) {
+						Constants.getLogger().info("Password matched, client accepted.");
+						try {
+							getOutputStream().writeByte(PacketType.AUTHENTICATE_SUCCESS);
+						}
+						catch (IOException e) {
+						}
+						expectingPassword = false;
+					}
+					else
+						endSession("Password incorrect");
+			}
+			else
+				endSession("Password expected, but not received");
+		}
+		else {
+			try {
+				if (!receivable.handlePacket(packetId, this))
+					endSession("Packet " + packetId + " was not handled");
+			}
+			catch (IOException e) {
+				endSession("Error while handling packet " + packetId);
+			}
+		}
 	}
 }
