@@ -1,3 +1,4 @@
+package org.whired.ghostclient.awt;
 import java.awt.Component;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;

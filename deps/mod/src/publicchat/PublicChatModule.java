@@ -16,6 +16,7 @@ import javax.swing.text.StyleConstants;
 import org.whired.ghost.Constants;
 import org.whired.ghost.player.Player;
 import org.whired.ghostclient.awt.GhostScrollBarUI;
+import org.whired.ghostclient.awt.JAutoScrollPane;
 import org.whired.ghostclient.client.GhostClientFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 import org.whired.ghostclient.client.impl.LinkEventListener;
