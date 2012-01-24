@@ -45,6 +45,7 @@ public class DefaultClientGhostFrame extends GhostClientFrame {
 
 	@Override
 	public void sessionClosed() {
+		getPlayerList().removeAll();
 		getView().sessionClosed();
 	}
 

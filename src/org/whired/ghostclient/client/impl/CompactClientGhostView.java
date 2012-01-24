@@ -333,19 +333,19 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 
 					@Override
 					public void intervalAdded(ListDataEvent e) {
-						consumeEvent((DefaultListModel) e.getSource(), ((DefaultListModel) e.getSource()).elementAt(e.getIndex0()).toString());
+						consumeEvent((DefaultListModel) e.getSource());
 					}
 
 					@Override
 					public void intervalRemoved(ListDataEvent e) {
-						consumeEvent((DefaultListModel) e.getSource(), ((DefaultListModel) e.getSource()).elementAt(e.getIndex0()).toString());
+						consumeEvent((DefaultListModel) e.getSource());
 					}
 
 					@Override
 					public void contentsChanged(ListDataEvent e) {
 					}
 
-					private void consumeEvent(DefaultListModel source, String item) {
+					private void consumeEvent(DefaultListModel source) {
 						lblPlayerCount.setText("Players: " + source.getSize());
 					}
 				});
@@ -508,21 +508,18 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 	}
 
 	@Override
-	public void setInputText(final String text) {
+	public void setInputText(final String text, final boolean requestFocus) {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
 			public void run() {
 				textInput.setText(text);
+				if(requestFocus)
+					textInput.requestFocusInWindow();
 			}
 		});
 	}
-
-	@Override
-	public void focusInputBox() {
-		textInput.requestFocusInWindow();
-	}
-
+	
 	@Override
 	public void moduleAdded(final Module module) {
 		tabbedPane.addTab(module.getModuleName(), module.getComponent());

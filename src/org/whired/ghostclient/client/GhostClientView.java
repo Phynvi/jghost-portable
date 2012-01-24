@@ -21,13 +21,9 @@ public interface GhostClientView extends SessionEventListener {
 	 * Sets the text of the main input box on this view
 	 * 
 	 * @param text the text to set
+	 * @param requestFocus whether or not to request focus to the input box
 	 */
-	public void setInputText(String text);
-
-	/**
-	 * Applies focus to the main input box on this view
-	 */
-	public void focusInputBox();
+	public void setInputText(String text, boolean requestFocus);
 
 	/**
 	 * Invoked when a module's component needs to be added to this view This method is called from the event dispatching thread.

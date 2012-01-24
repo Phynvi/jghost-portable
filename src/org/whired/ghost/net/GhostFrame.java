@@ -7,6 +7,8 @@ import org.whired.ghost.Constants;
 import org.whired.ghost.net.packet.DebugPacket;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketType;
+import org.whired.ghost.net.packet.PlayerConnectionPacket;
+import org.whired.ghost.net.packet.PrivateChatPacket;
 import org.whired.ghost.net.packet.PublicChatPacket;
 import org.whired.ghost.player.PlayerList;
 import org.whired.ghostclient.client.user.GhostUser;
@@ -94,6 +96,22 @@ public abstract class GhostFrame implements Receivable, AbstractClient {
 			if (pc.receive(connection)) {
 				displayPublicChat(pc.sender, pc.message);
 				packetReceived(pc);
+			}
+		break;
+		case PacketType.PLAYER_CONNECTION:
+			PlayerConnectionPacket pcp = new PlayerConnectionPacket();
+			if(pcp.receive(connection)) {
+				if(pcp.connectionType == PlayerConnectionPacket.CONNECTING)
+					this.getPlayerList().addPlayer(pcp.player);
+				else if(pcp.connectionType == PlayerConnectionPacket.DISCONNECTING)
+					this.getPlayerList().removePlayer(pcp.player);
+			}
+			break;
+		case PacketType.PRIVATE_CHAT:
+			PrivateChatPacket prc = new PrivateChatPacket();
+			if (prc.receive(connection)) {
+				displayPrivateChat(prc.sender, prc.recipient, prc.message);
+				packetReceived(prc);
 			}
 		break;
 		case PacketType.AUTHENTICATE_SUCCESS:

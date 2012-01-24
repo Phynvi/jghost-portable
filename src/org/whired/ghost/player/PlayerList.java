@@ -13,7 +13,7 @@ import org.whired.ghost.player.event.PlayerListEventListener;
 public abstract class PlayerList implements PlayerListEventListener {
 
 	private final GhostFrame frame;
-	private final HashSet<PlayerListEventListener> listeners = new HashSet<PlayerListEventListener>();
+	protected final HashSet<PlayerListEventListener> listeners = new HashSet<PlayerListEventListener>();
 
 	protected PlayerList(GhostFrame frame) {
 		this.frame = frame;

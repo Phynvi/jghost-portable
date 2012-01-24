@@ -31,7 +31,6 @@ import org.whired.ghostclient.client.module.Module;
 public class DebugModule implements Module {
 
 	private final JAutoScrollPane scrollPane = new JAutoScrollPane();
-	// private final JScrollPane scrollPane = new JScrollPane();
 	private final JTextPane textPane = new JTextPane();
 	private GhostClientFrame frame;
 	private final OutputStream out = new OutputStream() {

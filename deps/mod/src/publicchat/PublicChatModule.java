@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
@@ -31,15 +30,13 @@ import org.whired.ghostclient.client.module.Module;
 public class PublicChatModule extends LinkingJTextPane implements Module {
 
 	private GhostClientFrame frame;
-	private final String name = "Chat";
 	private final JAutoScrollPane scrollPane = new JAutoScrollPane();
 
 	private final LinkEventListener linkListener = new LinkEventListener() {
 
 		@Override
 		public void linkClicked(String linkText) {
-			frame.getView().setInputText("/pm " + linkText + " ");
-			frame.getView().focusInputBox();
+			frame.getView().setInputText("/pm " + linkText + " ", true);
 		}
 	};
 	private final GhostEventAdapter ghostEventListener = new GhostEventAdapter() {
@@ -60,12 +57,13 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					scrollPane.autoscrollNext();
-					Icon i = frame.getRankHandler().rankForLevel(from.getRights()).getIcon();
 					try {
-						Style iconOnly = getStyledDocument().getStyle("iconOnly");
-						StyleConstants.setIcon(iconOnly, i);
 						getStyledDocument().insertString(getStyledDocument().getLength(), "[" + Constants.DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] ", null);
-						getStyledDocument().insertString(getStyledDocument().getLength(), " ", iconOnly);
+						if (from.getRights() > 0) {
+							Style iconOnly = getStyledDocument().getStyle("iconOnly");
+							StyleConstants.setIcon(iconOnly, frame.getRankHandler().rankForLevel(from.getRights()).getIcon());
+							getStyledDocument().insertString(getStyledDocument().getLength(), " ", iconOnly);
+						}
 						StringBuilder b = new StringBuilder().append(from.getName()).append(": ").append(message).append("\n");
 						getStyledDocument().insertString(getStyledDocument().getLength(), b.toString(), null);
 						frame.getView().displayModuleNotification(PublicChatModule.this);
@@ -95,7 +93,7 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 		scrollPane.setOpaque(false);
 		scrollPane.getViewport().setOpaque(false);
 	}
-	
+
 	@Override
 	public Component getComponent() {
 		return this.scrollPane;
@@ -113,7 +111,7 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 
 	@Override
 	public String getModuleName() {
-		return this.name;
+		return "Chat";
 	}
 
 	@Override

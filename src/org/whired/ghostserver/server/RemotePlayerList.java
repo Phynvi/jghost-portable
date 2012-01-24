@@ -1,6 +1,7 @@
 package org.whired.ghostserver.server;
 
 import org.whired.ghost.net.GhostFrame;
+import org.whired.ghost.net.packet.PlayerConnectionPacket;
 import org.whired.ghost.net.reflection.Accessor;
 import org.whired.ghost.player.Player;
 import org.whired.ghost.player.PlayerList;
@@ -12,30 +13,18 @@ import org.whired.ghost.player.PlayerList;
  */
 public class RemotePlayerList extends PlayerList {
 
-	private final Accessor playerList = Accessor.getClass("org.whired.ghostclient.Main").getField("client").getMethod("getModel").getMethod("getPlayerList");
-
 	public RemotePlayerList(GhostFrame frame) {
 		super(frame);
 	}
 
 	@Override
 	public void playerAdded(Player player) {
-		invoke(playerList.getMethod("addPlayer", player));
+		new PlayerConnectionPacket(player, PlayerConnectionPacket.CONNECTING).send(getFrame().getSessionManager().getConnection());
 	}
 
 	@Override
 	public void playerRemoved(Player player) {
-		invoke(playerList.getMethod("removePlayer", player));
-	}
-
-	/**
-	 * Invokes an accessor
-	 * 
-	 * @param accessor the accessor to invoke
-	 */
-	private void invoke(Accessor accessor) {
-		// getFrame().getSessionManager().getConnection().sendPacket(PacketType.INVOKE_ACCESSOR,
-		// accessor);//TODO fix
+		new PlayerConnectionPacket(player, PlayerConnectionPacket.DISCONNECTING).send(getFrame().getSessionManager().getConnection());
 	}
 
 	@Override

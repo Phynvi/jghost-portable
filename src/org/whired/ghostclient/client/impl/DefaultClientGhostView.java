@@ -616,8 +616,11 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	}
 
 	@Override
-	public void setInputText(String text) {
+	public void setInputText(String text, boolean requestFocus) {
+		// TODO edt
 		this.chatInput.setText(text);
+		if(requestFocus)
+			this.chatInput.requestFocus();
 	}
 
 	@Override
@@ -667,10 +670,5 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	@Override
 	public void playerRemoved(Player player) {
 		this.playerListModel.removeElement(player);
-	}
-
-	@Override
-	public void focusInputBox() {
-		this.chatInput.requestFocus();
 	}
 }

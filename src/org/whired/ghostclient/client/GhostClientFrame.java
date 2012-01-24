@@ -1,6 +1,7 @@
 package org.whired.ghostclient.client;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.whired.ghost.Constants;
 import org.whired.ghost.net.GhostFrame;
@@ -31,16 +32,16 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 
 		@Override
 		public void playerAdded(Player player) {
-			players.add(player);
 			view.playerAdded(player);
 			moduleHandler.playerAdded(player);
+			players.add(player);
 		}
 
 		@Override
 		public void playerRemoved(Player player) {
-			players.remove(player);
 			view.playerRemoved(player);
 			moduleHandler.playerRemoved(player);
+			players.remove(player);
 		}
 
 		@Override
@@ -51,6 +52,18 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 		@Override
 		public void playerSelected(Player player) {
 			moduleHandler.playerSelected(player);
+		}
+
+		@Override
+		public void removeAll() {
+			Iterator<Player> it = players.iterator();
+			Player next;
+			while(it.hasNext()) {
+				next = it.next();
+				view.playerRemoved(next);
+				moduleHandler.playerRemoved(next);
+				it.remove();
+			}
 		}
 	};
 
