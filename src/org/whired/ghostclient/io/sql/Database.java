@@ -10,7 +10,6 @@ import java.util.Properties;
 
 /**
  * Simplifies database operations
- * 
  * @author Whired
  */
 public class Database {
@@ -21,9 +20,9 @@ public class Database {
 	private final Connection connection;
 	private final String databaseName;
 
-	public Database(String workingDir, String databaseName) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public Database(final String workingDir, final String databaseName) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		Class.forName(DRIVER);
-		Properties connectionProperties = new Properties();
+		final Properties connectionProperties = new Properties();
 		connectionProperties.put("user", "program");
 		connectionProperties.put("password", "program");
 		this.databaseName = databaseName;
@@ -31,7 +30,7 @@ public class Database {
 
 	}
 
-	public void setAutoCommit(boolean autoCommit) throws SQLException {
+	public void setAutoCommit(final boolean autoCommit) throws SQLException {
 		this.connection.setAutoCommit(autoCommit);
 	}
 
@@ -41,32 +40,30 @@ public class Database {
 
 	/**
 	 * Executes the specified statement
-	 * 
 	 * @param statement the statement to execute
 	 * @throws SQLException when a statement fails to execute
 	 */
-	public void executeStatement(String statement) throws SQLException {
-		Statement s = connection.createStatement();
+	public void executeStatement(final String statement) throws SQLException {
+		final Statement s = connection.createStatement();
 		s.execute(statement);
 		s.close();
 	}
 
-	public void executePreparedStatement(String statement) throws SQLException {
-		PreparedStatement ps = connection.prepareStatement(statement);
+	public void executePreparedStatement(final String statement) throws SQLException {
+		final PreparedStatement ps = connection.prepareStatement(statement);
 		ps.executeUpdate();
 		ps.close();
 	}
 
 	/**
 	 * Executes the specified query
-	 * 
 	 * @param query the query to execute
 	 * @return the results returned by the query
 	 * @throws SQLException if the database can not be queried
 	 */
-	public ResultSet executeQuery(String query) throws SQLException {
-		Statement s = connection.createStatement();
-		ResultSet rs = s.executeQuery(query);
+	public ResultSet executeQuery(final String query) throws SQLException {
+		final Statement s = connection.createStatement();
+		final ResultSet rs = s.executeQuery(query);
 		return rs;
 	}
 
@@ -77,7 +74,7 @@ public class Database {
 		try {
 			connection.close();
 		}
-		catch (SQLException ex) {
+		catch (final SQLException ex) {
 		}
 	}
 }

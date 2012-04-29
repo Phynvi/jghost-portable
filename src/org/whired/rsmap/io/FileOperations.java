@@ -17,11 +17,11 @@ public class FileOperations {
 	public FileOperations() {
 	}
 
-	public static final byte[] ReadFile(InputStream is) throws FileNotFoundException, IOException {
+	public static final byte[] ReadFile(final InputStream is) throws FileNotFoundException, IOException {
 		return getBytes(is);
 	}
 
-	public static byte[] getBytes(InputStream is) throws IOException {
+	public static byte[] getBytes(final InputStream is) throws IOException {
 
 		int len;
 		int size = 1024;
@@ -33,29 +33,30 @@ public class FileOperations {
 			len = is.read(buf, 0, size);
 		}
 		else {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			buf = new byte[size];
-			while ((len = is.read(buf, 0, size)) != -1)
+			while ((len = is.read(buf, 0, size)) != -1) {
 				bos.write(buf, 0, len);
+			}
 			buf = bos.toByteArray();
 		}
 		return buf;
 	}
 
-	public static final void WriteFile(String s, byte abyte0[]) {
+	public static final void WriteFile(final String s, final byte abyte0[]) {
 		try {
 			new File(new File(s).getParent()).mkdirs();
-			FileOutputStream fileoutputstream = new FileOutputStream(s);
+			final FileOutputStream fileoutputstream = new FileOutputStream(s);
 			fileoutputstream.write(abyte0, 0, abyte0.length);
 			fileoutputstream.close();
 		}
-		catch (Throwable throwable) {
+		catch (final Throwable throwable) {
 			System.out.println("Write Error: " + s);
 		}
 	}
 
-	public static boolean FileExists(String file) {
-		File f = new File(file);
+	public static boolean FileExists(final String file) {
+		final File f = new File(file);
 		return f.exists();
 	}
 }

@@ -12,41 +12,41 @@ public class PlayerConnectionPacket extends GhostPacket {
 	public static final int DISCONNECTING = 0;
 	public int connectionType;
 	public Player player;
-	
-	public PlayerConnectionPacket(Player player, int connectionType) {
+
+	public PlayerConnectionPacket(final Player player, final int connectionType) {
 		super(PacketType.PLAYER_CONNECTION);
 		this.connectionType = connectionType;
 		this.player = player;
 		this.setSendAction(new TransmitAction() {
 			@Override
-			public boolean onTransmit(Connection connection) {
-				WrappedOutputStream os = connection.getOutputStream();
+			public boolean onTransmit(final Connection connection) {
+				final WrappedOutputStream os = connection.getOutputStream();
 				try {
 					os.writeString(PlayerConnectionPacket.this.player.getName());
 					os.writeByte(PlayerConnectionPacket.this.player.getRights());
 					os.writeByte(PlayerConnectionPacket.this.connectionType);
 					return true;
 				}
-				catch(Throwable t) {
+				catch (final Throwable t) {
 					return false;
 				}
 			}
 		});
 	}
-	
+
 	public PlayerConnectionPacket() {
 		super(PacketType.PLAYER_CONNECTION);
 		this.setReceiveAction(new TransmitAction() {
 
 			@Override
-			public boolean onTransmit(Connection connection) {
+			public boolean onTransmit(final Connection connection) {
 				try {
-					WrappedInputStream is = connection.getInputStream();
+					final WrappedInputStream is = connection.getInputStream();
 					PlayerConnectionPacket.this.player = new Player(is.readString(), is.readByte());
 					PlayerConnectionPacket.this.connectionType = is.readByte();
 					return true;
 				}
-				catch (IOException e) {
+				catch (final IOException e) {
 					return false;
 				}
 			}

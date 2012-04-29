@@ -8,7 +8,6 @@ import org.whired.ghostclient.client.settings.SessionSettings;
 
 /**
  * A collection of methods that a typical ghost client would utilize
- * 
  * @author Whired
  */
 public interface GhostClient extends AbstractClient {
@@ -32,7 +31,6 @@ public interface GhostClient extends AbstractClient {
 
 	/**
 	 * Gets the abstract player list for this client
-	 * 
 	 * @return the list
 	 */
 	public ClientPlayerList getPlayerList();

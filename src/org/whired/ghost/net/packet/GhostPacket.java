@@ -7,7 +7,6 @@ import org.whired.ghost.net.Connection;
 
 /**
  * The layout a standard packet
- * 
  * @author Whired
  */
 public class GhostPacket {
@@ -31,11 +30,10 @@ public class GhostPacket {
 
 	/**
 	 * Creates a new packet on the specified connection with the specified id
-	 * 
 	 * @param connection the connection that will handle data transfer
 	 * @param id the id of this packet
 	 */
-	public GhostPacket(int id) {
+	public GhostPacket(final int id) {
 		this.id = id;
 	}
 
@@ -43,39 +41,42 @@ public class GhostPacket {
 		return this.id;
 	}
 
-	public void setSendAction(TransmitAction action) {
+	public void setSendAction(final TransmitAction action) {
 		this.onSend = action;
 	}
 
-	public void setReceiveAction(TransmitAction action) {
+	public void setReceiveAction(final TransmitAction action) {
 		this.onReceive = action;
 	}
 
-	public final boolean receive(Connection connection) throws IllegalStateException {
+	public final boolean receive(final Connection connection) throws IllegalStateException {
 		if (!isReceived && onReceive != null) {
 			isReceived = true;
 			return onReceive.onTransmit(connection);
 		}
-		else if (isReceived)
+		else if (isReceived) {
 			throw new IllegalStateException("This packet has already been received");
+		}
 		return false;
 	}
 
-	public final boolean send(Connection connection) {
-		if (onSend != null)
+	public final boolean send(final Connection connection) {
+		if (onSend != null) {
 			try {
 				if (connection != null) {
 					connection.getOutputStream().writeByte(id);
 					return onSend.onTransmit(connection);
 				}
-				else
+				else {
 					Constants.getLogger().log(Level.WARNING, "Packet {0} not sent: No connection to remote", id);
+				}
 			}
-			catch (Throwable t) {
+			catch (final Throwable t) {
 				Constants.getLogger().log(Level.WARNING, "Packet {0} not sent: {1}", new Object[] { id, t });
 				Constants.getLogger().log(Level.FINE, "Exception details: ", t);
 				return false;
 			}
+		}
 		return false;
 	}
 

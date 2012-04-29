@@ -20,9 +20,10 @@ public class ByteBuffer {
 	}
 
 	public String getString() {
-		int i = currentOffset;
-		while (buffer[currentOffset++] != 10)
+		final int i = currentOffset;
+		while (buffer[currentOffset++] != 10) {
 			;
+		}
 		return new String(buffer, i, currentOffset - i - 1);
 	}
 
@@ -34,7 +35,7 @@ public class ByteBuffer {
 	public ByteBuffer() {
 	}
 
-	public ByteBuffer(byte abyte0[]) {
+	public ByteBuffer(final byte abyte0[]) {
 		buffer = abyte0;
 		currentOffset = 0;
 	}

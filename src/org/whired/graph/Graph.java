@@ -1,16 +1,15 @@
 package org.whired.graph;
 
 import java.awt.Color;
-import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
 /**
  * Represents a graph
- * 
  * @author Whired
  */
-public abstract class Graph extends Component implements Plottable {
+public abstract class Graph extends Container implements Plottable {
 
 	/**
 	 * The labels to show
@@ -28,89 +27,100 @@ public abstract class Graph extends Component implements Plottable {
 	 * Whether or not this graph automatically scrolls when data is added
 	 */
 	private boolean autoScroll = true;
+	/**
+	 * The legend for this graph
+	 */
+	private Legend legend = new Legend();
 
 	/**
 	 * Creates a new graph with the specified width and height
-	 * 
 	 * @param width the width of this graph
 	 * @param height the height of this graph
 	 */
-	public Graph(int width, int height) {
-		Dimension d = new Dimension(width, height);
-		this.setSize(d);
+	public Graph(final int width, final int height) {
+		this();
+		final Dimension d = new Dimension(width, height);
 		this.setPreferredSize(d);
 	}
 
 	public Graph() {
+		this.add(legend);
+	}
 
+	/**
+	 * Sets the legend for this graph
+	 * @param legend the legend to set
+	 */
+	public void setLegend(final Legend legend) {
+		this.legend = legend;
+	}
+
+	/**
+	 * Gets the legend for this graph
+	 * @return the legend
+	 */
+	public Legend getLegend() {
+		return this.legend;
 	}
 
 	/**
 	 * Sets the labels for this graph. Accepts bitwise operations.
-	 * 
 	 * @param labels the labels to set
 	 */
-	public void setLabels(int labels) {
+	public void setLabels(final int labels) {
 		this.labels = labels;
 	}
 
 	/**
 	 * Sets whether or not to show labels for the x axis
-	 * 
 	 * @param visible
 	 */
-	public void setShowAxisXLabel(boolean visible) {
+	public void setShowAxisXLabel(final boolean visible) {
 		this.labels = visible ? this.getLabels() | Label.AXIS_X : this.getLabels() ^ Label.AXIS_X;
 	}
 
 	/**
 	 * Sets whether or not to show labels for the y axis
-	 * 
 	 * @param visible
 	 */
-	public void setShowAxisYLabel(boolean visible) {
+	public void setShowAxisYLabel(final boolean visible) {
 		this.labels = visible ? this.getLabels() | Label.AXIS_Y : this.getLabels() ^ Label.AXIS_Y;
 	}
 
 	/**
 	 * Sets whether or not to display gridlines for the x axis
-	 * 
 	 * @param visible
 	 */
-	public void setShowGridLineX(boolean visible) {
+	public void setShowGridLineX(final boolean visible) {
 		this.labels = visible ? this.getLabels() | Label.GRIDLINE_X : this.getLabels() ^ Label.GRIDLINE_X;
 	}
 
 	/**
 	 * Sets whether or not to display gridlines for the x axis
-	 * 
 	 * @param visible
 	 */
-	public void setShowGridlineY(boolean visible) {
+	public void setShowGridlineY(final boolean visible) {
 		this.labels = visible ? this.getLabels() | Label.GRIDLINE_Y : this.getLabels() ^ Label.GRIDLINE_Y;
 	}
 
 	/**
 	 * Sets whether or not to show labels for points' x-coordinates
-	 * 
 	 * @param visible
 	 */
-	public void setShowPointXLabel(boolean visible) {
+	public void setShowPointXLabel(final boolean visible) {
 		this.labels = visible ? this.getLabels() | Label.POINT_X : this.getLabels() ^ Label.POINT_X;
 	}
 
 	/**
 	 * Sets whether or not to show labels for points' y-coordinates
-	 * 
 	 * @param visible
 	 */
-	public void setShowPointYLabel(boolean visible) {
+	public void setShowPointYLabel(final boolean visible) {
 		this.labels = visible ? this.getLabels() | Label.POINT_Y : this.getLabels() ^ Label.POINT_Y;
 	}
 
 	/**
 	 * Whether or not to show labels for the x axis
-	 * 
 	 * @return {@code true} if they are shown, otherwise {@code false}
 	 */
 	public boolean showAxisXLabel() {
@@ -119,7 +129,6 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Whether or not to show labels for the y axis
-	 * 
 	 * @return {@code true} if they are shown, otherwise {@code false}
 	 */
 	public boolean showAxisYLabel() {
@@ -128,7 +137,6 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Whether or not to display gridlines for the x axis
-	 * 
 	 * @return {@code true} if they are shown, otherwise {@code false}
 	 */
 	public boolean showGridLineX() {
@@ -137,7 +145,6 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Whether or not to display gridlines for the y axis
-	 * 
 	 * @return {@code true} if they are shown, otherwise {@code false}
 	 */
 	public boolean showGridLineY() {
@@ -146,7 +153,6 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Whether or not to show labels for points' x-coordinates
-	 * 
 	 * @return {@code true} if they are shown, otherwise {@code false}
 	 */
 	public boolean showPointXLabel() {
@@ -155,7 +161,6 @@ public abstract class Graph extends Component implements Plottable {
 
 	/**
 	 * Whether or not to show labels for points' y-coordinates
-	 * 
 	 * @return {@code true} if they are shown, otherwise {@code false}
 	 */
 	public boolean showPointYLabel() {
@@ -172,7 +177,7 @@ public abstract class Graph extends Component implements Plottable {
 	/**
 	 * @param gridLineXColor the gridLineXColor to set
 	 */
-	public void setGridLineXColor(Color gridLineXColor) {
+	public void setGridLineXColor(final Color gridLineXColor) {
 		this.gridLineXColor = gridLineXColor;
 	}
 
@@ -186,7 +191,7 @@ public abstract class Graph extends Component implements Plottable {
 	/**
 	 * @param gridLineYColor the gridLineYColor to set
 	 */
-	public void setGridLineYColor(Color gridLineYColor) {
+	public void setGridLineYColor(final Color gridLineYColor) {
 		this.gridLineYColor = gridLineYColor;
 	}
 
@@ -207,7 +212,7 @@ public abstract class Graph extends Component implements Plottable {
 	/**
 	 * @param autoscrolls sets whether or not this graph autoscrolls when data is added
 	 */
-	public void setAutoScrolls(boolean autoscrolls) {
+	public void setAutoScrolls(final boolean autoscrolls) {
 		this.autoScroll = autoscrolls;
 	}
 
@@ -219,31 +224,31 @@ public abstract class Graph extends Component implements Plottable {
 		/**
 		 * No labels
 		 */
-		public static final int NONE = 0;
+		public static final int NONE = 0x0;
 		/**
 		 * Labels for a point's x-coordinate
 		 */
-		public static final int POINT_X = 1;
+		public static final int POINT_X = 0x1;
 		/**
 		 * Labels for a point's y-coordinate
 		 */
-		public static final int POINT_Y = 2;
+		public static final int POINT_Y = 0x2;
 		/**
 		 * Labels for the x axis
 		 */
-		public static final int AXIS_X = 4;
+		public static final int AXIS_X = 0x4;
 		/**
 		 * Labels for the y axis
 		 */
-		public static final int AXIS_Y = 8;
+		public static final int AXIS_Y = 0x8;
 		/**
 		 * Gridlines for the x axis
 		 */
-		public static final int GRIDLINE_X = 16;
+		public static final int GRIDLINE_X = 0x16;
 		/**
 		 * Gridlines for the y axis
 		 */
-		public static final int GRIDLINE_Y = 32;
+		public static final int GRIDLINE_Y = 0x32;
 		/**
 		 * All labels
 		 */
@@ -251,7 +256,8 @@ public abstract class Graph extends Component implements Plottable {
 	}
 
 	@Override
-	public final void paint(Graphics g) {
+	public final void paint(final Graphics g) {
 		plot(g);
+		super.paint(g);
 	}
 }

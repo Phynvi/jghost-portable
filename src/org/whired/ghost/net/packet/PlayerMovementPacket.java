@@ -8,7 +8,6 @@ import org.whired.ghost.net.WrappedOutputStream;
 
 /**
  * An movement packet
- * 
  * @author Whired
  */
 public class PlayerMovementPacket extends GhostPacket {
@@ -22,22 +21,22 @@ public class PlayerMovementPacket extends GhostPacket {
 		this.setReceiveAction(new TransmitAction() {
 
 			@Override
-			public boolean onTransmit(Connection connection) {
+			public boolean onTransmit(final Connection connection) {
 				try {
-					WrappedInputStream is = connection.getInputStream();
+					final WrappedInputStream is = connection.getInputStream();
 					PlayerMovementPacket.this.playerName = is.readString();
 					PlayerMovementPacket.this.newAbsX = is.readShort();
 					PlayerMovementPacket.this.newAbsY = is.readShort();
 					return true;
 				}
-				catch (IOException e) {
+				catch (final IOException e) {
 					return false;
 				}
 			}
 		});
 	}
 
-	public PlayerMovementPacket(String playerName, short newAbsX, short newAbsY) {
+	public PlayerMovementPacket(final String playerName, final short newAbsX, final short newAbsY) {
 		super(PacketType.PLAYER_MOVEMENT);
 		this.playerName = playerName;
 		this.newAbsX = newAbsX;
@@ -45,15 +44,15 @@ public class PlayerMovementPacket extends GhostPacket {
 		this.setSendAction(new TransmitAction() {
 
 			@Override
-			public boolean onTransmit(Connection connection) {
+			public boolean onTransmit(final Connection connection) {
 				try {
-					WrappedOutputStream os = connection.getOutputStream();
+					final WrappedOutputStream os = connection.getOutputStream();
 					os.writeString(PlayerMovementPacket.this.playerName);
 					os.writeShort(PlayerMovementPacket.this.newAbsX);
 					os.writeShort(PlayerMovementPacket.this.newAbsY);
 					return true;
 				}
-				catch (IOException e) {
+				catch (final IOException e) {
 					return false;
 				}
 			}

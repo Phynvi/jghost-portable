@@ -4,7 +4,6 @@ import java.awt.Graphics;
 
 /**
  * Contains methods for plotting points on a graph
- * 
  * @author Whired
  */
 public interface Plottable {

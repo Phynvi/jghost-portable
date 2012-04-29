@@ -25,7 +25,6 @@ import org.whired.ghostclient.client.module.Module;
 
 /**
  * Used to display logger output
- * 
  * @author Whired
  */
 public class DebugModule implements Module {
@@ -35,17 +34,17 @@ public class DebugModule implements Module {
 	private GhostClientFrame frame;
 	private final OutputStream out = new OutputStream() {
 		@Override
-		public void write(int b) throws IOException {
+		public void write(final int b) throws IOException {
 			updateTextArea(String.valueOf((char) b), false);
 		}
 
 		@Override
-		public void write(byte[] b, int off, int len) throws IOException {
+		public void write(final byte[] b, final int off, final int len) throws IOException {
 			updateTextArea(new String(b, off, len), false);
 		}
 
 		@Override
-		public void write(byte[] b) throws IOException {
+		public void write(final byte[] b) throws IOException {
 			write(b, 0, b.length);
 		}
 	};
@@ -53,7 +52,7 @@ public class DebugModule implements Module {
 	public DebugModule() {
 		((DefaultCaret) textPane.getCaret()).setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 		textPane.setEditable(false);
-		Border border = BorderFactory.createEmptyBorder();
+		final Border border = BorderFactory.createEmptyBorder();
 		textPane.setBorder(border);
 		textPane.setOpaque(false);
 		scrollPane.setViewportView(textPane);
@@ -69,8 +68,9 @@ public class DebugModule implements Module {
 
 			@Override
 			public void publish(final LogRecord record) {
-				if (isLoggable(record))
+				if (isLoggable(record)) {
 					updateTextArea(formatter.format(record), true);
+				}
 			}
 
 			@Override
@@ -82,14 +82,13 @@ public class DebugModule implements Module {
 			}
 		});
 
-		PrintStream p = new PrintStream(out, true);
+		final PrintStream p = new PrintStream(out, true);
 		System.setOut(p);
 		System.setErr(p);
 	}
 
 	/**
 	 * Appends string to {@code textArea}
-	 * 
 	 * @param text the text to append
 	 */
 	private void updateTextArea(final String text, final boolean preFormatted) {
@@ -98,14 +97,15 @@ public class DebugModule implements Module {
 			@Override
 			public void run() {
 				scrollPane.autoscrollNext();
-				Document doc = textPane.getStyledDocument();
+				final Document doc = textPane.getStyledDocument();
 				try {
 					doc.insertString(doc.getLength(), !text.contains(System.getProperty("line.separator")) && !preFormatted ? "[" + Constants.DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] System: " + text : text, null);
 				}
-				catch (BadLocationException e) {
+				catch (final BadLocationException e) {
 				}
-				if (frame != null)
+				if (frame != null) {
 					frame.getView().displayModuleNotification(DebugModule.this);
+				}
 			}
 		});
 	}
@@ -130,12 +130,12 @@ public class DebugModule implements Module {
 	}
 
 	@Override
-	public void setFrame(GhostClientFrame frame) {
+	public void setFrame(final GhostClientFrame frame) {
 		this.frame = frame;
 	}
 
 	@Override
-	public void setResourcePath(String arg0) {
+	public void setResourcePath(final String arg0) {
 	}
 
 }

@@ -5,31 +5,30 @@ import org.whired.ghost.player.Player;
 
 /**
  * Contains empty methods for receiving ghost events
- * 
  * @author Whired
  */
 public abstract class GhostEventAdapter implements GhostEventListener {
 
 	@Override
-	public void playerAdded(Player player) {
+	public void playerAdded(final Player player) {
 	}
 
 	@Override
-	public void playerRemoved(Player player) {
+	public void playerRemoved(final Player player) {
 	}
 
 	@Override
-	public void privateMessageLogged(Player from, Player to, String message) {
+	public void privateMessageLogged(final Player from, final Player to, final String message) {
 	}
 
 	@Override
-	public void publicMessageLogged(Player from, String message) {
+	public void publicMessageLogged(final Player from, final String message) {
 	}
 
 	@Override
-	public void packetReceived(GhostPacket packet) {
+	public void packetReceived(final GhostPacket packet) {
 	}
 
-	public void playerSelected(Player player) {
+	public void playerSelected(final Player player) {
 	}
 }

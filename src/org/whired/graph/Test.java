@@ -11,12 +11,11 @@ import org.whired.graph.Graph.Label;
 
 /**
  * rend
- * 
  * @author whired
  */
 public class Test {
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		final Line line = new Line(Color.BLUE);
 		final Line line2 = new Line(Color.CYAN);
 		final LineGraph graph = new LineGraph(400, 300);
@@ -25,7 +24,7 @@ public class Test {
 		graph.addLine(line2);
 		graph.setFont(new Font("Arial", Font.PLAIN, 9));
 		graph.setBackground(Color.BLACK);
-		JFrame f = new JFrame("Players V Staff");
+		final JFrame f = new JFrame("Players V Staff");
 		f.setLocationByPlatform(true);
 		f.getContentPane().add(graph);
 		f.pack();
@@ -40,13 +39,15 @@ public class Test {
 					int lastMod = 0;
 					while (true) {
 						Thread.sleep(700);
-						int i = (int) (Math.random() * 5);
-						int m = (int) (Math.random() * 2);
+						final int i = (int) (Math.random() * 5);
+						final int m = (int) (Math.random() * 2);
 						if ((int) (Math.random() * 2) == 0) {
-							if (lastPlr > 5)
+							if (lastPlr > 5) {
 								lastPlr -= i;
-							if (lastMod > 1)
+							}
+							if (lastMod > 1) {
 								lastMod -= m;
+							}
 						}
 						else {
 							lastPlr += i;
@@ -56,7 +57,7 @@ public class Test {
 						line2.addNextY(lastMod);
 					}
 				}
-				catch (InterruptedException ex) {
+				catch (final InterruptedException ex) {
 					Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}

@@ -12,14 +12,13 @@ public class SessionSettings implements Serializable {
 	private String[] tabOrder = new String[0];
 	private final int idInTable;
 
-	public SessionSettings(Player player, int databaseId) {
+	public SessionSettings(final Player player, final int databaseId) {
 		this.idInTable = databaseId;
 		this.player = player;
 	}
 
 	/**
 	 * Gets the player representation of this user
-	 * 
 	 * @return the player for this user
 	 */
 	public Player getPlayer() {
@@ -28,16 +27,14 @@ public class SessionSettings implements Serializable {
 
 	/**
 	 * Sets the order of the tabs on the view
-	 * 
 	 * @param tabs the tabs, in order
 	 */
-	public void setTabOrder(String[] tabs) {
+	public void setTabOrder(final String[] tabs) {
 		tabOrder = tabs;
 	}
 
 	/**
 	 * Gets the names of tabs in their preferred order
-	 * 
 	 * @return the names of the tabs
 	 */
 	public String[] getTabOrder() {

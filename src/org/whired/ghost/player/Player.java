@@ -5,7 +5,6 @@ import java.io.Serializable;
 
 /**
  * Provides basic details about a player
- * 
  * @author Whired
  */
 public class Player implements Serializable {
@@ -22,13 +21,12 @@ public class Player implements Serializable {
 
 	/**
 	 * Creates a new player with the specified name, rights, and location
-	 * 
 	 * @param name the name of the player
 	 * @param rights the rights of the player (-128 to 127)
 	 * @param x the x-coordinate of this player
 	 * @param y the y-coordinate of this player
 	 */
-	public Player(String name, int rights, int x, int y) {
+	public Player(final String name, final int rights, final int x, final int y) {
 		this.name = name;
 		this.rights = (byte) rights;
 		this.x = x;
@@ -37,11 +35,10 @@ public class Player implements Serializable {
 
 	/**
 	 * Creates a new player with the specified name and rights
-	 * 
 	 * @param name the name of the player
 	 * @param rights the rights of the player (-128 to 127)
 	 */
-	public Player(String name, int rights) {
+	public Player(final String name, final int rights) {
 		this.name = name;
 		this.rights = (byte) rights;
 	}
@@ -50,36 +47,38 @@ public class Player implements Serializable {
 		return new Point(x, y);
 	}
 
-	public void setLocation(int x, int y) {
+	public void setLocation(final int x, final int y) {
 		this.x = x;
 		this.y = y;
 	}
 
 	/**
 	 * Gets the long that represents this player's name
-	 * 
 	 * @return the converted long
 	 */
 	public long nameToLong() {
 		long l = 0L;
 		for (int i = 0; i < getName().length() && i < 12; i++) {
-			char c = getName().charAt(i);
+			final char c = getName().charAt(i);
 			l *= 37L;
-			if (c >= 'A' && c <= 'Z')
+			if (c >= 'A' && c <= 'Z') {
 				l += 1 + c - 65;
-			else if (c >= 'a' && c <= 'z')
+			}
+			else if (c >= 'a' && c <= 'z') {
 				l += 1 + c - 97;
-			else if (c >= '0' && c <= '9')
+			}
+			else if (c >= '0' && c <= '9') {
 				l += 27 + c - 48;
+			}
 		}
-		while (l % 37L == 0L && l != 0L)
+		while (l % 37L == 0L && l != 0L) {
 			l /= 37L;
+		}
 		return l;
 	}
 
 	/**
 	 * Gets the name of this player
-	 * 
 	 * @return the name of this player
 	 */
 	public String getName() {
@@ -88,16 +87,14 @@ public class Player implements Serializable {
 
 	/**
 	 * Sets the name of this player
-	 * 
 	 * @param name the name to set
 	 */
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
 	/**
 	 * Gets the rights of this player
-	 * 
 	 * @return the rights
 	 */
 	public int getRights() {
@@ -106,14 +103,15 @@ public class Player implements Serializable {
 
 	/**
 	 * Sets the rights of this player
-	 * 
 	 * @param rights the rights to set (-128 to 127)
 	 */
 	public void setRights(int rights) {
-		if (rights > 127)
+		if (rights > 127) {
 			rights = 127;
-		if (rights < 0)
+		}
+		if (rights < 0) {
 			rights = 0;
+		}
 		this.rights = (byte) rights;
 	}
 

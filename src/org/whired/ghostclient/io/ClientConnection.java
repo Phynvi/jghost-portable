@@ -18,7 +18,7 @@ import org.whired.ghost.net.packet.GhostAuthenticationPacket;
  */
 public class ClientConnection extends Connection {
 
-	public ClientConnection(Socket sock, Receivable r, SessionManager manager, String passPhrase) throws IOException {
+	public ClientConnection(final Socket sock, final Receivable r, final SessionManager manager, final String passPhrase) throws IOException {
 		super(sock, r, manager);
 		Constants.getLogger().info("Connected");
 		super.startReceiving();
@@ -29,27 +29,29 @@ public class ClientConnection extends Connection {
 		new GhostAuthenticationPacket(passPhrase).send(this);
 	}
 
-	public static Connection connect(String IP, int port, String password, GhostFrame frame) throws UnknownHostException, IOException, InvalidStateException {
+	public static Connection connect(final String IP, final int port, final String password, final GhostFrame frame) throws UnknownHostException, IOException, InvalidStateException {
 		if (!frame.getSessionManager().sessionIsOpen()) {
-			Socket s = new Socket(IP, port);
-			ClientConnection ccon = new ClientConnection(s, frame, frame.getSessionManager(), password);
+			final Socket s = new Socket(IP, port);
+			final ClientConnection ccon = new ClientConnection(s, frame, frame.getSessionManager(), password);
 			return ccon;
 		}
-		else
+		else {
 			throw new InvalidStateException("Connection to server already exists");
+		}
 	}
 
 	@Override
-	protected void readPacket(WrappedInputStream inputStream) throws IOException {
+	protected void readPacket(final WrappedInputStream inputStream) throws IOException {
 		// For now there's not much ClientConnection needs to check up on
 		// may change in future
-		int packetId = inputStream.readByte();
+		final int packetId = inputStream.readByte();
 		try {
 			Constants.getLogger().fine("Notifying receivable that external packet " + packetId + " has been received.");
-			if (!receivable.handlePacket(packetId, this))
+			if (!receivable.handlePacket(packetId, this)) {
 				endSession("Packet " + packetId + " was not handled");
+			}
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			endSession("Error while handling packet " + packetId);
 		}
 	}

@@ -1,4 +1,5 @@
 package org.whired.ghostclient.awt;
+
 import java.awt.Component;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
@@ -14,17 +15,17 @@ public class JAutoScrollPane extends JScrollPane {
 		initScrollListener();
 	}
 
-	public JAutoScrollPane(Component arg0) {
+	public JAutoScrollPane(final Component arg0) {
 		super(arg0);
 		initScrollListener();
 	}
 
-	public JAutoScrollPane(int arg0, int arg1) {
+	public JAutoScrollPane(final int arg0, final int arg1) {
 		super(arg0, arg1);
 		initScrollListener();
 	}
 
-	public JAutoScrollPane(Component arg0, int arg1, int arg2) {
+	public JAutoScrollPane(final Component arg0, final int arg1, final int arg2) {
 		super(arg0, arg1, arg2);
 		initScrollListener();
 	}
@@ -45,7 +46,7 @@ public class JAutoScrollPane extends JScrollPane {
 				}
 			});
 		}
-		catch (Throwable e) {
+		catch (final Throwable e) {
 			notFromUser = true;
 		}
 
@@ -57,14 +58,16 @@ public class JAutoScrollPane extends JScrollPane {
 			boolean wasAtBottom = true;
 
 			@Override
-			public void adjustmentValueChanged(AdjustmentEvent e) {
+			public void adjustmentValueChanged(final AdjustmentEvent e) {
 				if (notFromUser) {
-					if (wasAtBottom)
+					if (wasAtBottom) {
 						brm.setValue(brm.getMaximum());
+					}
 					notFromUser = false;
 				}
-				else
+				else {
 					wasAtBottom = brm.getValue() + brm.getExtent() == brm.getMaximum();
+				}
 			}
 		});
 	}

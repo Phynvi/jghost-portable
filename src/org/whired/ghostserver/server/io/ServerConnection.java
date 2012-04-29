@@ -15,8 +15,9 @@ public class ServerConnection extends Connection {
 	private boolean sessionValid = true;
 	private boolean expectingPassword = true;
 	private final String password;
-	private final int HOUR = 60000*60;
-	public ServerConnection(Socket sock, Receivable receivable, String password) throws IOException {
+	private final int HOUR = 60000 * 60;
+
+	public ServerConnection(final Socket sock, final Receivable receivable, final String password) throws IOException {
 		super(sock, receivable);
 		this.password = password;
 	}
@@ -36,7 +37,7 @@ public class ServerConnection extends Connection {
 	}
 
 	@Override
-	protected void endSession(String reason) {
+	protected void endSession(final String reason) {
 		super.endSession(reason);
 		invalidateSession();
 	}
@@ -45,43 +46,48 @@ public class ServerConnection extends Connection {
 	 * Blocks until this session becomes invalid
 	 */
 	private final synchronized void validateSession() {
-		while (sessionValid)
+		while (sessionValid) {
 			try {
 				wait();
 			}
-			catch (InterruptedException e) {
+			catch (final InterruptedException e) {
 			}
+		}
 	}
 
 	@Override
-	protected void readPacket(WrappedInputStream inputStream) throws IOException {
-		socket.setSoTimeout(expectingPassword ? 1000 : 72*HOUR);
-		int packetId = inputStream.readByte();
+	protected void readPacket(final WrappedInputStream inputStream) throws IOException {
+		socket.setSoTimeout(expectingPassword ? 1000 : 72 * HOUR);
+		final int packetId = inputStream.readByte();
 		if (expectingPassword) {
 			if (packetId == PacketType.AUTHENTICATION) {
-				GhostAuthenticationPacket ap = new GhostAuthenticationPacket();
-				if (ap.receive(this))
+				final GhostAuthenticationPacket ap = new GhostAuthenticationPacket();
+				if (ap.receive(this)) {
 					if (ap.password.equals(password)) {
 						Constants.getLogger().info("Password matched, client accepted.");
 						try {
 							getOutputStream().writeByte(PacketType.AUTHENTICATE_SUCCESS);
 						}
-						catch (IOException e) {
+						catch (final IOException e) {
 						}
 						expectingPassword = false;
 					}
-					else
+					else {
 						endSession("Password incorrect");
+					}
+				}
 			}
-			else
+			else {
 				endSession("Password expected, but not received");
+			}
 		}
 		else {
 			try {
-				if (!receivable.handlePacket(packetId, this))
+				if (!receivable.handlePacket(packetId, this)) {
 					endSession("Packet " + packetId + " was not handled");
+				}
 			}
-			catch (IOException e) {
+			catch (final IOException e) {
 				endSession("Error while handling packet " + packetId);
 			}
 		}

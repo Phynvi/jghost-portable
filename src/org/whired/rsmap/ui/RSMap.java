@@ -52,19 +52,18 @@ public abstract class RSMap extends RSCanvas {
 	private final Font defaultFont = loadPackagedFont("ubuntu");
 	public TextSprite defaultTextSprite;
 
-	public synchronized void addSprite(Sprite s) {
+	public synchronized void addSprite(final Sprite s) {
 		mapSprites.add(s);
 	}
 
 	/**
 	 * Loads a custom map located at the given path
-	 * 
 	 * @param cachePath the path of the map to load
 	 */
-	public void loadMap(String cachePath) {
+	public void loadMap(final String cachePath) {
 		super.loadMap();
 		defaultTextSprite = new TextSprite("ts", defaultFont, 0xFFFFFF, false, true, this);
-		MapButton mb1 = new MapButton("Minimap", 2, RSMap.super.getHeight() - 14 - 2, 40, 14, 0xBEC7E8, 0x6382BF) {
+		final MapButton mb1 = new MapButton("Minimap", 2, RSMap.super.getHeight() - 14 - 2, 40, 14, 0xBEC7E8, 0x6382BF) {
 
 			@Override
 			public void draw() {
@@ -85,12 +84,12 @@ public abstract class RSMap extends RSCanvas {
 		try {
 			cacheLoader = getMapLoader(new FileInputStream(cachePath));
 		}
-		catch (Throwable t) {
+		catch (final Throwable t) {
 			try {
 				Constants.getLogger().log(Level.WARNING, "External cache load fail, falling back to default: ", t);
 				cacheLoader = getMapLoader(this.getClass().getResourceAsStream("/org/whired/rsmap/resources/worldmap.dat"));
 			}
-			catch (Throwable t2) {
+			catch (final Throwable t2) {
 				Constants.getLogger().log(Level.SEVERE, "Internal cache load fail, map not loaded", t2);
 				return;
 			}
@@ -111,7 +110,7 @@ public abstract class RSMap extends RSCanvas {
 		minimapY = super.getHeight() - minimapHeight - 5;
 
 		byteBuffer = new ByteBuffer(cacheLoader.loadNode("floorcol.dat"));
-		int length = byteBuffer.getShort();
+		final int length = byteBuffer.getShort();
 		anIntArray115 = new int[length + 1];
 		anIntArray116 = new int[length + 1];
 		for (int k = 0; k < length; k++) {
@@ -119,7 +118,7 @@ public abstract class RSMap extends RSCanvas {
 			anIntArray116[k + 1] = byteBuffer.getInt();
 		}
 
-		byte abyte1[][] = new byte[mapWidth][mapHeight];
+		final byte abyte1[][] = new byte[mapWidth][mapHeight];
 		loadUnderlay(cacheLoader.loadNode("underlay.dat"), abyte1);
 
 		anIntArrayArray118 = new int[mapWidth][mapHeight];
@@ -135,12 +134,12 @@ public abstract class RSMap extends RSCanvas {
 		method16(abyte1);
 		try {
 			// TODO IMPLEMENT ELSEWHERE
-			Sprite uberSprite = new StaticSprite(new URL("http://icons.iconarchive.com/icons/google/chrome/16/Google-Chrome-icon.png"));
+			final Sprite uberSprite = new StaticSprite(new URL("http://icons.iconarchive.com/icons/google/chrome/16/Google-Chrome-icon.png"));
 			uberSprite.location = new Point(2460, 3090);
 			uberSprite.isRelativeToMap = true;
 			// addSprite(uberSprite);
 		}
-		catch (Exception ex) {
+		catch (final Exception ex) {
 			Logger.getLogger(RSMap.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		overviewArea = new OverviewArea(this, minimapWidth, minimapHeight);
@@ -148,116 +147,131 @@ public abstract class RSMap extends RSCanvas {
 		renderMiniMap(overviewArea.area, new Dimension(minimapWidth, minimapHeight), 2, 2, mapWidth - 2, mapHeight - 2);
 	}
 
-	public void loadObjects(byte[] locations) {
+	public void loadObjects(final byte[] locations) {
 		for (int i = 0; i < locations.length;) {
-			int k = (locations[i++] & 0xff) * 64 - mapStartX;
-			int l = (locations[i++] & 0xff) * 64 - mapStartY;
-			if (k > 0 && l > 0 && k + 64 < mapWidth && l + 64 < mapHeight)
+			final int k = (locations[i++] & 0xff) * 64 - mapStartX;
+			final int l = (locations[i++] & 0xff) * 64 - mapStartY;
+			if (k > 0 && l > 0 && k + 64 < mapWidth && l + 64 < mapHeight) {
 				for (int i1 = 0; i1 < 64; i1++) {
-					byte abyte4[] = mapObjects[i1 + k];
+					final byte abyte4[] = mapObjects[i1 + k];
 					int l1 = mapHeight - l - 1;
 					for (int i2 = -64; i2 < 0; i2++) {
 						do {
-							int j = locations[i++] & 0xff;
-							if (j == 0)
+							final int j = locations[i++] & 0xff;
+							if (j == 0) {
 								break;
-							if (j < 29)
+							}
+							if (j < 29) {
 								abyte4[l1] = (byte) j;
+							}
 						}
 						while (true);
 						l1--;
 					}
 
 				}
-			else
-				for (int j1 = 0; j1 < 64; j1++)
+			}
+			else {
+				for (int j1 = 0; j1 < 64; j1++) {
 					for (int k1 = -64; k1 < 0; k1++) {
 						byte byte0;
-						do
+						do {
 							byte0 = locations[i++];
+						}
 						while (byte0 != 0);
 					}
+				}
+			}
 		}
 	}
 
-	public void loadUnderlay(byte abyte0[], byte abyte1[][]) {
+	public void loadUnderlay(final byte abyte0[], final byte abyte1[][]) {
 		for (int i = 0; i < abyte0.length;) {
-			int j = (abyte0[i++] & 0xff) * 64 - mapStartX;
-			int k = (abyte0[i++] & 0xff) * 64 - mapStartY;
-			if (j > 0 && k > 0 && j + 64 < mapWidth && k + 64 < mapHeight)
+			final int j = (abyte0[i++] & 0xff) * 64 - mapStartX;
+			final int k = (abyte0[i++] & 0xff) * 64 - mapStartY;
+			if (j > 0 && k > 0 && j + 64 < mapWidth && k + 64 < mapHeight) {
 				for (int l = 0; l < 64; l++) {
-					byte abyte2[] = abyte1[l + j];
+					final byte abyte2[] = abyte1[l + j];
 					int i1 = mapHeight - k - 1;
-					for (int j1 = -64; j1 < 0; j1++)
+					for (int j1 = -64; j1 < 0; j1++) {
 						abyte2[i1--] = abyte0[i++];
+					}
 
 				}
-			else
+			}
+			else {
 				i += 4096;
+			}
 		}
 
 	}
 
-	public void loadOverlay(byte abyte0[]) {
+	public void loadOverlay(final byte abyte0[]) {
 		for (int i = 0; i < abyte0.length;) {
-			int j = (abyte0[i++] & 0xff) * 64 - mapStartX;
-			int k = (abyte0[i++] & 0xff) * 64 - mapStartY;
-			if (j > 0 && k > 0 && j + 64 < mapWidth && k + 64 < mapHeight)
+			final int j = (abyte0[i++] & 0xff) * 64 - mapStartX;
+			final int k = (abyte0[i++] & 0xff) * 64 - mapStartY;
+			if (j > 0 && k > 0 && j + 64 < mapWidth && k + 64 < mapHeight) {
 				for (int l = 0; l < 64; l++) {
-					int ai1[] = anIntArrayArray118[l + j];
-					byte abyte2[] = aByteArrayArray119[l + j];
+					final int ai1[] = anIntArrayArray118[l + j];
+					final byte abyte2[] = aByteArrayArray119[l + j];
 					int j1 = mapHeight - k - 1;
 					for (int k1 = -64; k1 < 0; k1++) {
-						byte byte0 = abyte0[i++];
+						final byte byte0 = abyte0[i++];
 						if (byte0 != 0) {
 							abyte2[j1] = abyte0[i++];
 							int l1 = 0;
-							if (byte0 > 0)
+							if (byte0 > 0) {
 								l1 = anIntArray116[byte0];
+							}
 							ai1[j1--] = l1;
 						}
-						else
+						else {
 							ai1[j1--] = 0;
+						}
 					}
 
 				}
-			else
+			}
+			else {
 				for (int i1 = -4096; i1 < 0; i1++) {
-					byte byte1 = abyte0[i++];
-					if (byte1 != 0)
+					final byte byte1 = abyte0[i++];
+					if (byte1 != 0) {
 						i++;
+					}
 				}
+			}
 		}
 
 	}
 
 	/**
 	 * Has something to do tile color
-	 * 
 	 * @param abyte0
 	 * @param ai
 	 */
-	public void method16(byte abyte0[][]) {
-		int ai1[] = new int[mapHeight];
+	public void method16(final byte abyte0[][]) {
+		final int ai1[] = new int[mapHeight];
 		for (int l = 5; l < mapWidth - 5; l++) {
-			byte abyte1[] = abyte0[l + 5];
-			byte abyte2[] = abyte0[l - 5];
-			for (int i1 = 0; i1 < mapHeight; i1++)
+			final byte abyte1[] = abyte0[l + 5];
+			final byte abyte2[] = abyte0[l - 5];
+			for (int i1 = 0; i1 < mapHeight; i1++) {
 				ai1[i1] += anIntArray115[abyte1[i1] & 0xff] - anIntArray115[abyte2[i1] & 0xff];
+			}
 
 			if (l > 10 && l < mapWidth - 10) {
 				int j1 = 0;
 				int k1 = 0;
 				int l1 = 0;
-				int ai2[] = anIntArrayArray117[l];
+				final int ai2[] = anIntArrayArray117[l];
 				for (int i2 = 5; i2 < mapHeight - 5; i2++) {
-					int j2 = ai1[i2 - 5];
-					int k2 = ai1[i2 + 5];
+					final int j2 = ai1[i2 - 5];
+					final int k2 = ai1[i2 + 5];
 					j1 += (k2 >> 20) - (j2 >> 20);
 					k1 += (k2 >> 10 & 0x3ff) - (j2 >> 10 & 0x3ff);
 					l1 += (k2 & 0x3ff) - (j2 & 0x3ff);
-					if (l1 > 0)
+					if (l1 > 0) {
 						ai2[i2] = method17(j1 / 8533D, k1 / 8533D, l1 / 8533D);
+					}
 				}
 			}
 		}
@@ -265,69 +279,84 @@ public abstract class RSMap extends RSCanvas {
 
 	/**
 	 * Gets hex value for color
-	 * 
 	 * @param d
 	 * @param d1
 	 * @param d2
 	 * @return
 	 */
-	public int method17(double d, double d1, double d2) {
+	public int method17(final double d, final double d1, final double d2) {
 		double d3 = d2;
 		double d4 = d2;
 		double d5 = d2;
 		if (d1 != 0.0D) {
 			double d6;
-			if (d2 < 0.5D)
+			if (d2 < 0.5D) {
 				d6 = d2 * (1.0D + d1);
-			else
+			}
+			else {
 				d6 = d2 + d1 - d2 * d1;
-			double d7 = 2D * d2 - d6;
+			}
+			final double d7 = 2D * d2 - d6;
 			double d8 = d + 0.33333333333333331D;
-			if (d8 > 1.0D)
+			if (d8 > 1.0D) {
 				d8--;
-			double d9 = d;
+			}
+			final double d9 = d;
 			double d10 = d - 0.33333333333333331D;
-			if (d10 < 0.0D)
+			if (d10 < 0.0D) {
 				d10++;
-			if (6D * d8 < 1.0D)
+			}
+			if (6D * d8 < 1.0D) {
 				d3 = d7 + (d6 - d7) * 6D * d8;
-			else if (2D * d8 < 1.0D)
+			}
+			else if (2D * d8 < 1.0D) {
 				d3 = d6;
-			else if (3D * d8 < 2D)
+			}
+			else if (3D * d8 < 2D) {
 				d3 = d7 + (d6 - d7) * (0.66666666666666663D - d8) * 6D;
-			else
+			}
+			else {
 				d3 = d7;
-			if (6D * d9 < 1.0D)
+			}
+			if (6D * d9 < 1.0D) {
 				d4 = d7 + (d6 - d7) * 6D * d9;
-			else if (2D * d9 < 1.0D)
+			}
+			else if (2D * d9 < 1.0D) {
 				d4 = d6;
-			else if (3D * d9 < 2D)
+			}
+			else if (3D * d9 < 2D) {
 				d4 = d7 + (d6 - d7) * (0.66666666666666663D - d9) * 6D;
-			else
+			}
+			else {
 				d4 = d7;
-			if (6D * d10 < 1.0D)
+			}
+			if (6D * d10 < 1.0D) {
 				d5 = d7 + (d6 - d7) * 6D * d10;
-			else if (2D * d10 < 1.0D)
+			}
+			else if (2D * d10 < 1.0D) {
 				d5 = d6;
-			else if (3D * d10 < 2D)
+			}
+			else if (3D * d10 < 2D) {
 				d5 = d7 + (d6 - d7) * (0.66666666666666663D - d10) * 6D;
-			else
+			}
+			else {
 				d5 = d7;
+			}
 		}
-		int red = (int) (d3 * 256D);
-		int green = (int) (d4 * 256D);
-		int blue = (int) (d5 * 256D);
-		int hexValue = (red << 16) + (green << 8) + blue;
+		final int red = (int) (d3 * 256D);
+		final int green = (int) (d4 * 256D);
+		final int blue = (int) (d5 * 256D);
+		final int hexValue = (red << 16) + (green << 8) + blue;
 		return hexValue;
 	}
 
 	@Override
 	public void draw() {
 
-		int i = overviewCenterX - (int) (super.getWidth() / currentZoomLevel);
-		int j = overviewCenterY - (int) (super.getHeight() / currentZoomLevel);
-		int k = overviewCenterX + (int) (super.getWidth() / currentZoomLevel);
-		int l = overviewCenterY + (int) (super.getHeight() / currentZoomLevel);
+		final int i = overviewCenterX - (int) (super.getWidth() / currentZoomLevel);
+		final int j = overviewCenterY - (int) (super.getHeight() / currentZoomLevel);
+		final int k = overviewCenterX + (int) (super.getWidth() / currentZoomLevel);
+		final int l = overviewCenterY + (int) (super.getHeight() / currentZoomLevel);
 
 		renderMap(pixels, new Dimension(super.getWidth(), super.getHeight()), i, j, k, l);
 
@@ -338,45 +367,49 @@ public abstract class RSMap extends RSCanvas {
 		}
 
 		synchronized (RSMap.this) {
-			for (MapButton button : buttons)
+			for (final MapButton button : buttons) {
 				button.draw();
+			}
 		}
 	}
 
 	/**
 	 * Renders the minimap
 	 */
-	public void renderMiniMap(int[] pix, Dimension size, int x1, int y1, int x2, int y2) {
-		int localMapWidth = x2 - x1;
-		int localMapHeight = y2 - y1;
+	public void renderMiniMap(final int[] pix, final Dimension size, final int x1, final int y1, final int x2, final int y2) {
+		final int localMapWidth = x2 - x1;
+		final int localMapHeight = y2 - y1;
 
-		int k2 = (size.width << 16) / localMapWidth;
-		int l2 = (size.height << 16) / localMapHeight;
+		final int k2 = (size.width << 16) / localMapWidth;
+		final int l2 = (size.height << 16) / localMapHeight;
 
 		// Draws textures
 		for (int i3 = 0; i3 < localMapWidth; i3++) {
-			int j3 = k2 * i3 >> 16;
-			int l3 = k2 * (i3 + 1) >> 16;
-			int j4 = l3 - j3;
+			final int j3 = k2 * i3 >> 16;
+			final int l3 = k2 * (i3 + 1) >> 16;
+			final int j4 = l3 - j3;
 			if (j4 > 0) {
-				int ai[] = anIntArrayArray117[i3 + x1];
-				int ai1[] = anIntArrayArray118[i3 + x1];
-				byte abyte0[] = aByteArrayArray119[i3 + x1];
+				final int ai[] = anIntArrayArray117[i3 + x1];
+				final int ai1[] = anIntArrayArray118[i3 + x1];
+				final byte abyte0[] = aByteArrayArray119[i3 + x1];
 				for (int j7 = 0; j7 < localMapHeight; j7++) {
-					int i8 = l2 * j7 >> 16;
-					int l8 = l2 * (j7 + 1) >> 16;
-					int l9 = l8 - i8;
+					final int i8 = l2 * j7 >> 16;
+					final int l8 = l2 * (j7 + 1) >> 16;
+					final int l9 = l8 - i8;
 					if (l9 > 0) {
-						int l10 = ai1[j7 + y1];
-						if (l10 == 0)
+						final int l10 = ai1[j7 + y1];
+						if (l10 == 0) {
 							fillColor(pix, size, j3, i8, l3 - j3, l8 - i8, ai[j7 + y1]);
+						}
 						else {
-							byte byte0 = abyte0[j7 + y1];
-							int l11 = byte0 & 0xfc;
-							if (l11 == 0 || j4 <= 1 || l9 <= 1)
+							final byte byte0 = abyte0[j7 + y1];
+							final int l11 = byte0 & 0xfc;
+							if (l11 == 0 || j4 <= 1 || l9 <= 1) {
 								fillColor(pix, size, j3, i8, j4, l9, l10);
-							else
+							}
+							else {
 								blendCorners(pix, size, i8 * size.width + j3, ai[j7 + y1], l10, j4, l9, l11 >> 2, byte0 & 3);
+							}
 						}
 					}
 				}
@@ -384,37 +417,40 @@ public abstract class RSMap extends RSCanvas {
 		}
 	}
 
-	public void renderMap(int[] pix, Dimension size, int x1, int y1, int x2, int y2) {
-		int localMapWidth = x2 - x1;
-		int localMapHeight = y2 - y1;
+	public void renderMap(final int[] pix, final Dimension size, final int x1, final int y1, final int x2, final int y2) {
+		final int localMapWidth = x2 - x1;
+		final int localMapHeight = y2 - y1;
 
-		int k2 = (size.width << 16) / localMapWidth;
-		int l2 = (size.height << 16) / localMapHeight;
+		final int k2 = (size.width << 16) / localMapWidth;
+		final int l2 = (size.height << 16) / localMapHeight;
 
 		// Draws textures
 		for (int i3 = 0; i3 < localMapWidth; i3++) {
-			int j3 = k2 * i3 >> 16;
-			int l3 = k2 * (i3 + 1) >> 16;
-			int j4 = l3 - j3;
+			final int j3 = k2 * i3 >> 16;
+			final int l3 = k2 * (i3 + 1) >> 16;
+			final int j4 = l3 - j3;
 			if (j4 > 0) {
-				int ai[] = anIntArrayArray117[i3 + x1];
-				int ai1[] = anIntArrayArray118[i3 + x1];
-				byte abyte0[] = aByteArrayArray119[i3 + x1];
+				final int ai[] = anIntArrayArray117[i3 + x1];
+				final int ai1[] = anIntArrayArray118[i3 + x1];
+				final byte abyte0[] = aByteArrayArray119[i3 + x1];
 				for (int j7 = 0; j7 < localMapHeight; j7++) {
-					int i8 = l2 * j7 >> 16;
-					int l8 = l2 * (j7 + 1) >> 16;
-					int l9 = l8 - i8;
+					final int i8 = l2 * j7 >> 16;
+					final int l8 = l2 * (j7 + 1) >> 16;
+					final int l9 = l8 - i8;
 					if (l9 > 0) {
-						int l10 = ai1[j7 + y1];
-						if (l10 == 0)
+						final int l10 = ai1[j7 + y1];
+						if (l10 == 0) {
 							fillColor(pix, size, j3, i8, l3 - j3, l8 - i8, ai[j7 + y1]);
+						}
 						else {
-							byte byte0 = abyte0[j7 + y1];
-							int l11 = byte0 & 0xfc;
-							if (l11 == 0 || j4 <= 1 || l9 <= 1)
+							final byte byte0 = abyte0[j7 + y1];
+							final int l11 = byte0 & 0xfc;
+							if (l11 == 0 || j4 <= 1 || l9 <= 1) {
 								fillColor(pix, size, j3, i8, j4, l9, l10);
-							else
+							}
+							else {
 								blendCorners(pix, size, i8 * size.width + j3, ai[j7 + y1], l10, j4, l9, l11 >> 2, byte0 & 3);
+							}
 						}
 					}
 				}
@@ -422,46 +458,55 @@ public abstract class RSMap extends RSCanvas {
 			}
 		}
 
-		if (x2 - x1 > size.width)
+		if (x2 - x1 > size.width) {
 			return;
+		}
 
 		// Draws walls, doors, fences, etc.
 		for (int i4 = 0; i4 < localMapWidth; i4++) {
-			int k4 = k2 * i4 >> 16;
-			int i5 = k2 * (i4 + 1) >> 16;
-			int i6 = i5 - k4;
+			final int k4 = k2 * i4 >> 16;
+			final int i5 = k2 * (i4 + 1) >> 16;
+			final int i6 = i5 - k4;
 			if (i6 > 0) {
-				byte abyte1[] = mapObjects[i4 + x1];
+				final byte abyte1[] = mapObjects[i4 + x1];
 				for (int i9 = 0; i9 < localMapHeight; i9++) {
-					int i10 = l2 * i9 >> 16;
-					int i11 = l2 * (i9 + 1) >> 16;
-					int k11 = i11 - i10;
+					final int i10 = l2 * i9 >> 16;
+					final int i11 = l2 * (i9 + 1) >> 16;
+					final int k11 = i11 - i10;
 					if (k11 > 0) {
 						int i12 = abyte1[i9 + y1] & 0xff;
 						if (i12 != 0) {
 							int k12;
-							if (i6 == 1)
+							if (i6 == 1) {
 								k12 = k4;
-							else
+							}
+							else {
 								k12 = i5 - 1;
+							}
 							int j13;
-							if (k11 == 1)
+							if (k11 == 1) {
 								j13 = i10;
-							else
+							}
+							else {
 								j13 = i11 - 1;
+							}
 							int i14 = 0xcccccc;
 							if (i12 >= 5 && i12 <= 8 || i12 >= 13 && i12 <= 16 || i12 >= 21 && i12 <= 24 || i12 == 27 || i12 == 28) {
 								i14 = 0xcc0000;
 								i12 -= 4;
 							}
-							if (i12 == 1)
+							if (i12 == 1) {
 								renderVerticalLine(k4, i10, k11, i14);
-							else if (i12 == 2)
+							}
+							else if (i12 == 2) {
 								renderHorizontalLine(k4, i10, i6, i14);
-							else if (i12 == 3)
+							}
+							else if (i12 == 3) {
 								renderVerticalLine(k12, i10, k11, i14);
-							else if (i12 == 4)
+							}
+							else if (i12 == 4) {
 								renderHorizontalLine(k4, j13, i6, i14);
+							}
 							else if (i12 == 9) {
 								renderVerticalLine(k4, i10, k11, 0xffffff);
 								renderHorizontalLine(k4, i10, i6, i14);
@@ -478,20 +523,28 @@ public abstract class RSMap extends RSCanvas {
 								renderVerticalLine(k4, i10, k11, 0xffffff);
 								renderHorizontalLine(k4, j13, i6, i14);
 							}
-							else if (i12 == 17)
+							else if (i12 == 17) {
 								renderHorizontalLine(k4, i10, 1, i14);
-							else if (i12 == 18)
+							}
+							else if (i12 == 18) {
 								renderHorizontalLine(k12, i10, 1, i14);
-							else if (i12 == 19)
+							}
+							else if (i12 == 19) {
 								renderHorizontalLine(k12, j13, 1, i14);
-							else if (i12 == 20)
+							}
+							else if (i12 == 20) {
 								renderHorizontalLine(k4, j13, 1, i14);
-							else if (i12 == 25)
-								for (int j14 = 0; j14 < k11; j14++)
+							}
+							else if (i12 == 25) {
+								for (int j14 = 0; j14 < k11; j14++) {
 									renderHorizontalLine(k4 + j14, j13 - j14, 1, i14);
-							else if (i12 == 26)
-								for (int k14 = 0; k14 < k11; k14++)
+								}
+							}
+							else if (i12 == 26) {
+								for (int k14 = 0; k14 < k11; k14++) {
 									renderHorizontalLine(k4 + k14, i10 + k14, 1, i14);
+								}
+							}
 						}
 					}
 				}
@@ -499,85 +552,85 @@ public abstract class RSMap extends RSCanvas {
 		}
 
 		synchronized (RSCanvas.class) {
-			for (Sprite s : mapSprites)
+			for (final Sprite s : mapSprites) {
 				if (s.isRelativeToMap) {
-					Point loc = s.location;
-					int px = loc.x - mapStartX;
+					final Point loc = s.location;
+					final int px = loc.x - mapStartX;
 					int py = mapStartY + mapHeight - loc.y;
 					py -= currentZoomLevel < 8D ? 4 : 2;
 					int j6;
 					int l6;
 					j6 = px;
 					l6 = py;
-					int adjustedX = getWidth() * (j6 - x1) / (x2 - x1);
-					int adjustedY = getHeight() * (l6 - y1) / (y2 - y1);
+					final int adjustedX = getWidth() * (j6 - x1) / (x2 - x1);
+					final int adjustedY = getHeight() * (l6 - y1) / (y2 - y1);
 					s.drawSprite(adjustedX - s.getWidth() / 2, adjustedY, this);
 				}
-				else
+				else {
 					s.drawSprite(s.location.x, s.location.y, this);
+				}
+			}
 		}
 	}
 
 	/**
 	 * Translates a map coordinate into a pixel coordinate
-	 * 
 	 * @param mapCoord the point to translate
 	 * @return the pixel coordinate
 	 */
-	public Point mapToPixel(Point mapCoord) {
-		int i = overviewCenterX - (int) (super.getWidth() / currentZoomLevel);
-		int j = overviewCenterY - (int) (super.getHeight() / currentZoomLevel);
-		int k = overviewCenterX + (int) (super.getWidth() / currentZoomLevel);
-		int l = overviewCenterY + (int) (super.getHeight() / currentZoomLevel);
-		int px = mapCoord.x - mapStartX;
+	public Point mapToPixel(final Point mapCoord) {
+		final int i = overviewCenterX - (int) (super.getWidth() / currentZoomLevel);
+		final int j = overviewCenterY - (int) (super.getHeight() / currentZoomLevel);
+		final int k = overviewCenterX + (int) (super.getWidth() / currentZoomLevel);
+		final int l = overviewCenterY + (int) (super.getHeight() / currentZoomLevel);
+		final int px = mapCoord.x - mapStartX;
 		int py = mapStartY + mapHeight - mapCoord.y;
 		py -= currentZoomLevel < 8D ? 4 : 2;
 		int j6;
 		int l6;
 		j6 = px;
 		l6 = py;
-		int adjustedX = getWidth() * (j6 - i) / (k - i);
-		int adjustedY = getHeight() * (l6 - j) / (l - j);
+		final int adjustedX = getWidth() * (j6 - i) / (k - i);
+		final int adjustedY = getHeight() * (l6 - j) / (l - j);
 		return new Point(adjustedX, adjustedY);
 
 	}
 
 	/**
 	 * Translates a component coordinate into a map coordinate
-	 * 
 	 * @param componentCoord the point to translate
 	 * @return the map coordinate
 	 */
-	public Point componentToMap(Point componentCoord) {
-		int localX = (int) (componentCoord.x * 2D / currentZoomLevel) - (int) (getWidth() / currentZoomLevel);
-		int localY = (int) (componentCoord.y * 2D / currentZoomLevel) - (int) (getHeight() / currentZoomLevel);
-		int mapCoordX = mapStartX + overviewCenterX + localX;
-		int mapCoordY = mapStartY + mapHeight - localY - overviewCenterY;
+	public Point componentToMap(final Point componentCoord) {
+		final int localX = (int) (componentCoord.x * 2D / currentZoomLevel) - (int) (getWidth() / currentZoomLevel);
+		final int localY = (int) (componentCoord.y * 2D / currentZoomLevel) - (int) (getHeight() / currentZoomLevel);
+		final int mapCoordX = mapStartX + overviewCenterX + localX;
+		final int mapCoordY = mapStartY + mapHeight - localY - overviewCenterY;
 		return new Point(mapCoordX, mapCoordY);
 	}
 
 	/**
 	 * Gets a cache loader for the cache file at the specified path
-	 * 
 	 * @param cachePath the path of the cache to get a loader for
 	 * @return
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public CacheLoader getMapLoader(InputStream is) throws FileNotFoundException, IOException {
+	public CacheLoader getMapLoader(final InputStream is) throws FileNotFoundException, IOException {
 		byte abyte0[] = null;
 		abyte0 = FileOperations.ReadFile(is);
 		return new CacheLoader(abyte0);
 	}
 
 	@Override
-	public boolean clicked(Point p) {
+	public boolean clicked(final Point p) {
 		synchronized (RSMap.this) {
-			for (MapButton b : buttons)
+			for (final MapButton b : buttons) {
 				if (b.contains(p)) {
 					b.clicked();
 					return true;
 				}
+			}
 			return false;
 		}
 	}
@@ -586,26 +639,24 @@ public abstract class RSMap extends RSCanvas {
 
 	/**
 	 * Adds a button to this map
-	 * 
 	 * @param button the button to add
 	 */
-	public synchronized void addButton(MapButton button) {
+	public synchronized void addButton(final MapButton button) {
 		buttons.add(button);
 		repaint();
 	}
 
 	/**
 	 * Removes a button from this map
-	 * 
 	 * @param button the button to remove
 	 */
-	public synchronized void removeButton(MapButton button) {
+	public synchronized void removeButton(final MapButton button) {
 		buttons.remove(button);
 		repaint();
 	}
 
 	@Override
-	public void mouseDragged(int oldX, int oldY, int newX, int newY) {
+	public void mouseDragged(final int oldX, final int oldY, final int newX, final int newY) {
 		if (newX > minimapX && newY > minimapY && newX < minimapX + minimapWidth && newY < minimapY + minimapHeight && showOverview) {
 			overviewCenterX = (newX - minimapX) * mapWidth / minimapWidth;
 			overviewCenterY = (newY - minimapY) * mapHeight / minimapHeight;
@@ -618,72 +669,79 @@ public abstract class RSMap extends RSCanvas {
 	}
 
 	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
+	public void mouseWheelMoved(final MouseWheelEvent e) {
 		if (e.getWheelRotation() > 0) {
-			if (currentZoomLevel - 0.5D > 1)
+			if (currentZoomLevel - 0.5D > 1) {
 				currentZoomLevel -= 0.5D;
-			else
+			}
+			else {
 				currentZoomLevel = 1;
+			}
 		}
-		else
+		else {
 			currentZoomLevel += 0.5D;
+		}
 		adjustOverview();
 		repaint();
 	}
 
 	private void adjustOverview() {
-		int l = overviewCenterX - (int) (super.getWidth() / currentZoomLevel);
-		int l1 = overviewCenterY - (int) (super.getHeight() / currentZoomLevel);
-		int i2 = overviewCenterX + (int) (super.getWidth() / currentZoomLevel);
-		int k2 = overviewCenterY + (int) (super.getHeight() / currentZoomLevel);
-		if (l < 48)
+		final int l = overviewCenterX - (int) (super.getWidth() / currentZoomLevel);
+		final int l1 = overviewCenterY - (int) (super.getHeight() / currentZoomLevel);
+		final int i2 = overviewCenterX + (int) (super.getWidth() / currentZoomLevel);
+		final int k2 = overviewCenterY + (int) (super.getHeight() / currentZoomLevel);
+		if (l < 48) {
 			overviewCenterX = 48 + (int) (super.getWidth() / currentZoomLevel);
-		if (l1 < 48)
+		}
+		if (l1 < 48) {
 			overviewCenterY = 48 + (int) (super.getHeight() / currentZoomLevel);
-		if (i2 > mapWidth - 48)
+		}
+		if (i2 > mapWidth - 48) {
 			overviewCenterX = mapWidth - 48 - (int) (super.getWidth() / currentZoomLevel);
-		if (k2 > mapHeight - 48)
+		}
+		if (k2 > mapHeight - 48) {
 			overviewCenterY = mapHeight - 48 - (int) (super.getHeight() / currentZoomLevel);
+		}
 	}
 
 	@Override
-	public void mouseDown(int x, int y) {
+	public void mouseDown(final int x, final int y) {
 		dragStartX = overviewCenterX;
 		dragStartY = overviewCenterY;
 	}
 
 	@Override
-	public void keyPressed(int keyCode) {
+	public void keyPressed(final int keyCode) {
 		switch (keyCode) {
-		case 38: // UP
-			overviewCenterY = (int) (overviewCenterY - 16D / currentZoomLevel);
-		break;
-		case 40: // DOWN
-			overviewCenterY = (int) (overviewCenterY + 16D / currentZoomLevel);
-		break;
-		case 37: // LEFT
-			overviewCenterX = (int) (overviewCenterX - 16D / currentZoomLevel);
-		break;
-		case 39: // RIGHT
-			overviewCenterX = (int) (overviewCenterX + 16D / currentZoomLevel);
-		break;
-		case 77: // "M"
-			showOverview = !showOverview;
-		break;
+			case 38: // UP
+				overviewCenterY = (int) (overviewCenterY - 16D / currentZoomLevel);
+			break;
+			case 40: // DOWN
+				overviewCenterY = (int) (overviewCenterY + 16D / currentZoomLevel);
+			break;
+			case 37: // LEFT
+				overviewCenterX = (int) (overviewCenterX - 16D / currentZoomLevel);
+			break;
+			case 39: // RIGHT
+				overviewCenterX = (int) (overviewCenterX + 16D / currentZoomLevel);
+			break;
+			case 77: // "M"
+				showOverview = !showOverview;
+			break;
 		}
 		repaint();
 	}
 
-	private Font loadPackagedFont(String name) {
+	private Font loadPackagedFont(final String name) {
 		try {
-			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("/org/whired/rsmap/resources/" + name + ".ttf")).deriveFont(9F);
+			final Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("/org/whired/rsmap/resources/" + name + ".ttf")).deriveFont(9F);
 			Constants.getLogger().log(Level.INFO, "Loaded font: {0}", name);
 			return f;
 		}
-		catch (Throwable t) {
-			String safeFontName = "SansSerif";
+		catch (final Throwable t) {
+			final String safeFontName = "SansSerif";
 			Constants.getLogger().log(Level.WARNING, "Error loading font: " + name, t);
-			Font f = new Font(safeFontName, Font.PLAIN, 10);
+			final Font f = new Font(safeFontName, Font.PLAIN, 10);
 			Constants.getLogger().log(Level.INFO, "Loaded safe font: {0}", safeFontName);
 			return f;
 		}

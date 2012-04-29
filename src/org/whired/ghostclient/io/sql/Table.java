@@ -8,7 +8,6 @@ import org.whired.ghost.Constants;
 
 /**
  * Represents a MySQL table
- * 
  * @author Whired
  */
 public class Table {
@@ -19,13 +18,12 @@ public class Table {
 
 	/**
 	 * Creates a new table in the specified database with the specified name
-	 * 
 	 * @param database the database to add this table to
 	 * @param tableName the name for the table
 	 * @param structure the structure
 	 * @param recreate whether or not to recreate the table if it already exists
 	 */
-	public Table(Database database, String tableName, boolean recreate, Column[] columns) throws SQLException {
+	public Table(final Database database, final String tableName, final boolean recreate, final Column[] columns) throws SQLException {
 		this.tableName = tableName;
 		this.database = database;
 		this.columns = columns;
@@ -33,93 +31,101 @@ public class Table {
 			this.drop();
 			database.executeStatement("create table " + this.tableName + getStructure());
 		}
-		else
+		else {
 			database.executeStatement("create table if not exists " + this.tableName + getStructure());
+		}
 	}
 
-	public Table(Database database, String tableName, Column[] columns) throws SQLException {
+	public Table(final Database database, final String tableName, final Column[] columns) throws SQLException {
 		this(database, tableName, false, columns);
 	}
 
-	public void insert(Object... values) throws SQLException {
+	public void insert(final Object... values) throws SQLException {
 		database.executePreparedStatement("insert into " + getTableName() + " values(" + MySql.listToSql(values, true) + ")");
 	}
 
-	public void insert(String[] columnNames, Object[] values) throws SQLException {
-		String stmt = "insert into " + getTableName() + " (" + MySql.listToSql(columnNames, false) + ") values(" + MySql.listToSql(values, true) + ")";
+	public void insert(final String[] columnNames, final Object[] values) throws SQLException {
+		final String stmt = "insert into " + getTableName() + " (" + MySql.listToSql(columnNames, false) + ") values(" + MySql.listToSql(values, true) + ")";
 		Constants.getLogger().fine("Execute: " + stmt);
 		database.executePreparedStatement(stmt);
 	}
 
-	public void insertAll(Column[] columns, Object[] values) throws SQLException {
-		ArrayList<String> names = new ArrayList<String>();
-		for (Column c : columns)
+	public void insertAll(final Column[] columns, final Object[] values) throws SQLException {
+		final ArrayList<String> names = new ArrayList<String>();
+		for (final Column c : columns) {
 			names.add(c.getName());
-		String stmt = "insert into " + getTableName() + " (" + MySql.listToSql(names.toArray(new String[names.size()]), false) + ") values(" + MySql.listToSql(values, true) + ")";
+		}
+		final String stmt = "insert into " + getTableName() + " (" + MySql.listToSql(names.toArray(new String[names.size()]), false) + ") values(" + MySql.listToSql(values, true) + ")";
 		Constants.getLogger().fine("Execute: " + stmt);
 		database.executePreparedStatement(stmt);
 	}
 
-	public void replace(String[] columnNames, Object[] values) throws SQLException {
-		String stmt = "replace into " + getTableName() + " (" + MySql.listToSql(columnNames, false) + ") values(" + MySql.listToSql(values, true) + ")";
+	public void replace(final String[] columnNames, final Object[] values) throws SQLException {
+		final String stmt = "replace into " + getTableName() + " (" + MySql.listToSql(columnNames, false) + ") values(" + MySql.listToSql(values, true) + ")";
 		Constants.getLogger().fine("Execute: " + stmt);
 		database.executePreparedStatement(stmt);
 	}
 
-	public void replaceAll(Column[] columns, Object[] values) throws SQLException {
-		ArrayList<String> names = new ArrayList<String>();
-		for (Column c : columns)
+	public void replaceAll(final Column[] columns, final Object[] values) throws SQLException {
+		final ArrayList<String> names = new ArrayList<String>();
+		for (final Column c : columns) {
 			names.add(c.getName());
-		String stmt = "replace into " + getTableName() + " (" + MySql.listToSql(names.toArray(new String[names.size()]), false) + ") values(" + MySql.listToSql(values, true) + ")";
+		}
+		final String stmt = "replace into " + getTableName() + " (" + MySql.listToSql(names.toArray(new String[names.size()]), false) + ") values(" + MySql.listToSql(values, true) + ")";
 		Constants.getLogger().fine("Execute: " + stmt);
 		database.executePreparedStatement(stmt);
 	}
 
-	public void removeRow(String column, String row) throws SQLException {
+	public void removeRow(final String column, final String row) throws SQLException {
 		database.executeStatement("delete from " + getTableName() + " where " + column + "=" + MySql.wrapQuotes(row));
 	}
 
-	public boolean containsRow(String column, String row) throws SQLException {
-		ResultSet rs = database.executeQuery("select * from " + getTableName() + " where " + column + "=" + MySql.wrapQuotes(row));
-		boolean b = rs.next();
+	public boolean containsRow(final String column, final String row) throws SQLException {
+		final ResultSet rs = database.executeQuery("select * from " + getTableName() + " where " + column + "=" + MySql.wrapQuotes(row));
+		final boolean b = rs.next();
 		rs.getStatement().close();
 		return b;
 	}
 
 	public int getRowCount() throws SQLException {
-		ResultSet rs = database.executeQuery("select * from " + getTableName());
+		final ResultSet rs = database.executeQuery("select * from " + getTableName());
 		int rowCount = 0;
-		while (rs.next())
+		while (rs.next()) {
 			rowCount++;
+		}
 		rs.getStatement().close();
 		return rowCount;
 	}
 
-	public Object[] selectRow(int index) throws SQLException, RowNotFoundException {
-		ResultSet rs = database.executeQuery("select * from " + getTableName());
-		for (int i = 0; i <= index; i++)
-			if (!rs.next())
+	public Object[] selectRow(final int index) throws SQLException, RowNotFoundException {
+		final ResultSet rs = database.executeQuery("select * from " + getTableName());
+		for (int i = 0; i <= index; i++) {
+			if (!rs.next()) {
 				throw new RowNotFoundException("Row at index " + index + " not found.");
-		ArrayList<Object> values = new ArrayList<Object>();
-		for (int i = 0; i < columns.length; i++)
+			}
+		}
+		final ArrayList<Object> values = new ArrayList<Object>();
+		for (int i = 0; i < columns.length; i++) {
 			values.add(rs.getObject(i + 1));
+		}
 		rs.getStatement().close();
 		return values.toArray(new Object[values.size()]);
 	}
 
-	public Object[] selectRow(String columnName, String columnValue) throws SQLException {
-		ResultSet rs = database.executeQuery("select * from " + getTableName() + " where " + columnName + "=" + MySql.wrapQuotes(columnValue));
-		ArrayList<Object> values = new ArrayList<Object>();
+	public Object[] selectRow(final String columnName, final String columnValue) throws SQLException {
+		final ResultSet rs = database.executeQuery("select * from " + getTableName() + " where " + columnName + "=" + MySql.wrapQuotes(columnValue));
+		final ArrayList<Object> values = new ArrayList<Object>();
 		Constants.getLogger().info("selectRow success? " + rs.next());
-		for (int i = 0; i < columns.length; i++)
+		for (int i = 0; i < columns.length; i++) {
 			values.add(rs.getObject(i + 1));
+		}
 		rs.getStatement().close();
 		return values.toArray(new Object[values.size()]);
 	}
 
-	public Object selectFromRow(String returnColumn, String columnName, String columnValue) throws SQLException {
-		ResultSet rs = database.executeQuery("select " + returnColumn + " from " + getTableName() + " where " + columnName + "=" + MySql.wrapQuotes(columnValue));
-		Object o = rs.getObject(1);
+	public Object selectFromRow(final String returnColumn, final String columnName, final String columnValue) throws SQLException {
+		final ResultSet rs = database.executeQuery("select " + returnColumn + " from " + getTableName() + " where " + columnName + "=" + MySql.wrapQuotes(columnValue));
+		final Object o = rs.getObject(1);
 		rs.getStatement().close();
 		return o;
 	}
@@ -142,11 +148,12 @@ public class Table {
 	 * @return the structure
 	 */
 	private String getStructure() {
-		StringBuilder sb = new StringBuilder("(");
-		for (Column c : columns)
+		final StringBuilder sb = new StringBuilder("(");
+		for (final Column c : columns) {
 			sb.append(c).append(", ");
+		}
 		sb.delete(sb.lastIndexOf(", "), sb.length()).append(")");
-		String finalStr = sb.toString();
+		final String finalStr = sb.toString();
 		Constants.getLogger().fine(finalStr);
 		return finalStr;
 	}

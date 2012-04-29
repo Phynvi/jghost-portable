@@ -10,7 +10,6 @@ import org.whired.ghostclient.io.sql.Table;
 
 /**
  * Contains methods for database transporting {@link SessionSettings}
- * 
  * @author Whired
  */
 public class SettingsFactory {
@@ -25,24 +24,23 @@ public class SettingsFactory {
 
 	/**
 	 * Loads settings from the database
-	 * 
 	 * @param databaseDirectory the directory of the database
 	 * @return the settings
 	 */
-	public static SessionSettings loadFromDatabase(String databaseDirectory) {
+	public static SessionSettings loadFromDatabase(final String databaseDirectory) {
 
 		try {
-			Database db = new Database(databaseDirectory, DATABASE_NAME);
+			final Database db = new Database(databaseDirectory, DATABASE_NAME);
 
-			Table user = new Table(db, USER_TABLE_NAME, USER_TABLE_COLUMNS);
+			final Table user = new Table(db, USER_TABLE_NAME, USER_TABLE_COLUMNS);
 			final String userId = "0"; // TODO Remove later
 			if (user.getRowCount() > 0) {
 				Object[] val = user.selectRow("userId", userId);
-				Player player = new Player((String) val[1], (Integer) val[3]);
-				SessionSettings settings = new SessionSettings(player, (Integer) val[0]);
+				final Player player = new Player((String) val[1], (Integer) val[3]);
+				final SessionSettings settings = new SessionSettings(player, (Integer) val[0]);
 				settings.setTabOrder(decompressTabOrder((String) val[4]));
 				try {
-					Table connection = new Table(db, CONNECTION_TABLE_NAME, CONNECTION_TABLE_COLUMNS);
+					final Table connection = new Table(db, CONNECTION_TABLE_NAME, CONNECTION_TABLE_COLUMNS);
 					if (connection.getRowCount() > 0) {
 						val = connection.selectRow("userId", userId);
 						settings.defaultConnect[0] = (String) val[1];
@@ -50,14 +48,14 @@ public class SettingsFactory {
 						settings.defaultConnect[2] = (String) val[3];
 					}
 				}
-				catch (Throwable t) {
+				catch (final Throwable t) {
 					Constants.getLogger().log(Level.WARNING, "Unable to load default connection for " + settings.getPlayer().getName(), t);
 				}
 				Constants.getLogger().info("Session loaded");
 				return settings;
 			}
 		}
-		catch (Throwable t) {
+		catch (final Throwable t) {
 			Constants.getLogger().log(Level.WARNING, "Unable to load settings from database: ", t);
 		}
 		Constants.getLogger().info("No session found, loading defaults");
@@ -68,46 +66,45 @@ public class SettingsFactory {
 
 	/**
 	 * Decompresses a string array that has been compressed by {@link #compressTabOrder(String[])}
-	 * 
 	 * @param compressed the compressed string to decompress
 	 * @return the decompressed string array
 	 */
-	private static String[] decompressTabOrder(String compressed) {
+	private static String[] decompressTabOrder(final String compressed) {
 		return compressed.split(DELIMITER);
 	}
 
 	/**
 	 * Compresses a string array so it can be written to the database
-	 * 
 	 * @param decompressed the decompressed string array
 	 * @return the compressed string
 	 */
-	private static String compressTabOrder(String[] decompressed) {
-		if (decompressed.length == 0)
+	private static String compressTabOrder(final String[] decompressed) {
+		if (decompressed.length == 0) {
 			return "";
-		StringBuilder b = new StringBuilder();
-		for (String s : decompressed)
+		}
+		final StringBuilder b = new StringBuilder();
+		for (final String s : decompressed) {
 			b.append(s).append(DELIMITER);
+		}
 		b.delete(b.lastIndexOf(DELIMITER), b.length());
 		return b.toString();
 	}
 
 	/**
 	 * Saves the specified settings to the database
-	 * 
 	 * @param databaseDirectory the directory of the database
 	 * @param settings the settings to save
 	 */
-	public static void saveToDatabase(String databaseDirectory, SessionSettings settings) {
+	public static void saveToDatabase(final String databaseDirectory, final SessionSettings settings) {
 		try {
-			Database db = new Database(databaseDirectory, DATABASE_NAME);
-			Table user = new Table(db, USER_TABLE_NAME, USER_TABLE_COLUMNS);
+			final Database db = new Database(databaseDirectory, DATABASE_NAME);
+			final Table user = new Table(db, USER_TABLE_NAME, USER_TABLE_COLUMNS);
 			user.replace(new String[] { "userId", "name", "pass", "rights", "taborder" }, new Object[] { settings.getUserId(), settings.getPlayer().getName(), "pass", settings.getPlayer().getRights(), compressTabOrder(settings.getTabOrder()) });
-			Table connection = new Table(db, CONNECTION_TABLE_NAME, CONNECTION_TABLE_COLUMNS);
+			final Table connection = new Table(db, CONNECTION_TABLE_NAME, CONNECTION_TABLE_COLUMNS);
 			connection.replace(new String[] { "userId", "ip", "port", "pass" }, new Object[] { settings.getUserId(), settings.defaultConnect[0], settings.defaultConnect[1], settings.defaultConnect[2] });
 			Constants.getLogger().info("Session saved");
 		}
-		catch (Throwable t) {
+		catch (final Throwable t) {
 			Constants.getLogger().log(Level.WARNING, "Unable to save settings to database: ", t);
 		}
 	}

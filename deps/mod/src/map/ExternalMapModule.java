@@ -11,7 +11,6 @@ import org.whired.rsmap.impl.PlayerRSMap;
 
 /**
  * A module that displays players in the world on a graphical map
- * 
  * @author Whired
  */
 public class ExternalMapModule extends PlayerRSMap implements Module {
@@ -20,20 +19,20 @@ public class ExternalMapModule extends PlayerRSMap implements Module {
 	private final GhostEventAdapter adapter = new GhostEventAdapter() {
 
 		@Override
-		public void playerAdded(Player player) {
+		public void playerAdded(final Player player) {
 			addPlayer(player);
 		}
 
 		@Override
-		public void playerRemoved(Player player) {
+		public void playerRemoved(final Player player) {
 			removePlayer(player);
 		}
 
 		@Override
-		public void packetReceived(GhostPacket packet) {
+		public void packetReceived(final GhostPacket packet) {
 			if (packet.getId() == PacketType.PLAYER_MOVEMENT) {
-				PlayerMovementPacket pmp = (PlayerMovementPacket) packet;
-				Player p = getPlayer(pmp.playerName);
+				final PlayerMovementPacket pmp = (PlayerMovementPacket) packet;
+				final Player p = getPlayer(pmp.playerName);
 				if (p != null) {
 					p.setLocation(pmp.newAbsX, pmp.newAbsY);
 					playerMoved(p);
@@ -53,7 +52,7 @@ public class ExternalMapModule extends PlayerRSMap implements Module {
 	}
 
 	@Override
-	public void setFrame(GhostClientFrame frame) {
+	public void setFrame(final GhostClientFrame frame) {
 	}
 
 	@Override
@@ -67,7 +66,7 @@ public class ExternalMapModule extends PlayerRSMap implements Module {
 	}
 
 	@Override
-	public void setResourcePath(String path) {
+	public void setResourcePath(final String path) {
 		resourcePath = path;
 	}
 }

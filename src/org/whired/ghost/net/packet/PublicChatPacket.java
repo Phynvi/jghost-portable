@@ -20,14 +20,14 @@ public class PublicChatPacket extends GhostChatPacket {
 		this.setReceiveAction(new TransmitAction() {
 
 			@Override
-			public boolean onTransmit(Connection connection) {
+			public boolean onTransmit(final Connection connection) {
 				try {
-					WrappedInputStream is = connection.getInputStream();
+					final WrappedInputStream is = connection.getInputStream();
 					PublicChatPacket.this.sender = new Player(is.readString(), is.readByte());
 					PublicChatPacket.this.message = is.readString();
 					return true;
 				}
-				catch (IOException e) {
+				catch (final IOException e) {
 					return false;
 				}
 			}
@@ -36,26 +36,25 @@ public class PublicChatPacket extends GhostChatPacket {
 
 	/**
 	 * Creates a new public chat packet to be sent
-	 * 
 	 * @param sender the player that sent the message
 	 * @param message the message that was sent
 	 */
-	public PublicChatPacket(Player sender, String message) {
+	public PublicChatPacket(final Player sender, final String message) {
 		super(PacketType.PUBLIC_CHAT);
 		this.sender = sender;
 		this.message = message;
 		this.setSendAction(new TransmitAction() {
 
 			@Override
-			public boolean onTransmit(Connection connection) {
+			public boolean onTransmit(final Connection connection) {
 				try {
-					WrappedOutputStream os = connection.getOutputStream();
+					final WrappedOutputStream os = connection.getOutputStream();
 					os.writeString(PublicChatPacket.this.sender.getName());
 					os.writeByte(PublicChatPacket.this.sender.getRights());
 					os.writeString(PublicChatPacket.this.message);
 					return true;
 				}
-				catch (IOException e) {
+				catch (final IOException e) {
 					return false;
 				}
 			}
@@ -64,12 +63,11 @@ public class PublicChatPacket extends GhostChatPacket {
 
 	/**
 	 * Creates a new public chat packet to be sent
-	 * 
 	 * @param sender the player that sent the message
 	 * @param packedMessage the packed message that was sent
 	 * @param packedSize the packed size of the message that was sent
 	 */
-	public PublicChatPacket(Player sender, byte[] packedMessage, int packedSize) {
+	public PublicChatPacket(final Player sender, final byte[] packedMessage, final int packedSize) {
 		this(sender, getUnpackedMessage(packedMessage, packedSize));
 	}
 }

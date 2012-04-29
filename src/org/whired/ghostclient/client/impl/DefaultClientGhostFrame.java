@@ -6,6 +6,7 @@ import org.whired.ghost.Constants;
 import org.whired.ghost.net.packet.PrivateChatPacket;
 import org.whired.ghost.net.packet.PublicChatPacket;
 import org.whired.ghost.player.Player;
+import org.whired.ghost.player.RankHandler;
 import org.whired.ghostclient.client.GhostClientFrame;
 import org.whired.ghostclient.client.GhostClientView;
 import org.whired.ghostclient.client.settings.SessionSettings;
@@ -17,24 +18,28 @@ import org.whired.ghostclient.client.user.GhostUser;
  */
 public class DefaultClientGhostFrame extends GhostClientFrame {
 
-	public DefaultClientGhostFrame(GhostClientView v, GhostUser user) {
-		super(v, user);
+	public DefaultClientGhostFrame(final GhostClientView view, final GhostUser user) {
+		super(view, user);
+	}
+
+	public DefaultClientGhostFrame(final GhostClientView view, final GhostUser user, final RankHandler rankHandler) {
+		super(view, user, rankHandler);
 	}
 
 	@Override
-	public void displayPublicChat(Player sender, String message) {
+	public void displayPublicChat(final Player sender, final String message) {
 		getModuleHandler().publicMessageLogged(sender, message);
 		new PublicChatPacket(sender, message).send(getSessionManager().getConnection());
 	}
 
 	@Override
-	public void displayPrivateChat(Player sender, Player recipient, String message) {
+	public void displayPrivateChat(final Player sender, final Player recipient, final String message) {
 		getModuleHandler().privateMessageLogged(sender, recipient, message);
 		new PrivateChatPacket(sender, recipient, message).send(getSessionManager().getConnection());
 	}
 
 	@Override
-	public void displayDebug(Level level, String message) {
+	public void displayDebug(final Level level, final String message) {
 		Constants.getLogger().log(level, message);
 	}
 

@@ -2,7 +2,6 @@ package org.whired.ghost.player;
 
 /**
  * Constants for default rights
- * 
  * @author Whired
  */
 public interface DefaultRightsConstants {

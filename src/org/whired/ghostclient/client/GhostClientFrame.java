@@ -17,7 +17,6 @@ import org.whired.ghostclient.client.user.GhostUser;
 
 /**
  * A client ghost frame
- * 
  * @author Whired
  */
 public abstract class GhostClientFrame extends GhostFrame implements GhostClient {
@@ -31,34 +30,34 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 		HashSet<Player> players = new HashSet<Player>();
 
 		@Override
-		public void playerAdded(Player player) {
+		public synchronized void playerAdded(final Player player) {
 			view.playerAdded(player);
 			moduleHandler.playerAdded(player);
 			players.add(player);
 		}
 
 		@Override
-		public void playerRemoved(Player player) {
+		public synchronized void playerRemoved(final Player player) {
 			view.playerRemoved(player);
 			moduleHandler.playerRemoved(player);
 			players.remove(player);
 		}
 
 		@Override
-		public Player[] getPlayers() {
+		public synchronized Player[] getPlayers() {
 			return this.players.toArray(new Player[players.size()]);
 		}
 
 		@Override
-		public void playerSelected(Player player) {
+		public void playerSelected(final Player player) {
 			moduleHandler.playerSelected(player);
 		}
 
 		@Override
-		public void removeAll() {
-			Iterator<Player> it = players.iterator();
+		public synchronized void removeAll() {
+			final Iterator<Player> it = players.iterator();
 			Player next;
-			while(it.hasNext()) {
+			while (it.hasNext()) {
 				next = it.next();
 				view.playerRemoved(next);
 				moduleHandler.playerRemoved(next);
@@ -67,7 +66,15 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 		}
 	};
 
-	public GhostClientFrame(GhostClientView view, GhostUser user) {
+	public GhostClientFrame(final GhostClientView view, final GhostUser user, final RankHandler rankHandler) {
+		this.view = view;
+		super.setUser(user);
+		super.getSessionManager().addEventListener(this);
+		this.rankHandler = rankHandler;
+		moduleHandler = new ModuleHandler(ModuleLoader.loadFromDisk(Constants.getLocalCodebase() + "modules" + Constants.FS, this.getUser().getSettings().getTabOrder()), this);
+	}
+
+	public GhostClientFrame(final GhostClientView view, final GhostUser user) {
 		this.view = view;
 		super.setUser(user);
 		super.getSessionManager().addEventListener(this);
@@ -75,7 +82,7 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 	}
 
 	@Override
-	public void packetReceived(GhostPacket packet) {
+	public void packetReceived(final GhostPacket packet) {
 		moduleHandler.packetReceived(packet);
 	}
 
@@ -89,7 +96,7 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 	/**
 	 * @param commandHandler the command handler to set
 	 */
-	public void setCommandHandler(CommandHandler commandHandler) {
+	public void setCommandHandler(final CommandHandler commandHandler) {
 		this.commandHandler = commandHandler;
 	}
 
@@ -104,7 +111,7 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 	/**
 	 * @param rankHandler the rank handler to set
 	 */
-	public void setRankHandler(RankHandler rankHandler) {
+	public void setRankHandler(final RankHandler rankHandler) {
 		this.rankHandler = rankHandler;
 	}
 
@@ -118,7 +125,7 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 	/**
 	 * @param moduleHandler the module handler to set
 	 */
-	public void setModuleHandler(ModuleHandler moduleHandler) {
+	public void setModuleHandler(final ModuleHandler moduleHandler) {
 		this.moduleHandler = moduleHandler;
 	}
 
@@ -128,7 +135,7 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 	}
 
 	@Override
-	public void setView(GhostClientView view) {
+	public void setView(final GhostClientView view) {
 		this.view = view;
 	}
 
@@ -141,19 +148,15 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 	}
 
 	@Override
-	public void handleCommand(String command) {
+	public void handleCommand(final String command) {
 		try {
 			getCommandHandler().handleInput(command);
 		}
-		catch (CommandMalformedException ex) {
+		catch (final CommandMalformedException ex) {
 			Constants.getLogger().warning("Command " + command + " malformed");
 		}
-		catch (CommandNotFoundException ex) {
+		catch (final CommandNotFoundException ex) {
 			Constants.getLogger().warning("Command " + command + " not found");
 		}
 	}
-
-	/*
-	 * @Override public Rank getRankForPlayer(Player player) { return rankHandler.rankForLevel(player.getRights()); }
-	 */
 }

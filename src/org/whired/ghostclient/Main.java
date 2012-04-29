@@ -2,12 +2,9 @@ package org.whired.ghostclient;
 
 import java.util.logging.Level;
 
-import javax.swing.ImageIcon;
-
 import org.whired.ghost.Constants;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.packet.AccessorPacket;
-import org.whired.ghost.player.DefaultRightsConstants;
 import org.whired.ghost.player.Player;
 import org.whired.ghost.player.Rank;
 import org.whired.ghostclient.client.command.Command;
@@ -20,17 +17,17 @@ public class Main {
 
 	public static DefaultController client;
 
-	public static void main(String args[]) {
+	public static void main(final String args[]) {
 		client = new DefaultController(new DefaultUser(SettingsFactory.loadFromDatabase(Constants.getLocalCodebase())));
 		client.getModel().getCommandHandler().registerCommands(new Command[] { new Command("setrights", 1) {
 
 			@Override
-			public boolean handle(String[] args) {
+			public boolean handle(final String[] args) {
 				Rank rank;
 				try {
 					rank = client.getModel().getRankHandler().rankForLevel(Integer.parseInt(args[0]));
 				}
-				catch (NumberFormatException e) {
+				catch (final NumberFormatException e) {
 					rank = client.getModel().getRankHandler().rankForName(args[0]);
 				}
 				if (rank != null) {
@@ -38,14 +35,15 @@ public class Main {
 					Constants.getLogger().log(Level.INFO, "New rank: {0}", rank.getTitle());
 					return true;
 				}
-				else
+				else {
 					return false;
+				}
 			}
 		}, new Command("disconnect", 0) {
 
 			@Override
-			public boolean handle(String[] args) {
-				Connection c = client.getModel().getSessionManager().getConnection();
+			public boolean handle(final String[] args) {
+				final Connection c = client.getModel().getSessionManager().getConnection();
 				if (c != null) {
 					client.getModel().getSessionManager().removeConnection("User requested");
 					return true;
@@ -58,13 +56,13 @@ public class Main {
 		}, new Command("setname", 1) {
 
 			@Override
-			public boolean handle(String[] args) {
-				StringBuilder finalName = new StringBuilder();
-				for (String s : args) {
+			public boolean handle(final String[] args) {
+				final StringBuilder finalName = new StringBuilder();
+				for (final String s : args) {
 					finalName.append(s);
 					finalName.append(" ");
 				}
-				String name = finalName.toString().trim();
+				final String name = finalName.toString().trim();
 				client.getModel().getUser().getSettings().getPlayer().setName(name);
 				Constants.getLogger().info("Your name is now " + name);
 				return true;
@@ -72,23 +70,25 @@ public class Main {
 		}, new Command("pm", 2) {
 
 			@Override
-			public boolean handle(String[] args) {
+			public boolean handle(final String[] args) {
 				String message = "";
-				for (int i = 1; i < args.length; i++)
+				for (int i = 1; i < args.length; i++) {
 					message += args[i] + " ";
+				}
 				int rights = 0;
-				for (Player p : client.getModel().getPlayerList().getPlayers())
+				for (final Player p : client.getModel().getPlayerList().getPlayers()) {
 					if (p.getName().equals(args[0])) {
 						rights = p.getRights();
 						break;
 					}
+				}
 				client.getModel().displayPrivateChat(client.getModel().getUser().getSettings().getPlayer(), new Player(args[0], rights, -1, -1), message);
 				return true;
 			}
 		}, new Command("setdebug", 1) {
 
 			@Override
-			public boolean handle(String[] args) {
+			public boolean handle(final String[] args) {
 				if (args[0].equals("on")) {
 					Constants.setDebug(true);
 					client.getModel().getUser().getSettings().debugOn = true;
@@ -107,23 +107,23 @@ public class Main {
 			}
 		}, new Command("whoami") {
 			@Override
-			public boolean handle(String[] args) {
-				Player p = client.getModel().getUser().getSettings().getPlayer();
+			public boolean handle(final String[] args) {
+				final Player p = client.getModel().getUser().getSettings().getPlayer();
 				Constants.getLogger().info("You are " + client.getModel().getRankHandler().rankForLevel(p.getRights()).getTitle() + " " + p.getName());
 				return true;
 			}
 		}, new Command("savesession") {
 			@Override
-			public boolean handle(String[] args) {
+			public boolean handle(final String[] args) {
 				SettingsFactory.saveToDatabase(Constants.getLocalCodebase(), client.getModel().getUser().getSettings());
 				return true;
 			}
 		}, new Command("connect", 0) {
 
 			@Override
-			public boolean handle(String[] args) {
+			public boolean handle(final String[] args) {
 				if (args == null) {
-					String[] con = client.getModel().getUser().getSettings().defaultConnect;
+					final String[] con = client.getModel().getUser().getSettings().defaultConnect;
 					if (con[0] == null || con[1] == null || con[2] == null) {
 						Constants.getLogger().warning("No default connection saved");
 						return false;
@@ -132,7 +132,7 @@ public class Main {
 						client.getModel().getSessionManager().setConnection(ClientConnection.connect(con[0], Integer.parseInt(con[1]), con[2], client.getModel()));
 						return true;
 					}
-					catch (Exception e) {
+					catch (final Exception e) {
 						Constants.getLogger().warning("Unable to connect to " + con[0] + ":" + con[1] + " - " + e.toString());
 						Constants.getLogger().fine(e.getMessage());
 						return false;
@@ -145,7 +145,7 @@ public class Main {
 							try {
 								port = Integer.parseInt(args[1]);
 							}
-							catch (Exception e) {
+							catch (final Exception e) {
 								Constants.getLogger().warning("Port must be numeric.");
 								return false;
 							}
@@ -158,24 +158,26 @@ public class Main {
 								client.getModel().getUser().getSettings().defaultConnect[2] = args[2];
 								return true;
 							}
-							catch (Exception e) {
+							catch (final Exception e) {
 								Constants.getLogger().warning("Unable to connect to " + args[0] + ":" + port);
 								Constants.getLogger().fine(e.getMessage());
 								return false;
 							}
 						}
-						else
+						else {
 							Constants.getLogger().warning("Please specify a password.");
+						}
 					}
-					else
+					else {
 						Constants.getLogger().warning("Please specify a port.");
+					}
 				}
-				else
+				else {
 					Constants.getLogger().warning("Please specify an IP.");
+				}
 				return false;
 			}
 		} });
-		client.getModel().getRankHandler().registerRanks(new Rank[] { new Rank(DefaultRightsConstants.PLAYER, "Player", new ImageIcon(client.getClass().getResource("resources/player.png"))), new Rank(DefaultRightsConstants.VETERAN, "Veteran", new ImageIcon(client.getClass().getResource("resources/veteran.png"))), new Rank(DefaultRightsConstants.DONATOR, "Donator", new ImageIcon(client.getClass().getResource("resources/donator.png"))), new Rank(DefaultRightsConstants.DEVELOPER, "Developer", new ImageIcon(client.getClass().getResource("resources/developer.png"))), new Rank(DefaultRightsConstants.MODERATOR, "Moderator", new ImageIcon(client.getClass().getResource("resources/moderator.png"))), new Rank(DefaultRightsConstants.ADMINISTRATOR, "Administrator", new ImageIcon(client.getClass().getResource("resources/administrator.png"))), new Rank(DefaultRightsConstants.OWNER, "Owner", new ImageIcon(client.getClass().getResource("resources/owner.png"))) });
 		client.getModel().getPacketHandler().registerPacket(new AccessorPacket());
 	}
 }

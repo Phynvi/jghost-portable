@@ -4,7 +4,6 @@ import javax.swing.Icon;
 
 /**
  * A rank for {@link org.whired.ghost.net.model.player.Player}s
- * 
  * @author Whired
  */
 public class Rank implements DefaultRightsConstants {
@@ -12,9 +11,10 @@ public class Rank implements DefaultRightsConstants {
 	private final String title;
 	private final int level;
 
-	public Rank(int level, String title, Icon icon) {
-		if (level > 127 || level < 0)
+	public Rank(final int level, final String title, final Icon icon) {
+		if (level > 127 || level < 0) {
 			throw new IllegalArgumentException("level must be between 0 and 127, inclusive");
+		}
 		this.level = level;
 		this.title = title;
 		this.icon = icon;

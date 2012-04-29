@@ -19,28 +19,28 @@ public class PlayerRSMap extends RSMap {
 	private boolean showNames = false;
 	private MapPlayer selectedPlayer = null;
 
-	public MapPlayer addPlayer(Player player) {
-		MapPlayer wrapped = MapPlayer.fromPlayer(player, 200);
+	public MapPlayer addPlayer(final Player player) {
+		final MapPlayer wrapped = MapPlayer.fromPlayer(player, 200);
 		players.put(player.getName(), wrapped);
 		repaint();
 		return wrapped;
 	}
 
-	public void removePlayer(Player player) {
+	public void removePlayer(final Player player) {
 		players.remove(player.getName());
 		repaint();
 	}
 
-	public Player getPlayer(String name) {
+	public Player getPlayer(final String name) {
 		return players.get(name);
 	}
 
-	public void playerMoved(Player player) {
+	public void playerMoved(final Player player) {
 		players.get(player.getName()).addLocation(player.getLocation());
 	}
 
 	private void addButtons() {
-		MapButton mb = new MapButton("Players", 44, PlayerRSMap.super.getHeight() - 14 - 2, 40, 14, 0xBEC7E8, 0x6382BF) {
+		final MapButton mb = new MapButton("Players", 44, PlayerRSMap.super.getHeight() - 14 - 2, 40, 14, 0xBEC7E8, 0x6382BF) {
 
 			int mode = 0;
 
@@ -78,21 +78,22 @@ public class PlayerRSMap extends RSMap {
 	}
 
 	@Override
-	public void renderMap(int[] pix, Dimension size, int x1, int y1, int x2, int y2) {
+	public void renderMap(final int[] pix, final Dimension size, final int x1, final int y1, final int x2, final int y2) {
 		super.renderMap(pix, size, x1, y1, x2, y2);
 		if (selectedPlayer != null) {
 			Point loc = null;
 			for (Point lh : selectedPlayer.getLocationHistory()) {
 				lh = mapToPixel(lh);
-				if (loc != null)
+				if (loc != null) {
 					renderLine(loc.x, loc.y, lh.x, lh.y, 0xffffff);
+				}
 				loc = lh;
 			}
-			Point c = mapToPixel(selectedPlayer.getLocation());
+			final Point c = mapToPixel(selectedPlayer.getLocation());
 			renderLine(loc.x, loc.y, c.x, c.y, 0xff0000);
 		}
-		if (showLocations || showNames)
-			for (MapPlayer p : players.values()) {
+		if (showLocations || showNames) {
+			for (final MapPlayer p : players.values()) {
 				Point loc = mapToPixel(p.getLocation());
 				if (showNames) {
 					defaultTextSprite.setText(p.getName());
@@ -102,37 +103,42 @@ public class PlayerRSMap extends RSMap {
 				if (showLocations) {
 					for (Point lh : p.getLocationHistory()) {
 						lh = mapToPixel(lh);
-						if (loc != null)
+						if (loc != null) {
 							renderLine(loc.x, loc.y, lh.x, lh.y, 0xffffff);
+						}
 						loc = lh;
 					}
-					Point c = mapToPixel(p.getLocation());
+					final Point c = mapToPixel(p.getLocation());
 					renderLine(loc.x, loc.y, c.x, c.y, 0xff0000);
 				}
 			}
-		Point p = mapToPixel(new Point(2460, 3000));
+		}
+		final Point p = mapToPixel(new Point(2460, 3000));
 		renderPoint(p.x, p.y, 0xff00ff);
 	}
 
-	public MapPlayer findPlayerNearest(Point mapCoord) {
+	public MapPlayer findPlayerNearest(final Point mapCoord) {
 		MapPlayer nearest = null;
-		for (MapPlayer pl : players.values())
+		for (final MapPlayer pl : players.values()) {
 			if (nearest != null) {
-				if (GhostMath.getDistance(pl.getLocation(), mapCoord) < GhostMath.getDistance(nearest.getLocation(), mapCoord))
+				if (GhostMath.getDistance(pl.getLocation(), mapCoord) < GhostMath.getDistance(nearest.getLocation(), mapCoord)) {
 					nearest = pl;
+				}
 			}
-			else
+			else {
 				nearest = pl;
+			}
+		}
 		return nearest;
 	}
 
 	@Override
-	public void mouseUp(int x, int y) {
+	public void mouseUp(final int x, final int y) {
 		selectedPlayer = findPlayerNearest(componentToMap(new Point(x, y)));
 	}
 
 	@Override
-	public void loadMap(String cacheDir) {
+	public void loadMap(final String cacheDir) {
 		super.loadMap(cacheDir);
 		addButtons();
 	}

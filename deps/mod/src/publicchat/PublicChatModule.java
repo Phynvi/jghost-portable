@@ -4,7 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
@@ -24,7 +23,6 @@ import org.whired.ghostclient.client.module.Module;
 
 /**
  * A default public chat module
- * 
  * @author Whired
  */
 public class PublicChatModule extends LinkingJTextPane implements Module {
@@ -35,40 +33,40 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 	private final LinkEventListener linkListener = new LinkEventListener() {
 
 		@Override
-		public void linkClicked(String linkText) {
+		public void linkClicked(final String linkText) {
 			frame.getView().setInputText("/pm " + linkText + " ", true);
 		}
 	};
 	private final GhostEventAdapter ghostEventListener = new GhostEventAdapter() {
 
 		@Override
-		public void playerAdded(Player player) {
-			Constants.getLogger().info("Adding match: " + player.getName());
+		public void playerAdded(final Player player) {
 			addMatch(player.getName());
 		}
 
 		@Override
-		public void playerRemoved(Player player) {
+		public void playerRemoved(final Player player) {
 			removeMatch(player.getName());
 		}
 
 		@Override
 		public void publicMessageLogged(final Player from, final String message) {
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					scrollPane.autoscrollNext();
 					try {
 						getStyledDocument().insertString(getStyledDocument().getLength(), "[" + Constants.DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] ", null);
 						if (from.getRights() > 0) {
-							Style iconOnly = getStyledDocument().getStyle("iconOnly");
+							final Style iconOnly = getStyledDocument().getStyle("iconOnly");
 							StyleConstants.setIcon(iconOnly, frame.getRankHandler().rankForLevel(from.getRights()).getIcon());
 							getStyledDocument().insertString(getStyledDocument().getLength(), " ", iconOnly);
 						}
-						StringBuilder b = new StringBuilder().append(from.getName()).append(": ").append(message).append("\n");
+						final StringBuilder b = new StringBuilder().append(from.getName()).append(": ").append(message).append("\n");
 						getStyledDocument().insertString(getStyledDocument().getLength(), b.toString(), null);
 						frame.getView().displayModuleNotification(PublicChatModule.this);
 					}
-					catch (Exception e) {
+					catch (final Exception e) {
 						Logger.getLogger(Module.class.getName()).log(Level.SEVERE, "Unable to display chat:", e);
 					}
 				}
@@ -84,7 +82,7 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 		this.setOpaque(false);
 		this.getStyledDocument().addStyle("iconOnly", null);
 		scrollPane.setViewportView(this);
-		Border border = BorderFactory.createEmptyBorder();
+		final Border border = BorderFactory.createEmptyBorder();
 		this.setBorder(border);
 		scrollPane.setBorder(border);
 		scrollPane.setViewportBorder(border);
@@ -100,7 +98,7 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 	}
 
 	@Override
-	public void setFrame(GhostClientFrame frame) {
+	public void setFrame(final GhostClientFrame frame) {
 		this.frame = frame;
 	}
 
@@ -119,6 +117,6 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 	}
 
 	@Override
-	public void setResourcePath(String path) {
+	public void setResourcePath(final String path) {
 	}
 }

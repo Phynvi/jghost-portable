@@ -1,15 +1,11 @@
 import java.awt.Component;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.text.DefaultCaret;
-import javax.swing.text.Document;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -32,20 +28,19 @@ public class PrivateChatModule extends LinkingJTextPane implements Module {
 	private final LinkEventListener linkListener = new LinkEventListener() {
 
 		@Override
-		public void linkClicked(String linkText) {
+		public void linkClicked(final String linkText) {
 			frame.getView().setInputText("/pm " + linkText + " ", true);
 		}
 	};
 	private final GhostEventAdapter ghostEventListener = new GhostEventAdapter() {
 
 		@Override
-		public void playerAdded(Player player) {
-			Constants.getLogger().info("Adding match: " + player.getName());
+		public void playerAdded(final Player player) {
 			addMatch(player.getName());
 		}
 
 		@Override
-		public void playerRemoved(Player player) {
+		public void playerRemoved(final Player player) {
 			removeMatch(player.getName());
 		}
 
@@ -56,8 +51,8 @@ public class PrivateChatModule extends LinkingJTextPane implements Module {
 				public void run() {
 					scrollPane.autoscrollNext();
 					try {
-						StyledDocument doc = getStyledDocument();
-						Style iconOnly = doc.getStyle("iconOnly");
+						final StyledDocument doc = getStyledDocument();
+						final Style iconOnly = doc.getStyle("iconOnly");
 						getStyledDocument().insertString(getStyledDocument().getLength(), "[" + Constants.DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] ", null);
 						if (from.getRights() > 0) {
 							StyleConstants.setIcon(iconOnly, frame.getRankHandler().rankForLevel(from.getRights()).getIcon());
@@ -70,12 +65,12 @@ public class PrivateChatModule extends LinkingJTextPane implements Module {
 						}
 						doc.insertString(doc.getLength(), to.getName() + ": " + message + "\n", null);
 					}
-					catch (Throwable e) {
+					catch (final Throwable e) {
 						e.printStackTrace();
 					}
 				}
 			});
-			
+
 		}
 	};
 
@@ -87,7 +82,7 @@ public class PrivateChatModule extends LinkingJTextPane implements Module {
 		this.setOpaque(false);
 		this.getStyledDocument().addStyle("iconOnly", null);
 		scrollPane.setViewportView(this);
-		Border border = BorderFactory.createEmptyBorder();
+		final Border border = BorderFactory.createEmptyBorder();
 		this.setBorder(border);
 		scrollPane.setBorder(border);
 		scrollPane.setViewportBorder(border);
@@ -108,7 +103,7 @@ public class PrivateChatModule extends LinkingJTextPane implements Module {
 	}
 
 	@Override
-	public void setFrame(GhostClientFrame frame) {
+	public void setFrame(final GhostClientFrame frame) {
 		this.frame = frame;
 	}
 
@@ -118,7 +113,7 @@ public class PrivateChatModule extends LinkingJTextPane implements Module {
 	}
 
 	@Override
-	public void setResourcePath(String path) {
+	public void setResourcePath(final String path) {
 	}
 
 	@Override

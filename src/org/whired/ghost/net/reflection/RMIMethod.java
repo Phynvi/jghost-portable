@@ -4,19 +4,17 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * Represents a method; Used in conjunction with the reflection system
- * 
  * @author Whired
  */
 public class RMIMethod extends Accessor {
 
 	/**
 	 * Creates a new instance of RMIMethod
-	 * 
 	 * @param name the name of the RMIMethod
 	 * @param isStatic whether or not the RMIMethod is static
 	 * @param args the arguments of the RMIMethod (Must be in order!)
 	 */
-	protected RMIMethod(String name, boolean isStatic, Object... params) {
+	protected RMIMethod(final String name, final boolean isStatic, final Object... params) {
 		super(name, isStatic);
 		if (params != null) {
 			this.paramTypeNames = new String[params.length];
@@ -40,7 +38,6 @@ public class RMIMethod extends Accessor {
 
 	/**
 	 * Gets the parameter types of this RMIMethod
-	 * 
 	 * @return the types, in order
 	 */
 	protected Class<?>[] getParameters() throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
@@ -53,12 +50,13 @@ public class RMIMethod extends Accessor {
 					params[i] = Integer.TYPE;
 					System.out.println("Warning: Unboxed " + Integer.class.getName() + " to " + Integer.TYPE);
 				}
-				else if (this.paramTypeNames[i].equals("boolean"))
+				else if (this.paramTypeNames[i].equals("boolean")) {
 					params[i] = Boolean.TYPE;
+				}
 				else {
 					params[i] = Class.forName(this.paramTypeNames[i]);
 					if (Accessor.class.isAssignableFrom(params[i])) {
-						Object o = ((Accessor) argValues[i]).invoke();
+						final Object o = ((Accessor) argValues[i]).invoke();
 						this.argValues[i] = o;
 						this.paramTypeNames[i] = o.getClass().getName();
 						params[i] = Class.forName(this.paramTypeNames[i]);

@@ -2,7 +2,6 @@ package org.whired.ghost.net.event;
 
 /**
  * Listens for events pertaining to connection states
- * 
  * @author Whired
  */
 public interface SessionEventListener {

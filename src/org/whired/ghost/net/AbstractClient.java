@@ -11,7 +11,6 @@ import org.whired.ghost.player.Player;
 public interface AbstractClient extends SessionEventListener {
 	/**
 	 * Called when a normal chat message is received
-	 * 
 	 * @param sender the player who sent the message
 	 * @param message the message that was received
 	 */
@@ -19,7 +18,6 @@ public interface AbstractClient extends SessionEventListener {
 
 	/**
 	 * Called when a private chat message is received
-	 * 
 	 * @param sender the player who sent the message
 	 * @param recipient the player who received the message
 	 * @param message the message that was transferred

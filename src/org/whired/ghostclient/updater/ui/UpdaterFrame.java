@@ -17,11 +17,11 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.whired.ghostclient.awt.GhostScrollBarUI;
 import org.whired.ghostclient.awt.RoundedBorder;
 
 /**
  * The frame for the updater
- * 
  * @author Whired
  */
 public class UpdaterFrame extends JFrame {
@@ -36,15 +36,15 @@ public class UpdaterFrame extends JFrame {
 	 * Creates a new updater form
 	 */
 	public UpdaterFrame() {
-		UIManager.put("ScrollBar.width", 12);
+		UIManager.put("ScrollBar.width", 5);
 		Exception lafError = null;
 		try {
-			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/ubuntu.ttf")).deriveFont(9F);
+			final Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/ubuntu.ttf")).deriveFont(9F);
 			UIManager.put("TextArea.font", f);
 			UIManager.put("CheckBox.font", f);
 			UIManager.put("Label.font", f);
 		}
-		catch (Exception e) {
+		catch (final Exception e) {
 			lafError = e;
 		}
 
@@ -57,7 +57,7 @@ public class UpdaterFrame extends JFrame {
 		iconLbl.setSize(new Dimension(400, 265));
 		iconLbl.setIcon(new ImageIcon(this.getClass().getResource("resources/updaterbg.png")));
 
-		JScrollPane pane = new JScrollPane();
+		final JScrollPane pane = new JScrollPane();
 		pane.setSize(new Dimension(198, 166));
 		pane.setLocation(18, 40);
 		pane.setBorder(BorderFactory.createEmptyBorder());
@@ -73,6 +73,7 @@ public class UpdaterFrame extends JFrame {
 
 		pane.setViewportView(output);
 		pane.getViewport().setOpaque(false);
+		pane.getVerticalScrollBar().setUI(new GhostScrollBarUI(pane.getVerticalScrollBar()));
 
 		box = new JCheckBox("Update official modules");
 		box.setSize(140, 14);
@@ -82,14 +83,14 @@ public class UpdaterFrame extends JFrame {
 
 		final JLabel btnLaunch = new JLabel("Launch");
 		final JLabel btnUpdate = new JLabel("Update");
-		btnUpdate.setSize(34, 16);
+		btnUpdate.setSize(36, 16);
 		btnUpdate.setLocation(20, 209);
 		btnUpdate.setOpaque(false);
 		btnUpdate.setBorder(new RoundedBorder(5));
 		btnUpdate.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnUpdate.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(final MouseEvent e) {
 				btnUpdate.setVisible(false);
 				btnLaunch.setVisible(false);
 				box.setVisible(false);
@@ -97,14 +98,14 @@ public class UpdaterFrame extends JFrame {
 			}
 		});
 
-		btnLaunch.setSize(34, 16);
+		btnLaunch.setSize(36, 16);
 		btnLaunch.setLocation(58, 209);
 		btnLaunch.setOpaque(false);
 		btnLaunch.setBorder(new RoundedBorder(5));
 		btnLaunch.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnLaunch.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(final MouseEvent e) {
 				btnLaunch.setVisible(false);
 				btnUpdate.setVisible(false);
 				box.setVisible(false);
@@ -122,15 +123,16 @@ public class UpdaterFrame extends JFrame {
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 
-		if (lafError != null)
+		if (lafError != null) {
 			log("Error while setting look and feel: " + lafError.toString());
+		}
 	}
 
-	public void setOnUpdate(Runnable onUpdate) {
+	public void setOnUpdate(final Runnable onUpdate) {
 		this.onUpdate = onUpdate;
 	}
 
-	public void setOnLaunch(Runnable onLaunch) {
+	public void setOnLaunch(final Runnable onLaunch) {
 		this.onLaunch = onLaunch;
 	}
 
@@ -140,7 +142,6 @@ public class UpdaterFrame extends JFrame {
 
 	/**
 	 * Logs a message to the primary output box
-	 * 
 	 * @param message the message to log
 	 */
 	public void log(final String message) {

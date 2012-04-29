@@ -6,7 +6,6 @@ import org.whired.ghost.net.Connection;
 
 /**
  * An authentication packet
- * 
  * @author Whired
  */
 public class GhostAuthenticationPacket extends GhostPacket {
@@ -18,30 +17,30 @@ public class GhostAuthenticationPacket extends GhostPacket {
 		this.setReceiveAction(new TransmitAction() {
 
 			@Override
-			public boolean onTransmit(Connection connection) {
+			public boolean onTransmit(final Connection connection) {
 				try {
 					password = connection.getInputStream().readString();
 					return true;
 				}
-				catch (IOException e) {
+				catch (final IOException e) {
 					return false;
 				}
 			}
 		});
 	}
 
-	public GhostAuthenticationPacket(String password) {
+	public GhostAuthenticationPacket(final String password) {
 		super(PacketType.AUTHENTICATION);
 		this.password = password;
 		this.setSendAction(new TransmitAction() {
 
 			@Override
-			public boolean onTransmit(Connection connection) {
+			public boolean onTransmit(final Connection connection) {
 				try {
 					connection.getOutputStream().writeString(GhostAuthenticationPacket.this.password);
 					return true;
 				}
-				catch (IOException e) {
+				catch (final IOException e) {
 					return false;
 				}
 			}

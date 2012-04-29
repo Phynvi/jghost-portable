@@ -8,14 +8,15 @@ import org.whired.ghost.net.packet.DebugPacket;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.packet.PlayerConnectionPacket;
+import org.whired.ghost.net.packet.PlayerListUpdatePacket;
 import org.whired.ghost.net.packet.PrivateChatPacket;
 import org.whired.ghost.net.packet.PublicChatPacket;
+import org.whired.ghost.player.Player;
 import org.whired.ghost.player.PlayerList;
 import org.whired.ghostclient.client.user.GhostUser;
 
 /**
  * Provides the functionality and layout for a standard implementation of a JFrame that will utilize Ghost's core functionality
- * 
  * @author Whired
  */
 public abstract class GhostFrame implements Receivable, AbstractClient {
@@ -32,17 +33,15 @@ public abstract class GhostFrame implements Receivable, AbstractClient {
 
 	/**
 	 * Gets the list of players for this frame
-	 * 
 	 * @return the list
 	 */
 	public abstract PlayerList getPlayerList();
 
 	/**
 	 * Creates a new ghost frame with the specified session manager
-	 * 
 	 * @param sessionManager the session manager to use
 	 */
-	public GhostFrame(SessionManager sessionManager) {
+	public GhostFrame(final SessionManager sessionManager) {
 		this.sessionManager = sessionManager;
 	}
 
@@ -55,16 +54,14 @@ public abstract class GhostFrame implements Receivable, AbstractClient {
 
 	/**
 	 * Sets the user of this frame
-	 * 
 	 * @param user the user to set
 	 */
-	public void setUser(GhostUser user) {
+	public void setUser(final GhostUser user) {
 		this.ghostUser = user;
 	}
 
 	/**
 	 * Gets the user of this frame
-	 * 
 	 * @return the user if one exists, otherwise null
 	 */
 	public GhostUser getUser() {
@@ -73,7 +70,6 @@ public abstract class GhostFrame implements Receivable, AbstractClient {
 
 	/**
 	 * Gets the session manager for this frame
-	 * 
 	 * @return the session manager
 	 */
 	public SessionManager getSessionManager() {
@@ -82,67 +78,78 @@ public abstract class GhostFrame implements Receivable, AbstractClient {
 
 	/**
 	 * Called when a packet is received; packets that should be handled internally are handled here
-	 * 
 	 * @param packetId the id of the packet that was received
 	 * @param connection the connection that received the packet
 	 * @throws IOException
 	 */
 	@Override
-	public boolean handlePacket(int packetId, Connection connection) throws IOException {
+	public boolean handlePacket(final int packetId, final Connection connection) throws IOException {
 		Constants.getLogger().fine(this + " received packet " + packetId);
 		switch (packetId) {
-		case PacketType.PUBLIC_CHAT:
-			PublicChatPacket pc = new PublicChatPacket();
-			if (pc.receive(connection)) {
-				displayPublicChat(pc.sender, pc.message);
-				packetReceived(pc);
-			}
-		break;
-		case PacketType.PLAYER_CONNECTION:
-			PlayerConnectionPacket pcp = new PlayerConnectionPacket();
-			if(pcp.receive(connection)) {
-				if(pcp.connectionType == PlayerConnectionPacket.CONNECTING)
-					this.getPlayerList().addPlayer(pcp.player);
-				else if(pcp.connectionType == PlayerConnectionPacket.DISCONNECTING)
-					this.getPlayerList().removePlayer(pcp.player);
-			}
+			case PacketType.UPDATE_PLAYER_LIST:
+				final PlayerListUpdatePacket plp = new PlayerListUpdatePacket();
+				if (plp.receive(connection)) {
+					for (final Player p : plp.onlinePlayers) {
+						getPlayerList().addPlayer(p);
+					}
+				}
 			break;
-		case PacketType.PRIVATE_CHAT:
-			PrivateChatPacket prc = new PrivateChatPacket();
-			if (prc.receive(connection)) {
-				displayPrivateChat(prc.sender, prc.recipient, prc.message);
-				packetReceived(prc);
-			}
-		break;
-		case PacketType.AUTHENTICATE_SUCCESS:
-			sessionManager.sessionOpened();
-			Constants.getLogger().info("Sucessfully connected");
-		break;
-		case PacketType.DEBUG_MESSAGE:
-			DebugPacket dpacket = new DebugPacket();
-			if (dpacket.receive(connection)) {
-				Constants.getLogger().log(Level.parse(Integer.toString(dpacket.level)), "[REMOTE] " + dpacket.message);
-				packetReceived(dpacket);
-			}
-		break;
-		default: // Notify external
-			Constants.getLogger().fine("Pushing noninternal packet " + packetId + " to packet handler");
-			GhostPacket packet = getPacketHandler().get(packetId);
-			if (packet != null)
-				if (packet.receive(connection))
-					packetReceived(packet);
-				else
-					return false;
+			case PacketType.PUBLIC_CHAT:
+				final PublicChatPacket pc = new PublicChatPacket();
+				if (pc.receive(connection)) {
+					displayPublicChat(pc.sender, pc.message);
+					packetReceived(pc);
+				}
+			break;
+			case PacketType.PLAYER_CONNECTION:
+				final PlayerConnectionPacket pcp = new PlayerConnectionPacket();
+				if (pcp.receive(connection)) {
+					if (pcp.connectionType == PlayerConnectionPacket.CONNECTING) {
+						this.getPlayerList().addPlayer(pcp.player);
+					}
+					else if (pcp.connectionType == PlayerConnectionPacket.DISCONNECTING) {
+						this.getPlayerList().removePlayer(pcp.player);
+					}
+				}
+			break;
+			case PacketType.PRIVATE_CHAT:
+				final PrivateChatPacket prc = new PrivateChatPacket();
+				if (prc.receive(connection)) {
+					displayPrivateChat(prc.sender, prc.recipient, prc.message);
+					packetReceived(prc);
+				}
+			break;
+			case PacketType.AUTHENTICATE_SUCCESS:
+				sessionManager.sessionOpened();
+				Constants.getLogger().info("Sucessfully connected");
+			break;
+			case PacketType.DEBUG_MESSAGE:
+				final DebugPacket dpacket = new DebugPacket();
+				if (dpacket.receive(connection)) {
+					Constants.getLogger().log(Level.parse(Integer.toString(dpacket.level)), "[REMOTE] " + dpacket.message);
+					packetReceived(dpacket);
+				}
+			break;
+			default: // Notify external
+				Constants.getLogger().fine("Pushing noninternal packet " + packetId + " to packet handler");
+				final GhostPacket packet = getPacketHandler().get(packetId);
+				if (packet != null) {
+					if (packet.receive(connection)) {
+						packetReceived(packet);
+					}
+					else {
+						return false;
+					}
+				}
 		}
 		return true;
 	}
 
 	/**
 	 * Invoked when a packet has been received used for notifying modules of incoming data
-	 * 
 	 * @param packet the packet that was received
 	 */
-	public void packetReceived(GhostPacket packet) {
+	public void packetReceived(final GhostPacket packet) {
 	}
 
 	/**
@@ -155,7 +162,7 @@ public abstract class GhostFrame implements Receivable, AbstractClient {
 	/**
 	 * @param packetHandler the packetHandler to set
 	 */
-	public void setPacketHandler(PacketHandler packetHandler) {
+	public void setPacketHandler(final PacketHandler packetHandler) {
 		this.packetHandler = packetHandler;
 	}
 }

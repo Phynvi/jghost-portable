@@ -21,7 +21,6 @@ import org.whired.ghostclient.updater.ui.UpdaterFrame;
 
 /**
  * Downloads and launches the newest version of GHOST
- * 
  * @author Whired
  */
 public class Launcher implements Runnable {
@@ -54,10 +53,9 @@ public class Launcher implements Runnable {
 
 	/**
 	 * Creates a new launcher for the given form
-	 * 
 	 * @param form the form to display output to
 	 */
-	public Launcher(UpdaterFrame form) {
+	public Launcher(final UpdaterFrame form) {
 		this.form = form;
 	}
 
@@ -68,13 +66,13 @@ public class Launcher implements Runnable {
 			checkAndDownload(LOCAL_CODEBASE + JAR_PACKAGE_NAME, REMOTE_CODEBASE + JAR_PACKAGE_NAME);
 			form.log("Client updated!");
 		}
-		catch (IOException e1) {
+		catch (final IOException e1) {
 			form.log("Unable to update client.");
 			e1.printStackTrace();
 			launchGhost();
 			return;
 		}
-		catch (UpdateNotFoundException e) {
+		catch (final UpdateNotFoundException e) {
 			form.log("No update found.");
 		}
 
@@ -84,40 +82,44 @@ public class Launcher implements Runnable {
 			try {
 				zipped = checkAndDownload(LOCAL_CODEBASE + MODULE_PACKAGE_NAME, REMOTE_CODEBASE + MODULE_PACKAGE_NAME);
 			}
-			catch (IOException e) {
+			catch (final IOException e) {
 				form.log("Unable to update modules.");
 				e.printStackTrace();
 				launchGhost();
 				return;
 			}
-			catch (UpdateNotFoundException e) {
+			catch (final UpdateNotFoundException e) {
 				form.log("No update found.");
 				launchGhost();
 				return;
 			}
 			form.log("Modules updated! Unpacking..");
-			File f = new File(LOCAL_CODEBASE + "modules" + Constants.FS);
-			if (!f.exists())
+			final File f = new File(LOCAL_CODEBASE + "modules" + Constants.FS);
+			if (!f.exists()) {
 				f.mkdirs();
+			}
 			try {
-				ZipFile zipFile = new ZipFile(zipped);
-				Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
+				final ZipFile zipFile = new ZipFile(zipped);
+				final Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
 				while (enumeration.hasMoreElements()) {
-					ZipEntry zipEntry = enumeration.nextElement();
+					final ZipEntry zipEntry = enumeration.nextElement();
 
-					if (zipEntry.isDirectory())
+					if (zipEntry.isDirectory()) {
 						new File(f.getAbsolutePath() + Constants.FS + zipEntry.getName()).mkdir();
+					}
 					else {
-						File tf = new File(f.getAbsolutePath() + Constants.FS + zipEntry.getName());
-						if (!tf.getParentFile().exists())
+						final File tf = new File(f.getAbsolutePath() + Constants.FS + zipEntry.getName());
+						if (!tf.getParentFile().exists()) {
 							tf.getParentFile().mkdirs();
+						}
 
-						BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(zipEntry));
+						final BufferedInputStream bis = new BufferedInputStream(zipFile.getInputStream(zipEntry));
 						int size;
-						byte[] buffer = new byte[2048];
-						BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f.getAbsolutePath() + Constants.FS + zipEntry.getName()), buffer.length);
-						while ((size = bis.read(buffer, 0, buffer.length)) != -1)
+						final byte[] buffer = new byte[2048];
+						final BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(f.getAbsolutePath() + Constants.FS + zipEntry.getName()), buffer.length);
+						while ((size = bis.read(buffer, 0, buffer.length)) != -1) {
 							bos.write(buffer, 0, size);
+						}
 						bos.flush();
 						bos.close();
 						bis.close();
@@ -125,7 +127,7 @@ public class Launcher implements Runnable {
 				}
 				zipFile.close();
 			}
-			catch (Throwable t) {
+			catch (final Throwable t) {
 				form.log("Unable to unpack modules.");
 				t.printStackTrace();
 				launchGhost();
@@ -138,16 +140,16 @@ public class Launcher implements Runnable {
 
 	/**
 	 * Checks for a new version and downloads, ensuring that the download succeeded
-	 * 
 	 * @throws IOException if the file can not be downloaded
 	 * @throws UpdateNotFoundException when no update is found
 	 */
-	private File checkAndDownload(String destFile, String remoteUrl) throws IOException, UpdateNotFoundException {
-		String remoteHash = getRemoteHash(remoteUrl);
+	private File checkAndDownload(final String destFile, final String remoteUrl) throws IOException, UpdateNotFoundException {
+		final String remoteHash = getRemoteHash(remoteUrl);
 		String localHash = getLocalHash(destFile);
 		boolean match = localHash != null && remoteHash.toLowerCase().equals(localHash.toLowerCase());
-		if (match)
+		if (match) {
 			throw new UpdateNotFoundException();
+		}
 		File file = null;
 		while (!match) {
 			form.log("Update found.");
@@ -169,57 +171,58 @@ public class Launcher implements Runnable {
 			try {
 				Thread.sleep(8000);
 			}
-			catch (InterruptedException ex) {
+			catch (final InterruptedException ex) {
 			}
 			System.exit(0);
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			form.log("Unable to launch GHOST: " + e.toString());
 		}
 	}
 
 	/**
 	 * Gets the hash from the file at the specified url
-	 * 
 	 * @param url the url of the file to get the hash of
 	 * @return the hash that was read
 	 */
-	private String getRemoteHash(String url) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(HttpClient.getStream(url + ".MD5")));
-		StringBuilder sb = new StringBuilder();
+	private String getRemoteHash(final String url) throws IOException {
+		final BufferedReader br = new BufferedReader(new InputStreamReader(HttpClient.getStream(url + ".MD5")));
+		final StringBuilder sb = new StringBuilder();
 		String line;
-		while ((line = br.readLine()) != null)
+		while ((line = br.readLine()) != null) {
 			sb.append(line);
+		}
 		return sb.toString();
 	}
 
 	/**
 	 * Gets the hash from the file at the given path
-	 * 
 	 * @param path the path to the file
 	 * @return the hash of the file
 	 */
-	private String getLocalHash(String path) {
+	private String getLocalHash(final String path) {
 		BufferedInputStream bis = null;
 		try {
-			File file = new File(path);
-			MessageDigest md = MessageDigest.getInstance("MD5");
+			final File file = new File(path);
+			final MessageDigest md = MessageDigest.getInstance("MD5");
 			int bytesRead;
-			byte[] buffer = new byte[1024];
+			final byte[] buffer = new byte[1024];
 			bis = new BufferedInputStream(new FileInputStream(file));
-			while ((bytesRead = bis.read(buffer)) != -1)
+			while ((bytesRead = bis.read(buffer)) != -1) {
 				md.update(buffer, 0, bytesRead);
+			}
 			bis.close();
 			return toHexString(md.digest());
 		}
-		catch (Exception ex) {
+		catch (final Exception ex) {
 		} // Swallow irrelevant exceptions
 		finally {
 			try {
-				if (bis != null)
+				if (bis != null) {
 					bis.close();
+				}
 			}
-			catch (IOException ex) {
+			catch (final IOException ex) {
 			}
 		}
 		return null;
@@ -227,13 +230,12 @@ public class Launcher implements Runnable {
 
 	/**
 	 * Converts an array of bytes to a hexidecimal string
-	 * 
 	 * @param bytes the bytes to convert
 	 * @return the resulting string
 	 */
-	public static String toHexString(byte[] bytes) {
-		char[] hexArray = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-		char[] hexChars = new char[bytes.length * 2];
+	public static String toHexString(final byte[] bytes) {
+		final char[] hexArray = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+		final char[] hexChars = new char[bytes.length * 2];
 		int v;
 		for (int j = 0; j < bytes.length; j++) {
 			v = bytes[j] & 0xFF;
@@ -246,7 +248,7 @@ public class Launcher implements Runnable {
 	private class UpdateNotFoundException extends Exception {
 	}
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {

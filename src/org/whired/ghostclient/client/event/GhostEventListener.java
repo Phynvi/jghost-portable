@@ -10,7 +10,6 @@ import org.whired.ghost.player.event.PlayerListEventListener;
 public interface GhostEventListener extends PlayerListEventListener {
 	/**
 	 * Invoked when a private message is logged
-	 * 
 	 * @param from the sending player
 	 * @param to the receiving player
 	 * @param message the message that was logged
@@ -19,7 +18,6 @@ public interface GhostEventListener extends PlayerListEventListener {
 
 	/**
 	 * Invoked when a public message is logged
-	 * 
 	 * @param from the sending player
 	 * @param message the message that was logged
 	 */
@@ -27,7 +25,6 @@ public interface GhostEventListener extends PlayerListEventListener {
 
 	/**
 	 * Invoked when a packet is received
-	 * 
 	 * @param packet the packet that was received
 	 */
 	public void packetReceived(GhostPacket packet);

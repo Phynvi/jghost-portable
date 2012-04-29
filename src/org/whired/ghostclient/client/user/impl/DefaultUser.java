@@ -15,16 +15,14 @@ public class DefaultUser implements GhostUser {
 
 	/**
 	 * Constructs a new GhostUser
-	 * 
 	 * @param frame the frame that provides access to the graphical client
 	 */
-	public DefaultUser(SessionSettings settings) {
+	public DefaultUser(final SessionSettings settings) {
 		this.settings = settings;
 	}
 
 	/**
 	 * Gets the settings for this user
-	 * 
 	 * @return the settings associated with this user
 	 */
 	@Override

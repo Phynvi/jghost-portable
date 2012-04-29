@@ -9,7 +9,6 @@ import org.whired.ghost.player.Player;
 
 /**
  * Represents a private chat packet
- * 
  * @author Whired
  */
 public class PrivateChatPacket extends GhostChatPacket {
@@ -27,22 +26,22 @@ public class PrivateChatPacket extends GhostChatPacket {
 		this.setReceiveAction(new TransmitAction() {
 
 			@Override
-			public boolean onTransmit(Connection connection) {
+			public boolean onTransmit(final Connection connection) {
 				try {
-					WrappedInputStream is = connection.getInputStream();
+					final WrappedInputStream is = connection.getInputStream();
 					PrivateChatPacket.this.sender = new Player(is.readString(), is.readByte());
 					PrivateChatPacket.this.recipient = new Player(is.readString(), is.readByte());
 					PrivateChatPacket.this.message = is.readString();
 					return true;
 				}
-				catch (IOException e) {
+				catch (final IOException e) {
 					return false;
 				}
 			}
 		});
 	}
 
-	public PrivateChatPacket(Player sender, Player recipient, String message) {
+	public PrivateChatPacket(final Player sender, final Player recipient, final String message) {
 		super(PacketType.PRIVATE_CHAT);
 		this.sender = sender;
 		this.recipient = recipient;
@@ -50,9 +49,9 @@ public class PrivateChatPacket extends GhostChatPacket {
 		this.setSendAction(new TransmitAction() {
 
 			@Override
-			public boolean onTransmit(Connection connection) {
+			public boolean onTransmit(final Connection connection) {
 				try {
-					WrappedOutputStream os = connection.getOutputStream();
+					final WrappedOutputStream os = connection.getOutputStream();
 					os.writeString(PrivateChatPacket.this.sender.getName());
 					os.writeByte(PrivateChatPacket.this.sender.getRights());
 					os.writeString(PrivateChatPacket.this.recipient.getName());
@@ -60,14 +59,14 @@ public class PrivateChatPacket extends GhostChatPacket {
 					os.writeString(PrivateChatPacket.this.message);
 					return true;
 				}
-				catch (IOException e) {
+				catch (final IOException e) {
 					return false;
 				}
 			}
 		});
 	}
 
-	public PrivateChatPacket(Player sender, Player recipient, byte[] chatText, int chatTextSize) {
+	public PrivateChatPacket(final Player sender, final Player recipient, final byte[] chatText, final int chatTextSize) {
 		this(sender, recipient, getUnpackedMessage(chatText, chatTextSize));
 	}
 }

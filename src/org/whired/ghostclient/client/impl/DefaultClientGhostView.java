@@ -58,7 +58,6 @@ import org.whired.ghostclient.client.module.Module;
 
 /**
  * The graphical components for the client
- * 
  * @author Whired
  */
 public class DefaultClientGhostView extends JFrame implements GhostClientView {
@@ -105,30 +104,29 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 
 	/**
 	 * Invoked when a menu item has been selected
-	 * 
 	 * @param i the index of the {@code JMenuItem} that was clicked
 	 */
-	public void menuActionPerformed(int i, ActionEvent e) {
+	public void menuActionPerformed(final int i, final ActionEvent e) {
 		switch (i) {
-		case 0: // Connect with dialog
-			tryExtendedConnect();
-		break;
-		case 1: // Connect to default
-			controller.handleCommand("connect");
-		break;
-		case 2:
-		// TODO Send the file request packet here
-		break;
-		case 3:
-			if (JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-				controller.saveSettings();
-				System.exit(0);
-			}
-		break;
-		case 4:
-			throw new UnsupportedOperationException("Momentarily disabled.");
-			// controller.displayReflectionManager();
-			// break;
+			case 0: // Connect with dialog
+				tryExtendedConnect();
+			break;
+			case 1: // Connect to default
+				controller.handleCommand("connect");
+			break;
+			case 2:
+			// TODO Send the file request packet here
+			break;
+			case 3:
+				if (JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+					controller.saveSettings();
+					System.exit(0);
+				}
+			break;
+			case 4:
+				throw new UnsupportedOperationException("Momentarily disabled.");
+				// controller.displayReflectionManager();
+				// break;
 		}
 	}
 
@@ -146,24 +144,25 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		jd.addWindowListener(new WindowAdapter() {
 
 			@Override
-			public void windowClosing(WindowEvent we) {
+			public void windowClosing(final WindowEvent we) {
 				jo.setValue(JOptionPane.CLOSED_OPTION);
 			}
 		});
 		jo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
 
 			@Override
-			public void propertyChange(java.beans.PropertyChangeEvent e) {
-				String prop = e.getPropertyName();
+			public void propertyChange(final java.beans.PropertyChangeEvent e) {
+				final String prop = e.getPropertyName();
 				if (isVisible() && e.getSource() == jo && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
-					Object value = jo.getValue();
-					if (value == JOptionPane.UNINITIALIZED_VALUE)
+					final Object value = jo.getValue();
+					if (value == JOptionPane.UNINITIALIZED_VALUE) {
 						return;
+					}
 					jo.setValue(JOptionPane.UNINITIALIZED_VALUE);
 					if (value.equals("OK")) {
-						String IP = connectInput.getText();
+						final String IP = connectInput.getText();
 						String port = portInput.getText();
-						String password = new String(passwordInput.getPassword());
+						final String password = new String(passwordInput.getPassword());
 						if (IP.length() == 0 || port.length() == 0 || password.length() == 0) {
 							JOptionPane.showMessageDialog(jd, "Not all fields were filled out properly.", "Error", JOptionPane.ERROR_MESSAGE);
 							return;
@@ -171,7 +170,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 						try {
 							port = "" + Integer.parseInt(portInput.getText());
 						}
-						catch (Exception err) {
+						catch (final Exception err) {
 							JOptionPane.showMessageDialog(jd, "The port must be numeric!", "Error", JOptionPane.ERROR_MESSAGE);
 							portInput.setText(null);
 							portInput.requestFocusInWindow();
@@ -186,8 +185,9 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 						jd.dispose();
 						controller.handleCommand("connect " + IP + " " + port + " " + password);
 					}
-					else
+					else {
 						jd.dispose();
+					}
 				}
 			}
 		});
@@ -219,13 +219,13 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 		}
-		catch (Exception e) {
+		catch (final Exception e) {
 			Constants.getLogger().warning("Error setting Metal look and feel:");
 			e.printStackTrace();
 		}
 		try {
-			Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/ubuntu.ttf")).deriveFont(9F);
-			Font f2 = f.deriveFont(10F);
+			final Font f = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/ubuntu.ttf")).deriveFont(9F);
+			final Font f2 = f.deriveFont(10F);
 			UIManager.put("ToolTip.font", f);
 			UIManager.put("OptionPane.messageFont", f);
 			UIManager.put("List.font", f);
@@ -246,7 +246,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			UIManager.put("TabbedPane.tabsOpaque", false);
 
 		}
-		catch (Exception e) {
+		catch (final Exception e) {
 			Constants.getLogger().warning("Error while overriding look and feel:");
 			e.printStackTrace();
 		}
@@ -263,7 +263,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			imageLabel = new JLabel();
 			imageLabel.setIcon(new ImageIcon(this.getClass().getResource("resources/interfacetest.png")));
 		}
-		catch (Exception e) {
+		catch (final Exception e) {
 			Constants.getLogger().warning("Error while loading graphical resources:");
 			e.printStackTrace();
 		}
@@ -277,9 +277,10 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 
 			@Override
 			public void run() {
-				LinkedList<String> tabs = new LinkedList<String>();
-				for (int i = 0; i < jTabbedPane1.getTabCount(); i++)
+				final LinkedList<String> tabs = new LinkedList<String>();
+				for (int i = 0; i < jTabbedPane1.getTabCount(); i++) {
 					tabs.add(jTabbedPane1.getTitleAt(i));
+				}
 				controller.getSettings().setTabOrder(tabs.toArray(new String[tabs.size()]));
 			}
 		};
@@ -288,14 +289,15 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		rangeDisp = new JLabel();
 		coordsLabel = new JLabel();
 		jScrollPane4 = new JScrollPane();
-		MouseListener mouseListener = new MouseAdapter() {
+		final MouseListener mouseListener = new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				Object x = playerListComponent.getSelectedValue();
+			public void mouseClicked(final MouseEvent e) {
+				final Object x = playerListComponent.getSelectedValue();
 				if (e.getClickCount() == 1) {
-					if (x != null)
+					if (x != null) {
 						controller.getPlayerList().playerSelected((Player) x);
+					}
 				}
 				else if (e.getClickCount() == 2) {
 					chatInput.setText("/pm " + x + " ");
@@ -307,7 +309,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		playerListComponent.setCellRenderer(new DefaultListCellRenderer() {
 
 			@Override
-			public Component getListCellRendererComponent(JList list, final Object value, int index, final boolean isSelected, boolean cellHasFocus) {
+			public Component getListCellRendererComponent(final JList list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
 				final Player player;
 				final Rank playerRank;
 				if (value instanceof Player) {
@@ -318,10 +320,10 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 					player = null;
 					playerRank = null;
 				}
-				JLabel label = new JLabel(value.toString()) {
+				final JLabel label = new JLabel(value.toString()) {
 
 					@Override
-					public void paint(Graphics g) {
+					public void paint(final Graphics g) {
 						if (isSelected) {
 							g.setColor(new Color(206, 222, 237, 200));
 							g.fillRect(0, 0, this.getWidth(), this.getHeight());
@@ -329,14 +331,15 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 						}
 						super.paint(g);
 						if (playerRank != null) {
-							Icon i = playerRank.getIcon();
+							final Icon i = playerRank.getIcon();
 							i.paintIcon(this, g, getWidth() - i.getIconWidth(), this.getHeight() / 2 - i.getIconHeight() / 2);
 						}
 						g.dispose();
 					}
 				};
-				if (player != null && playerRank != null)
+				if (player != null && playerRank != null) {
 					label.setToolTipText(player.getName() + " - " + playerRank.getTitle());
+				}
 				return label;
 			}
 		});
@@ -366,19 +369,19 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setTitle("jGHOST.Portable");
 		setResizable(false);
-		JMenuBar jmb = new JMenuBar();
-		JMenu jmFile = new JMenu("File");
-		JMenu jmBinding = new JMenu("Bindings");
-		JMenuItem jmiConnect = new JMenuItem("Connect..");
-		JMenuItem jmiQConnect = new JMenuItem("Quick Connect");
-		JMenuItem jmiOpen = new JMenuItem("Open (server)");
-		JMenuItem jmiExit = new JMenuItem("Exit");
+		final JMenuBar jmb = new JMenuBar();
+		final JMenu jmFile = new JMenu("File");
+		final JMenu jmBinding = new JMenu("Bindings");
+		final JMenuItem jmiConnect = new JMenuItem("Connect..");
+		final JMenuItem jmiQConnect = new JMenuItem("Quick Connect");
+		final JMenuItem jmiOpen = new JMenuItem("Open (server)");
+		final JMenuItem jmiExit = new JMenuItem("Exit");
 		jmFile.add(jmiConnect);
 		jmFile.add(jmiQConnect);
 		jmFile.add(jmiOpen);
 		jmFile.addSeparator();
 		jmFile.add(jmiExit);
-		JMenuItem jmiNew = new JMenuItem("New..");
+		final JMenuItem jmiNew = new JMenuItem("New..");
 		jmBinding.add(jmiNew);
 		jmb.add(jmFile);
 		jmb.add(jmBinding);
@@ -386,35 +389,35 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		jmiConnect.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(final ActionEvent evt) {
 				menuActionPerformed(0, evt);
 			}
 		});
 		jmiQConnect.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(final ActionEvent evt) {
 				menuActionPerformed(1, evt);
 			}
 		});
 		jmiOpen.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(final ActionEvent evt) {
 				menuActionPerformed(2, evt);
 			}
 		});
 		jmiExit.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(final ActionEvent evt) {
 				menuActionPerformed(3, evt);
 			}
 		});
 		jmiNew.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(final ActionEvent evt) {
 				menuActionPerformed(4, evt);
 			}
 		});
@@ -427,7 +430,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		thpDisp.setHorizontalAlignment(SwingConstants.CENTER);
 		thpDisp.setText("n/a");
 		atkLabel.setText("Attack: ");
-		JLayeredPane layeredPane = new JLayeredPane();
+		final JLayeredPane layeredPane = new JLayeredPane();
 		layeredPane.setBounds(132, 254, 739, 335);
 		jTabbedPane1.setBounds(0, 0, 739, 335);
 		jTabbedPane1.setTabPlacement(SwingConstants.BOTTOM);
@@ -436,7 +439,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		new LinkEventListener() {
 
 			@Override
-			public void linkClicked(String linkText) {
+			public void linkClicked(final String linkText) {
 				chatInput.setText("/pm " + linkText + " ");
 				chatInput.requestFocus();
 			}
@@ -444,7 +447,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		jTabbedPane1.addChangeListener(new ChangeListener() {
 
 			@Override
-			public void stateChanged(ChangeEvent evt) {
+			public void stateChanged(final ChangeEvent evt) {
 				jTabbedPane1.setForegroundAt(jTabbedPane1.getSelectedIndex(), Color.black);
 			}
 		});
@@ -453,7 +456,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		addWindowListener(new WindowAdapter() {
 
 			@Override
-			public void windowClosing(WindowEvent e) {
+			public void windowClosing(final WindowEvent e) {
 				controller.saveSettings();
 				System.exit(0);
 			}
@@ -461,44 +464,53 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		chatInput.addKeyListener(new KeyAdapter() {
 
 			@Override
-			public void keyPressed(KeyEvent ke) {
+			public void keyPressed(final KeyEvent ke) {
 				if (ke.getKeyCode() == 38) {
-					if (historyIndex > 1)
+					if (historyIndex > 1) {
 						historyIndex--;
+					}
 					chatInput.setText(chatHistory.get(historyIndex));
 				}
-				else if (ke.getKeyCode() == 40)
+				else if (ke.getKeyCode() == 40) {
 					if (historyIndex < chatHistory.size() + 1) {
 						historyIndex++;
 						chatInput.setText(chatHistory.get(historyIndex));
 					}
-					else
+					else {
 						chatInput.setText(null);
+					}
+				}
 			}
 		});
 		chatInput.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent evt) {
-				String message = chatInput.getText();
+			public void actionPerformed(final ActionEvent evt) {
+				final String message = chatInput.getText();
 				chatInput.setText("");
 				if (!message.equals("")) {
-					if (!message.startsWith("/"))
+					if (!message.startsWith("/")) {
 						controller.displayPublicChat(controller.getUserPlayer(), message);
-					else
+					}
+					else {
 						controller.handleCommand(message.substring(1, message.length()));
+					}
 					if (historyIndex > 250) {
 						historyIndex = 1;
 						chatHistory.clear();
 					}
-					if (chatHistory.isEmpty())
+					if (chatHistory.isEmpty()) {
 						historyIndex = 1;
-					else
+					}
+					else {
 						historyIndex = chatHistory.size() + 1;
-					if (chatHistory.get(historyIndex - 1) == null || !chatHistory.get(historyIndex - 1).equalsIgnoreCase(message))
+					}
+					if (chatHistory.get(historyIndex - 1) == null || !chatHistory.get(historyIndex - 1).equalsIgnoreCase(message)) {
 						chatHistory.put(historyIndex++, message);
-					else
+					}
+					else {
 						Constants.getLogger().fine("History match, input not saved");
+					}
 				}
 			}
 		});
@@ -509,8 +521,8 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		packetPanelContainer.getViewport().setOpaque(false);
 		packetPanelContainer.setBackground(new Color(0, 0, 250, 0));
 		packetPanelContainer.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		Border border = BorderFactory.createEmptyBorder();
-		Border border2 = BorderFactory.createLineBorder(new Color(99, 130, 191), 1);
+		final Border border = BorderFactory.createEmptyBorder();
+		final Border border2 = BorderFactory.createLineBorder(new Color(99, 130, 191), 1);
 		packetPanelContainer.setBorder(border2);
 		packetPanelContainer.setBounds(390, 48, 481, 190);
 		jPanel1.add(packetPanelContainer);
@@ -535,7 +547,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		restartBut.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(final ActionEvent evt) {
 				controller.restartServer();
 			}
 		});
@@ -572,30 +584,30 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 		playerListModel.addListDataListener(new ListDataListener() {
 
 			@Override
-			public void intervalAdded(ListDataEvent e) {
+			public void intervalAdded(final ListDataEvent e) {
 				consumeEvent((DefaultListModel) e.getSource(), ((DefaultListModel) e.getSource()).elementAt(e.getIndex0()).toString());
 			}
 
 			@Override
-			public void intervalRemoved(ListDataEvent e) {
+			public void intervalRemoved(final ListDataEvent e) {
 				consumeEvent((DefaultListModel) e.getSource(), ((DefaultListModel) e.getSource()).elementAt(e.getIndex0()).toString());
 			}
 
 			@Override
-			public void contentsChanged(ListDataEvent e) {
+			public void contentsChanged(final ListDataEvent e) {
 			}
 
-			private void consumeEvent(DefaultListModel source, String item) {
+			private void consumeEvent(final DefaultListModel source, final String item) {
 				playerCount.setText("Players - " + source.getSize());
 			}
 		});
 		playerListComponent.setModel(playerListModel);
-		GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
+		final GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
 		jPanel1.setLayout(jPanel1Layout);
 		jPanel1Layout.setHorizontalGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(jPanel1Layout.createSequentialGroup().addContainerGap().addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(jScrollPane4, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE).addComponent(playerCount, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE).addComponent(restartBut, GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(jLabel2, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 739, Short.MAX_VALUE).addGroup(GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup().addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false).addGroup(jPanel1Layout.createSequentialGroup().addGap(10, 10, 10).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup().addComponent(thpLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(thpDisp, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)).addGroup(GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false).addGroup(jPanel1Layout.createSequentialGroup().addComponent(hpLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(hpDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(rangeLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(rangeDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(mageLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(mageDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(defLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(defDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(strLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(strDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(atkLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(atkDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(pkpLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(pkpDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(ipLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(ipDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(pwLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(pwDisp, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addGroup(jPanel1Layout.createSequentialGroup().addComponent(coordsLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(coordDisp, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE))))).addComponent(jLabel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(jLabel5, GroupLayout.DEFAULT_SIZE, 413, Short.MAX_VALUE).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)).addGroup(jPanel1Layout.createSequentialGroup().addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))))).addContainerGap()));
 		jPanel1Layout.linkSize(SwingConstants.HORIZONTAL, new Component[] { atkLabel, coordsLabel, defLabel, hpLabel, ipLabel, mageLabel, pkpLabel, pwLabel, rangeLabel, strLabel, thpLabel });
 		jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(jPanel1Layout.createSequentialGroup().addContainerGap().addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(playerCount).addComponent(jLabel2)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(jPanel1Layout.createSequentialGroup().addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(jPanel1Layout.createSequentialGroup().addComponent(jLabel3).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(coordsLabel).addComponent(coordDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(pwLabel).addComponent(pwDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(ipLabel).addComponent(ipDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(pkpLabel).addComponent(pkpDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(atkLabel).addComponent(atkDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(strLabel).addComponent(strDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(defLabel).addComponent(defDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(mageLabel).addComponent(mageDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(rangeLabel).addComponent(rangeDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(hpLabel).addComponent(hpDisp)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(thpLabel).addComponent(thpDisp))).addGroup(jPanel1Layout.createSequentialGroup().addComponent(jLabel5).addGap(18, 18, 18).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE))).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED))).addGap(14, 14, 14)).addComponent(jScrollPane4, GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(restartBut)).addContainerGap()));
-		GroupLayout layout = new GroupLayout(getContentPane());
+		final GroupLayout layout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
 		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
@@ -610,21 +622,22 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	public void moduleAdded(final Module module) {
 		jTabbedPane1.addTab(module.getModuleName(), module.getComponent());
 		// Module size changes here
-		int offs = jTabbedPane1.getBoundsAt(jTabbedPane1.getTabCount() - 1).width;
+		final int offs = jTabbedPane1.getBoundsAt(jTabbedPane1.getTabCount() - 1).width;
 		chatInput.setSize(chatInput.getWidth() - offs, chatInput.getHeight());
 		chatInput.setLocation(chatInput.getLocation().x + offs, chatInput.getLocation().y);
 	}
 
 	@Override
-	public void setInputText(String text, boolean requestFocus) {
+	public void setInputText(final String text, final boolean requestFocus) {
 		// TODO edt
 		this.chatInput.setText(text);
-		if(requestFocus)
+		if (requestFocus) {
 			this.chatInput.requestFocus();
+		}
 	}
 
 	@Override
-	public void setModel(GhostClient controller) {
+	public void setModel(final GhostClient controller) {
 		this.controller = controller;
 	}
 
@@ -655,20 +668,21 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	}
 
 	@Override
-	public void displayModuleNotification(Module module) {
-		int bgTab = jTabbedPane1.indexOfComponent(module.getComponent());
-		int selTab = jTabbedPane1.getSelectedIndex();
-		if (bgTab != -1 && selTab != -1 && selTab != bgTab && jTabbedPane1.getForegroundAt(bgTab) != Color.red)
+	public void displayModuleNotification(final Module module) {
+		final int bgTab = jTabbedPane1.indexOfComponent(module.getComponent());
+		final int selTab = jTabbedPane1.getSelectedIndex();
+		if (bgTab != -1 && selTab != -1 && selTab != bgTab && jTabbedPane1.getForegroundAt(bgTab) != Color.red) {
 			jTabbedPane1.setForegroundAt(bgTab, Color.red);
+		}
 	}
 
 	@Override
-	public void playerAdded(Player player) {
+	public void playerAdded(final Player player) {
 		this.playerListModel.addElement(player);
 	}
 
 	@Override
-	public void playerRemoved(Player player) {
+	public void playerRemoved(final Player player) {
 		this.playerListModel.removeElement(player);
 	}
 }

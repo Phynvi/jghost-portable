@@ -22,33 +22,37 @@ public class GhostScrollBarUI extends BasicScrollBarUI {
 			@Override
 			public void run() {
 				scrollbar.setOpaque(false);
-				if (decrButton != null && decrButton.getParent() != null)
+				if (decrButton != null && decrButton.getParent() != null) {
 					decrButton.getParent().remove(decrButton);
-				if (incrButton != null && incrButton.getParent() != null)
+				}
+				if (incrButton != null && incrButton.getParent() != null) {
 					incrButton.getParent().remove(incrButton);
+				}
 			}
 		});
 	}
 
 	@Override
-	protected void paintThumb(Graphics g, JComponent c, Rectangle r) {
+	protected void paintThumb(final Graphics g, final JComponent c, final Rectangle r) {
 		c.setOpaque(false);
-		if (this.isThumbRollover() || this.isDragging)
+		if (this.isThumbRollover() || this.isDragging) {
 			g.setColor(ghostHighlight);
-		else
+		}
+		else {
 			g.setColor(ghostBlue);
+		}
 		((java.awt.Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.fillRoundRect(r.x, r.y, r.width, r.height, 5, 5);
 	}
 
 	@Override
-	protected void paintTrack(Graphics g, JComponent c, Rectangle r) {
+	protected void paintTrack(final Graphics g, final JComponent c, final Rectangle r) {
 		g.setColor(transparent);
 		g.fillRect(r.x, r.y, r.width, r.height);
 	}
 
 	@Override
-	public void paint(Graphics g, JComponent c) {
+	public void paint(final Graphics g, final JComponent c) {
 		/*
 		 * if (decrButton.isVisible()) { this.decrButton.setVisible(false); } if (incrButton.isVisible()) { this.incrButton.setVisible(false); }
 		 */

@@ -7,7 +7,6 @@ import org.whired.ghost.player.event.PlayerListEventListener;
 
 /**
  * A list of players
- * 
  * @author Whired
  */
 public abstract class PlayerList implements PlayerListEventListener {
@@ -15,30 +14,30 @@ public abstract class PlayerList implements PlayerListEventListener {
 	private final GhostFrame frame;
 	protected final HashSet<PlayerListEventListener> listeners = new HashSet<PlayerListEventListener>();
 
-	protected PlayerList(GhostFrame frame) {
+	protected PlayerList(final GhostFrame frame) {
 		this.frame = frame;
 	}
 
 	/**
 	 * Adds a player to this list
-	 * 
 	 * @param player the player to add
 	 */
-	public void addPlayer(Player player) {
-		for (PlayerListEventListener l : listeners)
+	public void addPlayer(final Player player) {
+		for (final PlayerListEventListener l : listeners) {
 			l.playerAdded(player);
+		}
 		playerAdded(player);
 	}
 
-	public void removePlayer(Player player) {
-		for (PlayerListEventListener l : listeners)
+	public void removePlayer(final Player player) {
+		for (final PlayerListEventListener l : listeners) {
 			l.playerRemoved(player);
+		}
 		playerRemoved(player);
 	}
 
 	/**
 	 * Invoked when a player is added to this list
-	 * 
 	 * @param player the player that was added
 	 */
 	@Override
@@ -46,7 +45,6 @@ public abstract class PlayerList implements PlayerListEventListener {
 
 	/**
 	 * Invoked when a player is removed from the list
-	 * 
 	 * @param player the player that was removed
 	 */
 	@Override
@@ -56,7 +54,6 @@ public abstract class PlayerList implements PlayerListEventListener {
 
 	/**
 	 * Gets the frame that contains this list
-	 * 
 	 * @return the frame
 	 */
 	public GhostFrame getFrame() {

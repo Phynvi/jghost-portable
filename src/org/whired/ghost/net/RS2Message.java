@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 /**
  * Utility class for converting messages
- * 
  * @author Whired
  */
 public class RS2Message {
@@ -14,27 +13,32 @@ public class RS2Message {
 	 * Gets the message as a byte array
 	 */
 	public static byte[] getPackedMessage(String message) {
-		LinkedList<Byte> packed = new LinkedList<Byte>();
-		if (message.length() > 80)
+		final LinkedList<Byte> packed = new LinkedList<Byte>();
+		if (message.length() > 80) {
 			message = message.substring(0, 80);
+		}
 		message = message.toLowerCase();
 		int carryOverNibble = -1;
 		int ofs = 0;
 		for (int idx = 0; idx < message.length(); idx++) {
-			char c = message.charAt(idx);
+			final char c = message.charAt(idx);
 			int tableIdx = 0;
-			for (int i = 0; i < XLATE_TABLE.length; i++)
+			for (int i = 0; i < XLATE_TABLE.length; i++) {
 				if (c == (byte) XLATE_TABLE[i]) {
 					tableIdx = i;
 					break;
 				}
-			if (tableIdx > 12)
+			}
+			if (tableIdx > 12) {
 				tableIdx += 195;
+			}
 			if (carryOverNibble == -1) {
-				if (tableIdx < 13)
+				if (tableIdx < 13) {
 					carryOverNibble = tableIdx;
-				else
+				}
+				else {
 					packed.add(ofs++, (byte) tableIdx);
+				}
 			}
 			else if (tableIdx < 13) {
 				packed.add(ofs++, (byte) ((carryOverNibble << 4) + tableIdx));
@@ -45,32 +49,35 @@ public class RS2Message {
 				carryOverNibble = tableIdx & 0xf;
 			}
 		}
-		if (carryOverNibble != -1)
+		if (carryOverNibble != -1) {
 			packed.add(ofs++, (byte) (carryOverNibble << 4));
+		}
 		Byte[] packedArray = new Byte[packed.size()];
-		byte[] primPacked = new byte[packed.size()];
+		final byte[] primPacked = new byte[packed.size()];
 		packedArray = packed.toArray(packedArray);
-		for (int i = 0; i < packedArray.length; i++)
+		for (int i = 0; i < packedArray.length; i++) {
 			primPacked[i] = packedArray[i].byteValue();
+		}
 		return primPacked;
 	}
 
 	/**
 	 * Unpacks and formats chat that was sent on the specified connection
-	 * 
 	 * @return the unpacked and formatted chat
 	 */
-	public static String unpackMessage(byte[] chatText, int chatSize) {
-		char decodeBuf[] = new char[4096];
+	public static String unpackMessage(final byte[] chatText, final int chatSize) {
+		final char decodeBuf[] = new char[4096];
 
 		int idx = 0, highNibble = -1;
 		for (int i = 0; i < chatSize * 2; i++) {
-			int val = chatText[i / 2] >> 4 - 4 * (i % 2) & 0xf;
+			final int val = chatText[i / 2] >> 4 - 4 * (i % 2) & 0xf;
 			if (highNibble == -1) {
-				if (val < 13)
+				if (val < 13) {
 					decodeBuf[idx++] = XLATE_TABLE[val];
-				else
+				}
+				else {
 					highNibble = val;
+				}
 			}
 			else {
 				decodeBuf[idx++] = XLATE_TABLE[(highNibble << 4) + val - 195];
