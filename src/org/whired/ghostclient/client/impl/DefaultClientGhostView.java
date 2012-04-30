@@ -629,11 +629,15 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 
 	@Override
 	public void setInputText(final String text, final boolean requestFocus) {
-		// TODO edt
-		this.chatInput.setText(text);
-		if (requestFocus) {
-			this.chatInput.requestFocus();
-		}
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				chatInput.setText(text);
+				if (requestFocus) {
+					chatInput.requestFocus();
+				}
+			}
+		});
 	}
 
 	@Override

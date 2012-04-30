@@ -1,6 +1,7 @@
 package org.whired.graph;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -166,6 +167,8 @@ public class LineGraph extends Graph implements Scrollable {
 				}
 			}
 		}
+		g.setColor(Color.WHITE);
+		g.drawString("Double-click to refresh", this.getWidth() - g.getFontMetrics().stringWidth("Double-click to refresh") - 3, this.getHeight() - 3);
 	}
 
 	private int xOffset = 0;

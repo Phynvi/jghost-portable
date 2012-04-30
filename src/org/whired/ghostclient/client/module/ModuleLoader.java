@@ -68,11 +68,9 @@ public class ModuleLoader {
 								});
 							}
 							catch (final InterruptedException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 							catch (final InvocationTargetException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						}

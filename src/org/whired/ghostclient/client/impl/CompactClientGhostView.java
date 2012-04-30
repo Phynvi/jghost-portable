@@ -22,24 +22,20 @@ import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
+import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -51,6 +47,7 @@ import javax.swing.event.ListDataListener;
 import org.whired.ghost.Constants;
 import org.whired.ghost.player.Player;
 import org.whired.ghost.player.Rank;
+import org.whired.ghostclient.awt.ConnectDialog;
 import org.whired.ghostclient.awt.GhostScrollBarUI;
 import org.whired.ghostclient.awt.RoundedBorder;
 import org.whired.ghostclient.client.GhostClient;
@@ -65,7 +62,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 	private final Color transparent = new Color(0, 0, 0, 0);
 	private Font ghostFontSmall = new Font("SansSerif", Font.PLAIN, 9);
 	private Font ghostFontMedium = ghostFontSmall.deriveFont(10F);
-	private final DefaultListModel mdlPlayerList = new DefaultListModel();
+	private final SortedListModel mdlPlayerList = new SortedListModel();
 	private GhostClient model;
 	private final LinkedList<String> inputHistory = new LinkedList<String>();
 	private int historyIndex = 0;
@@ -211,70 +208,13 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 							model.handleCommand("disconnect");
 						}
 						else if (e.getButton() == MouseEvent.BUTTON1) {
-							final JDialog jd = new JDialog();
-							jd.setTitle("Connect");
-							final JTextField connectInput = new JTextField();
-							final JTextField portInput = new JTextField();
-							final JPasswordField passwordInput = new JPasswordField();
-							final JOptionPane jo = new JOptionPane(new Object[] { "Enter IP, port, and password.", connectInput, portInput, passwordInput }, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, new Object[] { "OK", "Cancel" }, "OK");
-							jd.setContentPane(jo);
-							jd.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-							jd.addWindowListener(new WindowAdapter() {
-
-								@Override
-								public void windowClosing(final WindowEvent we) {
-									jo.setValue(JOptionPane.CLOSED_OPTION);
-								}
-							});
-							jo.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-
-								@Override
-								public void propertyChange(final java.beans.PropertyChangeEvent e) {
-									final String prop = e.getPropertyName();
-									if (isVisible() && e.getSource() == jo && (JOptionPane.VALUE_PROPERTY.equals(prop) || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
-										final Object value = jo.getValue();
-										if (value == JOptionPane.UNINITIALIZED_VALUE) {
-											return;
-										}
-										jo.setValue(JOptionPane.UNINITIALIZED_VALUE);
-										if (value.equals("OK")) {
-											final String IP = connectInput.getText();
-											String port = portInput.getText();
-											final String password = new String(passwordInput.getPassword());
-											if (IP.length() == 0 || port.length() == 0 || password.length() == 0) {
-												JOptionPane.showMessageDialog(jd, "Not all fields were filled out properly", "Error", JOptionPane.ERROR_MESSAGE);
-												return;
-											}
-											try {
-												port = "" + Integer.parseInt(portInput.getText());
-											}
-											catch (final Exception err) {
-												JOptionPane.showMessageDialog(jd, "The port must be numeric!", "Error", JOptionPane.ERROR_MESSAGE);
-												portInput.setText(null);
-												portInput.requestFocusInWindow();
-												return;
-											}
-											if (!IP.contains(".") && !IP.toLowerCase().equals("localhost")) {
-												JOptionPane.showMessageDialog(jd, "The IP entered was invalid.", "Error", JOptionPane.ERROR_MESSAGE);
-												connectInput.setText(null);
-												connectInput.requestFocusInWindow();
-												return;
-											}
-											jd.dispose();
-											model.handleCommand("connect " + IP + " " + port + " " + password);
-										}
-										else {
-											jd.dispose();
-										}
-									}
-								}
-							});
-							jd.setResizable(false);
-							jd.pack();
-							jd.setLocationRelativeTo(CompactClientGhostView.this);
-							jd.setModal(true);
-							jd.setVisible(true);
-							connectInput.requestFocusInWindow();
+							final ConnectDialog cd = new ConnectDialog();
+							cd.setLocationRelativeTo(CompactClientGhostView.this);
+							cd.setVisible(true);
+							if (!cd.isCancelled()) {
+								model.handleCommand("connect " + cd.getIp() + " " + cd.getPort() + " " + new String(cd.getPassword()));
+								cd.dispose();
+							}
 						}
 						else if (e.getButton() == MouseEvent.BUTTON3) {
 							model.handleCommand("connect");
@@ -347,20 +287,15 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 
 					@Override
 					public void intervalAdded(final ListDataEvent e) {
-						consumeEvent((DefaultListModel) e.getSource());
 					}
 
 					@Override
 					public void intervalRemoved(final ListDataEvent e) {
-						consumeEvent((DefaultListModel) e.getSource());
 					}
 
 					@Override
 					public void contentsChanged(final ListDataEvent e) {
-					}
-
-					private void consumeEvent(final DefaultListModel source) {
-						lblPlayerCount.setText("Players: " + source.getSize());
+						lblPlayerCount.setText("Players: " + ((AbstractListModel) e.getSource()).getSize());
 					}
 				});
 				compPlayerList.setModel(mdlPlayerList);
@@ -445,10 +380,23 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 
 					@Override
 					public void changedUpdate(final DocumentEvent e) {
-						final String search = textSearch.getText();
+						final String search = textSearch.getText().toLowerCase();
 						if (search.length() > 0) {
+							Object sel = compPlayerList.getSelectedValue();
+							// No reason to iterate if we still match
+							if (sel != null && sel.toString().toLowerCase().startsWith(search) && search.length() <= sel.toString().length()) {
+								return;
+							}
 							final Object[] elems = new Object[mdlPlayerList.size()];
 							mdlPlayerList.copyInto(elems);
+							// Try startsWith first
+							for (final Object elem : elems) {
+								if (elem.toString().toLowerCase().startsWith(search.toLowerCase())) {
+									compPlayerList.setSelectedValue(elem, true);
+									return;
+								}
+							}
+							// No results from startsWith, try contains
 							for (final Object elem : elems) {
 								if (elem.toString().toLowerCase().contains(search.toLowerCase())) {
 									compPlayerList.setSelectedValue(elem, true);
@@ -462,25 +410,36 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 
 					@Override
 					public void keyPressed(final KeyEvent ke) {
-						int sel = compPlayerList.getSelectedIndex();
-						final String search = textSearch.getText();
-						if (ke.getKeyCode() == KeyEvent.VK_ENTER && sel != -1 && search.length() > 0) {
-							final Object[] elems = new Object[mdlPlayerList.size()];
-							mdlPlayerList.copyInto(elems);
-							outer: while (true) {
-								for (int i = sel + 1; i < elems.length; i++) {
-									if (elems[i].toString().toLowerCase().contains(search.toLowerCase())) {
-										compPlayerList.setSelectedValue(elems[i], true);
+						if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
+							int sel = compPlayerList.getSelectedIndex();
+							final String search = textSearch.getText().toLowerCase();
+							if (ke.getKeyCode() == KeyEvent.VK_ENTER && sel != -1 && search.length() > 0) {
+								final Object[] elems = new Object[mdlPlayerList.size()];
+								mdlPlayerList.copyInto(elems);
+								outer: while (true) {
+									// Try startsWith first
+									for (int i = sel + 1; i < elems.length; i++) {
+										if (elems[i].toString().toLowerCase().startsWith(search.toLowerCase())) {
+											compPlayerList.setSelectedValue(elems[i], true);
+											break outer;
+										}
+									}
+									// No results from startsWith, try contains
+									for (int i = sel + 1; i < elems.length; i++) {
+										if (elems[i].toString().toLowerCase().contains(search.toLowerCase())) {
+											compPlayerList.setSelectedValue(elems[i], true);
+											break outer;
+										}
+									}
+									if (sel > 0) {
+										sel = -1;
+									}
+									else {
 										break outer;
 									}
 								}
-								if (sel > 0) {
-									sel = -1;
-								}
-								else {
-									break outer;
-								}
 							}
+
 						}
 					}
 				});

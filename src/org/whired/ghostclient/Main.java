@@ -118,6 +118,12 @@ public class Main {
 				SettingsFactory.saveToDatabase(Constants.getLocalCodebase(), client.getModel().getUser().getSettings());
 				return true;
 			}
+		}, new Command("addplayer", 2) {
+			@Override
+			public boolean handle(String[] args) {
+				client.getModel().getPlayerList().addPlayer(new Player(args[0], Integer.parseInt(args[1])));
+				return true;
+			}
 		}, new Command("connect", 0) {
 
 			@Override
