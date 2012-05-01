@@ -19,16 +19,16 @@ public class Main {
 
 	public static void main(final String args[]) {
 		client = new DefaultController(new DefaultUser(SettingsFactory.loadFromDatabase(Constants.getLocalCodebase())));
-		client.getModel().getCommandHandler().registerCommands(new Command[] { new Command("setrights", 1) {
+		client.getModel().getCommandManager().registerCommands(new Command[] { new Command("setrights", 1) {
 
 			@Override
 			public boolean handle(final String[] args) {
 				Rank rank;
 				try {
-					rank = client.getModel().getRankHandler().rankForLevel(Integer.parseInt(args[0]));
+					rank = client.getModel().getRankManager().rankForLevel(Integer.parseInt(args[0]));
 				}
 				catch (final NumberFormatException e) {
-					rank = client.getModel().getRankHandler().rankForName(args[0]);
+					rank = client.getModel().getRankManager().rankForName(args[0]);
 				}
 				if (rank != null) {
 					client.getModel().getUser().getSettings().getPlayer().setRights(rank.getLevel());
@@ -109,7 +109,7 @@ public class Main {
 			@Override
 			public boolean handle(final String[] args) {
 				final Player p = client.getModel().getUser().getSettings().getPlayer();
-				Constants.getLogger().info("You are " + client.getModel().getRankHandler().rankForLevel(p.getRights()).getTitle() + " " + p.getName());
+				Constants.getLogger().info("You are " + client.getModel().getRankManager().rankForLevel(p.getRights()).getTitle() + " " + p.getName());
 				return true;
 			}
 		}, new Command("savesession") {

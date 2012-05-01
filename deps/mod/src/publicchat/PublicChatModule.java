@@ -59,7 +59,7 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 						getStyledDocument().insertString(getStyledDocument().getLength(), "[" + Constants.DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] ", null);
 						if (from.getRights() > 0) {
 							final Style iconOnly = getStyledDocument().getStyle("iconOnly");
-							StyleConstants.setIcon(iconOnly, frame.getRankHandler().rankForLevel(from.getRights()).getIcon());
+							StyleConstants.setIcon(iconOnly, frame.getRankManager().rankForLevel(from.getRights()).getIcon());
 							getStyledDocument().insertString(getStyledDocument().getLength(), " ", iconOnly);
 						}
 						final StringBuilder b = new StringBuilder().append(from.getName()).append(": ").append(message).append("\n");

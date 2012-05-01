@@ -3,35 +3,76 @@ package org.whired.ghostclient.client;
 import org.whired.ghost.net.AbstractClient;
 import org.whired.ghost.net.SessionManager;
 import org.whired.ghost.player.Player;
-import org.whired.ghost.player.RankHandler;
+import org.whired.ghost.player.RankManager;
 import org.whired.ghostclient.client.settings.SessionSettings;
 
 /**
- * A collection of methods that a typical ghost client would utilize
+ * A typical ghost client
  * @author Whired
  */
 public interface GhostClient extends AbstractClient {
-	public void handleCommand(String command);
+	/**
+	 * Parses and handles a command
+	 * @param command the command to handle
+	 */
+	void handleCommand(String command);
 
-	public RankHandler getRankHandler();
+	/**
+	 * Gets the rank manager for this session
+	 * @return the rank manager
+	 */
+	RankManager getRankManager();
 
-	public SessionManager getSessionManager();
+	/**
+	 * Gets the session manager that is managing this session
+	 * @return the session manager
+	 */
+	SessionManager getSessionManager();
 
-	public Player getUserPlayer();
+	/**
+	 * Gets the player for the current user
+	 * @return the player
+	 */
+	Player getUserPlayer();
 
-	public void saveSettings();
+	/**
+	 * Saves the settings for this session
+	 */
+	void saveSessionSettings();
 
-	public void restartServer();
+	/**
+	 * Restarts the server
+	 */
+	void restartServer();
 
-	public GhostClientView getView();
+	/**
+	 * Gets the view for this client
+	 * @return the view
+	 */
+	GhostClientView getView();
 
-	public void setView(GhostClientView view);
+	/**
+	 * Sets the view for this client
+	 * @param view the view to set
+	 */
+	void setView(GhostClientView view);
 
-	public SessionSettings getSettings();
+	/**
+	 * Gets the settings for the current session
+	 * @return the settings
+	 */
+	SessionSettings getSessionSettings();
+
+	/**
+	 * Moderates the specified player
+	 * @param playerName the name of the player to moderate
+	 * @param operation the operation to perform
+	 */
+	void moderatePlayer(String playerName, int operation);
 
 	/**
 	 * Gets the abstract player list for this client
 	 * @return the list
 	 */
-	public ClientPlayerList getPlayerList();
+	ClientPlayerList getPlayerList();
 }

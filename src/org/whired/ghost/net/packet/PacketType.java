@@ -4,15 +4,16 @@ package org.whired.ghost.net.packet;
  * Constants for packet types
  * @author Whired
  */
-public abstract class PacketType {
-	public static final int AUTHENTICATION = 0;
-	public static final int AUTHENTICATE_SUCCESS = 1;
-	public static final int PUBLIC_CHAT = 2;
-	public static final int SERVER_LOG = 3;
-	public static final int DEBUG_MESSAGE = 4;
-	public static final int PLAYER_CONNECTION = 5;
-	public static final int PRIVATE_CHAT = 6;
-	public static final int PLAYER_MOVEMENT = 7;
-	public static final int INVOKE_ACCESSOR = 8;
-	public static final int UPDATE_PLAYER_LIST = 9;
+public interface PacketType {
+	int AUTHENTICATION = 0;
+	int AUTHENTICATE_SUCCESS = 1;
+	int PUBLIC_CHAT = 2;
+	int SERVER_LOG = 3;
+	int DEBUG_MESSAGE = 4;
+	int PLAYER_CONNECTION = 5;
+	int PRIVATE_CHAT = 6;
+	int PLAYER_MOVEMENT = 7;
+	int INVOKE_ACCESSOR = 8;
+	int UPDATE_PLAYER_LIST = 9;
+	int MODERATE_PLAYER = 10;
 }

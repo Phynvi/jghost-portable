@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 import org.whired.ghost.player.Player;
 import org.whired.ghost.player.Rank;
-import org.whired.ghost.player.RankHandler;
+import org.whired.ghost.player.RankManager;
 import org.whired.ghostclient.awt.ImageUtil;
 import org.whired.ghostclient.awt.RoundedBorder;
 import org.whired.ghostclient.client.ClientPlayerList;
@@ -23,7 +23,7 @@ public class PlayerGraph extends LineGraph implements Module {
 	private final HashMap<Rank, Line> lines = new HashMap<Rank, Line>();
 	private final HashMap<Rank, Integer> counts = new HashMap<Rank, Integer>();
 	private ClientPlayerList playerList;
-	private RankHandler rankHandler;
+	private RankManager rankManager;
 
 	@Override
 	public String getModuleName() {
@@ -38,7 +38,7 @@ public class PlayerGraph extends LineGraph implements Module {
 	@Override
 	public void setFrame(final GhostClientFrame frame) {
 		this.playerList = frame.getPlayerList();
-		this.rankHandler = frame.getRankHandler();
+		this.rankManager = frame.getRankManager();
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class PlayerGraph extends LineGraph implements Module {
 	@Override
 	public void load() {
 		final Legend leg = getLegend();
-		for (final Rank r : rankHandler.getAllRanks()) {
+		for (final Rank r : rankManager.getAllRanks()) {
 			final Line l = new Line(r.getTitle(), ImageUtil.colorFromIcon(r.getIcon()));
 			lines.put(r, l);
 			counts.put(r, 0);
@@ -95,7 +95,7 @@ public class PlayerGraph extends LineGraph implements Module {
 
 		// Recount
 		for (final Player p : playerList.getPlayers()) {
-			final Rank r = rankHandler.rankForLevel(p.getRights());
+			final Rank r = rankManager.rankForLevel(p.getRights());
 			final Integer oldCt = counts.get(r);
 			counts.put(r, oldCt + 1);
 		}

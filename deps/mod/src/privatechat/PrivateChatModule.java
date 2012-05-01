@@ -55,12 +55,12 @@ public class PrivateChatModule extends LinkingJTextPane implements Module {
 						final Style iconOnly = doc.getStyle("iconOnly");
 						getStyledDocument().insertString(getStyledDocument().getLength(), "[" + Constants.DATE_FORMAT.format(Calendar.getInstance().getTime()) + "] ", null);
 						if (from.getRights() > 0) {
-							StyleConstants.setIcon(iconOnly, frame.getRankHandler().rankForLevel(from.getRights()).getIcon());
+							StyleConstants.setIcon(iconOnly, frame.getRankManager().rankForLevel(from.getRights()).getIcon());
 							doc.insertString(doc.getLength(), " ", iconOnly);
 						}
 						doc.insertString(doc.getLength(), from.getName() + " to ", null);
 						if (to.getRights() > 0) {
-							StyleConstants.setIcon(iconOnly, frame.getRankHandler().rankForLevel(to.getRights()).getIcon());
+							StyleConstants.setIcon(iconOnly, frame.getRankManager().rankForLevel(to.getRights()).getIcon());
 							doc.insertString(doc.getLength(), " ", iconOnly);
 						}
 						doc.insertString(doc.getLength(), to.getName() + ": " + message + "\n", null);

@@ -30,6 +30,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -45,9 +47,12 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import org.whired.ghost.Constants;
+import org.whired.ghost.net.packet.ModeratePacket;
 import org.whired.ghost.player.Player;
 import org.whired.ghost.player.Rank;
 import org.whired.ghostclient.awt.ConnectDialog;
+import org.whired.ghostclient.awt.GhostContextMenu;
+import org.whired.ghostclient.awt.GhostMenuItem;
 import org.whired.ghostclient.awt.GhostScrollBarUI;
 import org.whired.ghostclient.awt.RoundedBorder;
 import org.whired.ghostclient.client.GhostClient;
@@ -58,6 +63,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 	private GhostTabbedPane tabbedPane;
 	private JTextField textInput;
 	private JLabel lblConnection;
+	private JList compPlayerList;
 	private final Color highlight = new Color(99, 130, 191, 120);
 	private final Color transparent = new Color(0, 0, 0, 0);
 	private Font ghostFontSmall = new Font("SansSerif", Font.PLAIN, 9);
@@ -94,6 +100,8 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					UIManager.put("TextArea.foreground", Color.WHITE);
 					UIManager.put("TextPane.foreground", Color.WHITE);
 					UIManager.put("TextPane.selectionBackground", highlight);
+					UIManager.put("MenuItem.selectionBackground", highlight);
+					UIManager.put("MenuItem.selectionForeground", Color.WHITE);
 					UIManager.put("TextPane.selectionForeground", Color.WHITE);
 					UIManager.put("List.font", ghostFontSmall);
 					UIManager.put("Button.font", ghostFontSmall);
@@ -121,7 +129,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 
 					@Override
 					public void windowClosing(final WindowEvent e) {
-						model.saveSettings();
+						model.saveSessionSettings();
 						System.exit(0);
 					}
 				});
@@ -227,7 +235,62 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				lblPlayerCount.setHorizontalAlignment(SwingConstants.CENTER);
 				lblPlayerCount.setBounds(0, 0, 137, 16);
 
-				final JList compPlayerList = new JList();
+				compPlayerList = new JList();
+
+				JMenuItem jmiDemote = new GhostMenuItem("Demote");
+				jmiDemote.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						tryModerate(ModeratePacket.DEMOTE);
+					}
+				});
+				JMenuItem jmiJail = new GhostMenuItem("Jail");
+				jmiJail.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						tryModerate(ModeratePacket.JAIL);
+					}
+				});
+				JMenuItem jmiKick = new GhostMenuItem("Kick");
+				jmiKick.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						tryModerate(ModeratePacket.KICK);
+					}
+				});
+				JMenuItem jmiBan = new GhostMenuItem("Ban");
+				jmiBan.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						tryModerate(ModeratePacket.BAN);
+					}
+				});
+
+				JMenuItem jmiIpBan = new GhostMenuItem("IP Ban");
+				jmiIpBan.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						tryModerate(ModeratePacket.IP_BAN);
+					}
+				});
+
+				JMenuItem jmiUnban = new GhostMenuItem("Unban");
+				jmiUnban.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						tryModerate(ModeratePacket.UN_BAN);
+					}
+				});
+
+				JMenuItem jmiPromote = new GhostMenuItem("Promote");
+				jmiPromote.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						tryModerate(ModeratePacket.PROMOTE);
+					}
+				});
+
+				final JPopupMenu mnuPlayerList = new GhostContextMenu(new JMenuItem[] { jmiDemote, jmiJail, jmiKick, jmiBan, jmiIpBan, jmiUnban, jmiPromote });
 				compPlayerList.setCellRenderer(new DefaultListCellRenderer() {
 
 					@Override
@@ -236,7 +299,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 						final Rank playerRank;
 						if (value instanceof Player) {
 							player = (Player) value;
-							playerRank = model.getRankHandler().rankForLevel(player.getRights());
+							playerRank = model.getRankManager().rankForLevel(player.getRights());
 						}
 						else {
 							player = null;
@@ -270,15 +333,33 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				compPlayerList.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(final MouseEvent e) {
-						final Object x = compPlayerList.getSelectedValue();
-						if (e.getClickCount() == 1) {
-							if (x != null) {
-								model.getPlayerList().playerSelected((Player) x);
-							}
-						}
-						else if (e.getClickCount() == 2) {
-							textInput.setText("/pm " + x + " ");
-							textInput.requestFocus();
+						switch (e.getButton()) {
+							case MouseEvent.BUTTON1:
+								final Object x = compPlayerList.getSelectedValue();
+								if (e.getClickCount() == 1) {
+									if (x != null) {
+										model.getPlayerList().playerSelected((Player) x);
+									}
+								}
+								else if (e.getClickCount() == 2) {
+									textInput.setText("/pm " + x + " ");
+									textInput.requestFocus();
+								}
+							break;
+							case MouseEvent.BUTTON2:
+								int idx = compPlayerList.locationToIndex(e.getPoint());
+								if (idx != -1) {
+									model.moderatePlayer(mdlPlayerList.getElementAt(idx).toString(), ModeratePacket.KICK);
+								}
+							break;
+							case MouseEvent.BUTTON3:
+								idx = compPlayerList.locationToIndex(e.getPoint());
+								if (idx != -1) {
+									compPlayerList.setSelectedIndex(idx);
+									model.getPlayerList().playerSelected((Player) compPlayerList.getSelectedValue());
+									mnuPlayerList.show(compPlayerList, e.getPoint().x, e.getPoint().y);
+								}
+							break;
 						}
 					}
 				});
@@ -357,7 +438,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 						for (int i = 0; i < tabbedPane.getTabCount(); i++) {
 							tabs.add(tabbedPane.getTitleAt(i));
 						}
-						model.getSettings().setTabOrder(tabs.toArray(new String[tabs.size()]));
+						model.getSessionSettings().setTabOrder(tabs.toArray(new String[tabs.size()]));
 					}
 				};
 				tabbedPane.setBackground(transparent);
@@ -473,6 +554,16 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				setVisible(true);
 			}
 		});
+	}
+
+	private void tryModerate(int operation) {
+		Object s;
+		if ((s = compPlayerList.getSelectedValue()) != null) {
+			model.moderatePlayer(s.toString(), operation);
+		}
+		else {
+			Constants.getLogger().info("No player selected");
+		}
 	}
 
 	@Override

@@ -11,7 +11,7 @@ import javax.swing.border.Border;
 public class RoundedBorder implements Border {
 
 	private final int radius;
-	private final Insets insets = new Insets(2, 3, 2, 3);
+	private Insets insets = new Insets(2, 3, 2, 3);
 	private final Color color;
 
 	public RoundedBorder(final int radius) {
@@ -30,6 +30,10 @@ public class RoundedBorder implements Border {
 	@Override
 	public Insets getBorderInsets(final Component c) {
 		return insets;
+	}
+
+	public void setBorderInsets(Insets insets) {
+		this.insets = insets;
 	}
 
 	@Override

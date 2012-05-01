@@ -15,24 +15,24 @@ import org.whired.ghostclient.client.event.GhostEventAdapter;
  * Handles modules
  * @author Whired
  */
-public class ModuleHandler extends GhostEventAdapter {
+public class ModuleManager extends GhostEventAdapter {
 
 	HashSet<Module> modules = new HashSet<Module>();
 	private final GhostClientFrame frame;
 
-	public ModuleHandler(final Module[] initialModules, final GhostClientFrame frame) {
+	public ModuleManager(final Module[] initialModules, final GhostClientFrame frame) {
 		this.frame = frame;
 		for (final Module m : initialModules) {
 			registerModule(m);
 		}
 	}
 
-	public ModuleHandler(final GhostClientFrame frame) {
+	public ModuleManager(final GhostClientFrame frame) {
 		this.frame = frame;
 	}
 
 	/**
-	 * Registers a module to this handler
+	 * Registers a module to this manager
 	 * @param module
 	 */
 	public final void registerModule(final Module module) {
@@ -71,7 +71,7 @@ public class ModuleHandler extends GhostEventAdapter {
 	}
 
 	/**
-	 * Unregisters a module from this handler
+	 * Unregisters a module from this manager
 	 * @param module
 	 */
 	protected void unregisterModule(final Module module) {

@@ -3,10 +3,11 @@ package org.whired.ghostclient.client.impl;
 import java.util.logging.Level;
 
 import org.whired.ghost.Constants;
+import org.whired.ghost.net.packet.ModeratePacket;
 import org.whired.ghost.net.packet.PrivateChatPacket;
 import org.whired.ghost.net.packet.PublicChatPacket;
 import org.whired.ghost.player.Player;
-import org.whired.ghost.player.RankHandler;
+import org.whired.ghost.player.RankManager;
 import org.whired.ghostclient.client.GhostClientFrame;
 import org.whired.ghostclient.client.GhostClientView;
 import org.whired.ghostclient.client.settings.SessionSettings;
@@ -22,19 +23,19 @@ public class DefaultClientGhostFrame extends GhostClientFrame {
 		super(view, user);
 	}
 
-	public DefaultClientGhostFrame(final GhostClientView view, final GhostUser user, final RankHandler rankHandler) {
-		super(view, user, rankHandler);
+	public DefaultClientGhostFrame(final GhostClientView view, final GhostUser user, final RankManager rankManager) {
+		super(view, user, rankManager);
 	}
 
 	@Override
 	public void displayPublicChat(final Player sender, final String message) {
-		getModuleHandler().publicMessageLogged(sender, message);
+		getModuleManager().publicMessageLogged(sender, message);
 		new PublicChatPacket(sender, message).send(getSessionManager().getConnection());
 	}
 
 	@Override
 	public void displayPrivateChat(final Player sender, final Player recipient, final String message) {
-		getModuleHandler().privateMessageLogged(sender, recipient, message);
+		getModuleManager().privateMessageLogged(sender, recipient, message);
 		new PrivateChatPacket(sender, recipient, message).send(getSessionManager().getConnection());
 	}
 
@@ -55,7 +56,7 @@ public class DefaultClientGhostFrame extends GhostClientFrame {
 	}
 
 	@Override
-	public void saveSettings() {
+	public void saveSessionSettings() {
 		SettingsFactory.saveToDatabase(Constants.getLocalCodebase(), getUser().getSettings());
 	}
 
@@ -69,8 +70,13 @@ public class DefaultClientGhostFrame extends GhostClientFrame {
 	}
 
 	@Override
-	public SessionSettings getSettings() {
+	public SessionSettings getSessionSettings() {
 		return getUser().getSettings();
+	}
+
+	@Override
+	public void moderatePlayer(String playerName, int operation) {
+		new ModeratePacket(playerName, operation).send(getSessionManager().getConnection());
 	}
 
 }

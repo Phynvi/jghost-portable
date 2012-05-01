@@ -7,12 +7,12 @@ import org.whired.ghost.Constants;
 import org.whired.ghost.net.GhostFrame;
 import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.player.Player;
-import org.whired.ghost.player.RankHandler;
-import org.whired.ghostclient.client.command.CommandHandler;
+import org.whired.ghost.player.RankManager;
 import org.whired.ghostclient.client.command.CommandMalformedException;
+import org.whired.ghostclient.client.command.CommandManager;
 import org.whired.ghostclient.client.command.CommandNotFoundException;
-import org.whired.ghostclient.client.module.ModuleHandler;
 import org.whired.ghostclient.client.module.ModuleLoader;
+import org.whired.ghostclient.client.module.ModuleManager;
 import org.whired.ghostclient.client.user.GhostUser;
 
 /**
@@ -21,9 +21,9 @@ import org.whired.ghostclient.client.user.GhostUser;
  */
 public abstract class GhostClientFrame extends GhostFrame implements GhostClient {
 
-	private CommandHandler commandHandler = new CommandHandler();
-	private RankHandler rankHandler = new RankHandler();
-	private ModuleHandler moduleHandler;
+	private CommandManager commandManager = new CommandManager();
+	private RankManager rankManager = new RankManager();
+	private ModuleManager moduleManager;
 	private GhostClientView view;
 	private final ClientPlayerList playerList = new ClientPlayerList(this) {
 
@@ -32,14 +32,14 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 		@Override
 		public synchronized void playerAdded(final Player player) {
 			view.playerAdded(player);
-			moduleHandler.playerAdded(player);
+			moduleManager.playerAdded(player);
 			players.add(player);
 		}
 
 		@Override
 		public synchronized void playerRemoved(final Player player) {
 			view.playerRemoved(player);
-			moduleHandler.playerRemoved(player);
+			moduleManager.playerRemoved(player);
 			players.remove(player);
 		}
 
@@ -50,7 +50,7 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 
 		@Override
 		public void playerSelected(final Player player) {
-			moduleHandler.playerSelected(player);
+			moduleManager.playerSelected(player);
 		}
 
 		@Override
@@ -60,73 +60,73 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 			while (it.hasNext()) {
 				next = it.next();
 				view.playerRemoved(next);
-				moduleHandler.playerRemoved(next);
+				moduleManager.playerRemoved(next);
 				it.remove();
 			}
 		}
 	};
 
-	public GhostClientFrame(final GhostClientView view, final GhostUser user, final RankHandler rankHandler) {
+	public GhostClientFrame(final GhostClientView view, final GhostUser user, final RankManager rankManager) {
 		this.view = view;
 		super.setUser(user);
 		super.getSessionManager().addEventListener(this);
-		this.rankHandler = rankHandler;
-		moduleHandler = new ModuleHandler(ModuleLoader.loadFromDisk(Constants.getLocalCodebase() + "modules" + Constants.FS, this.getUser().getSettings().getTabOrder()), this);
+		this.rankManager = rankManager;
+		moduleManager = new ModuleManager(ModuleLoader.loadFromDisk(Constants.getLocalCodebase() + "modules" + Constants.FS, this.getUser().getSettings().getTabOrder()), this);
 	}
 
 	public GhostClientFrame(final GhostClientView view, final GhostUser user) {
 		this.view = view;
 		super.setUser(user);
 		super.getSessionManager().addEventListener(this);
-		moduleHandler = new ModuleHandler(ModuleLoader.loadFromDisk(Constants.getLocalCodebase() + "modules" + Constants.FS, this.getUser().getSettings().getTabOrder()), this);
+		moduleManager = new ModuleManager(ModuleLoader.loadFromDisk(Constants.getLocalCodebase() + "modules" + Constants.FS, this.getUser().getSettings().getTabOrder()), this);
 	}
 
 	@Override
 	public void packetReceived(final GhostPacket packet) {
-		moduleHandler.packetReceived(packet);
+		moduleManager.packetReceived(packet);
 	}
 
 	/**
-	 * @return the command handler
+	 * @return the command manager
 	 */
-	public CommandHandler getCommandHandler() {
-		return commandHandler;
+	public CommandManager getCommandManager() {
+		return commandManager;
 	}
 
 	/**
-	 * @param commandHandler the command handler to set
+	 * @param commandManager the command manager to set
 	 */
-	public void setCommandHandler(final CommandHandler commandHandler) {
-		this.commandHandler = commandHandler;
+	public void setCommandManager(final CommandManager commandManager) {
+		this.commandManager = commandManager;
 	}
 
 	/**
-	 * @return the rank handler
+	 * @return the rank manager
 	 */
 	@Override
-	public RankHandler getRankHandler() {
-		return rankHandler;
+	public RankManager getRankManager() {
+		return rankManager;
 	}
 
 	/**
-	 * @param rankHandler the rank handler to set
+	 * @param rankManager the rank manager to set
 	 */
-	public void setRankHandler(final RankHandler rankHandler) {
-		this.rankHandler = rankHandler;
+	public void setRankManager(final RankManager rankManager) {
+		this.rankManager = rankManager;
 	}
 
 	/**
-	 * @return the module handler
+	 * @return the module manager
 	 */
-	public ModuleHandler getModuleHandler() {
-		return moduleHandler;
+	public ModuleManager getModuleManager() {
+		return moduleManager;
 	}
 
 	/**
-	 * @param moduleHandler the module handler to set
+	 * @param moduleManager the module manager to set
 	 */
-	public void setModuleHandler(final ModuleHandler moduleHandler) {
-		this.moduleHandler = moduleHandler;
+	public void setModuleManager(final ModuleManager moduleManager) {
+		this.moduleManager = moduleManager;
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public abstract class GhostClientFrame extends GhostFrame implements GhostClient
 	@Override
 	public void handleCommand(final String command) {
 		try {
-			getCommandHandler().handleInput(command);
+			getCommandManager().handleInput(command);
 		}
 		catch (final CommandMalformedException ex) {
 			Constants.getLogger().warning("Command " + command + " malformed");

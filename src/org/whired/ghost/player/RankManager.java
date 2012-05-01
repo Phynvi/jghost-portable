@@ -3,23 +3,23 @@ package org.whired.ghost.player;
 import java.util.TreeMap;
 
 /**
- * The definition of ranks
+ * Manages ranks
  * @author Whired
  */
-public class RankHandler {
+public class RankManager {
 
 	/**
-	 * Creates a new rank handler and registers the specified ranks
+	 * Creates a new rank manager and registers the specified ranks
 	 * @param ranks
 	 */
-	public RankHandler(final Rank[] ranks) {
+	public RankManager(final Rank[] ranks) {
 		registerRanks(ranks);
 	}
 
 	/**
-	 * Creates a new rank handler
+	 * Creates a new rank manager
 	 */
-	public RankHandler() {
+	public RankManager() {
 	}
 
 	/**

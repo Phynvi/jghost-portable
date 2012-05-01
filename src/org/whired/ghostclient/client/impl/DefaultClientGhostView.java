@@ -119,7 +119,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 			break;
 			case 3:
 				if (JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-					controller.saveSettings();
+					controller.saveSessionSettings();
 					System.exit(0);
 				}
 			break;
@@ -281,7 +281,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 				for (int i = 0; i < jTabbedPane1.getTabCount(); i++) {
 					tabs.add(jTabbedPane1.getTitleAt(i));
 				}
-				controller.getSettings().setTabOrder(tabs.toArray(new String[tabs.size()]));
+				controller.getSessionSettings().setTabOrder(tabs.toArray(new String[tabs.size()]));
 			}
 		};
 		pkpDisp = new JLabel();
@@ -314,7 +314,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 				final Rank playerRank;
 				if (value instanceof Player) {
 					player = (Player) value;
-					playerRank = controller.getRankHandler().rankForLevel(player.getRights());
+					playerRank = controller.getRankManager().rankForLevel(player.getRights());
 				}
 				else {
 					player = null;
@@ -457,7 +457,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 
 			@Override
 			public void windowClosing(final WindowEvent e) {
-				controller.saveSettings();
+				controller.saveSessionSettings();
 				System.exit(0);
 			}
 		});

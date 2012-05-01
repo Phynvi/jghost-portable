@@ -9,7 +9,7 @@ import org.whired.ghost.Constants;
  * Handles commands
  * @author Whired
  */
-public class CommandHandler {
+public class CommandManager {
 
 	/**
 	 * Contains all the commands
