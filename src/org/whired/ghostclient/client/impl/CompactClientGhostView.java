@@ -331,8 +331,9 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					}
 				});
 				compPlayerList.addMouseListener(new MouseAdapter() {
+
 					@Override
-					public void mouseClicked(final MouseEvent e) {
+					public void mouseReleased(final MouseEvent e) {
 						switch (e.getButton()) {
 							case MouseEvent.BUTTON1:
 								final Object x = compPlayerList.getSelectedValue();
