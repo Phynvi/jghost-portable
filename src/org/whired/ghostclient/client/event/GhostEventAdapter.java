@@ -1,6 +1,5 @@
 package org.whired.ghostclient.client.event;
 
-import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.player.Player;
 
 /**
@@ -23,10 +22,6 @@ public abstract class GhostEventAdapter implements GhostEventListener {
 
 	@Override
 	public void publicMessageLogged(final Player from, final String message) {
-	}
-
-	@Override
-	public void packetReceived(final GhostPacket packet) {
 	}
 
 	public void playerSelected(final Player player) {

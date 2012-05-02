@@ -4,7 +4,6 @@ import java.util.logging.Level;
 
 import org.whired.ghost.Constants;
 import org.whired.ghost.net.Connection;
-import org.whired.ghost.net.packet.AccessorPacket;
 import org.whired.ghost.player.Player;
 import org.whired.ghost.player.Rank;
 import org.whired.ghostclient.client.command.Command;
@@ -82,7 +81,10 @@ public class Main {
 						break;
 					}
 				}
-				client.getModel().displayPrivateChat(client.getModel().getUser().getSettings().getPlayer(), new Player(args[0], rights, -1, -1), message);
+				Player sender = client.getModel().getUser().getSettings().getPlayer();
+				Player recipient = new Player(args[0], rights);
+				client.getModel().displayPrivateChat(sender, recipient, message);
+				client.getModel().getSessionManager().getRemoteFrame().displayPrivateChat(sender, recipient, message);
 				return true;
 			}
 		}, new Command("setdebug", 1) {
@@ -135,7 +137,7 @@ public class Main {
 						return false;
 					}
 					try {
-						client.getModel().getSessionManager().setConnection(ClientConnection.connect(con[0], Integer.parseInt(con[1]), con[2], client.getModel()));
+						client.getModel().getSessionManager().setConnection(ClientConnection.connect(con[0], Integer.parseInt(con[1]), con[2], client.getModel().getSessionManager(), client.getModel().getPacketHandler()));
 						return true;
 					}
 					catch (final Exception e) {
@@ -156,7 +158,7 @@ public class Main {
 								return false;
 							}
 							try {
-								client.getModel().getSessionManager().setConnection(ClientConnection.connect(args[0], port, args[2], client.getModel()));
+								client.getModel().getSessionManager().setConnection(ClientConnection.connect(args[0], port, args[2], client.getModel().getSessionManager(), client.getModel().getPacketHandler()));
 								Constants.getLogger().info("Successfully connected to " + args[0] + ":" + port);
 								Constants.getLogger().info("Use /connect to quickly connect to this IP in the future.");
 								client.getModel().getUser().getSettings().defaultConnect[0] = args[0];
@@ -184,6 +186,5 @@ public class Main {
 				return false;
 			}
 		} });
-		client.getModel().getPacketHandler().registerPacket(new AccessorPacket());
 	}
 }

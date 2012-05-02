@@ -181,6 +181,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 						if (!message.equals("")) {
 							if (!message.startsWith("/")) {
 								model.displayPublicChat(model.getUserPlayer(), message);
+								model.getSessionManager().getRemoteFrame().displayPublicChat(model.getUserPlayer(), message);
 							}
 							else if (message.length() > 1) {
 								model.handleCommand(message.substring(1, message.length()));

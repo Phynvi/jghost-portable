@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.logging.Level;
 
 import org.whired.ghost.Constants;
+import org.whired.ghost.net.packet.GhostPacket;
+import org.whired.ghost.net.packet.PacketHandler;
 
 /**
  * @author Whired A friendly middle layer between the connection protocols and the stream wrappers. Keeps as much of the more advanced code as hidden as possible.
@@ -23,10 +25,6 @@ public abstract class Connection {
 	 * The WrappedOutputStream to be utilized.
 	 */
 	private final WrappedOutputStream outputStream;
-	/**
-	 * The Receivable to delegate events to.
-	 */
-	protected Receivable receivable = null;
 
 	/**
 	 * The session manager for this connection
@@ -34,59 +32,39 @@ public abstract class Connection {
 	protected final SessionManager manager;
 
 	/**
+	 * The packet handler that tells this connection how to handle a packet
+	 */
+	private final PacketHandler handler;
+
+	/**
 	 * Creates a new connection with the specified streams and listeners
-	 * @param inputStream the stream to read information from
-	 * @param outputStream the stream to send information to
-	 * @param receivable the Receivable to delegate events to
+	 * 
+	 * @param socket the raw socket this connection uses
 	 * @param manager the session manager for this connection
+	 * @param handler the packet handler that tells this connection how to handle a packet
 	 * @throws IOException
 	 */
-	public Connection(final Socket socket, final Receivable receivable, final SessionManager manager) throws IOException {
+	public Connection(final Socket socket, final SessionManager manager, final PacketHandler handler) throws IOException {
 		this.socket = socket;
 		this.inputStream = new WrappedInputStream(socket.getInputStream());
 		this.outputStream = new WrappedOutputStream(socket.getOutputStream());
-		this.receivable = receivable;
 		this.manager = manager;
+		this.handler = handler;
 	}
-
-	/**
-	 * Creates a new connection with the specified streams and listeners
-	 * @param inputStream the stream to read information from
-	 * @param outputStream the stream to send information to
-	 * @param receivable the receivable to delegate events to
-	 * @throws IOException
-	 */
-	public Connection(final Socket socket, final Receivable receivable) throws IOException {
-		this(socket, receivable, null);
-	}
-
-	/**
-	 * The Thread to interrupt when listening should stop
-	 */
-	private Thread listenerThread = null;
 
 	/**
 	 * Starts listening for and handling all incoming packets
 	 */
 	public void startReceiving() {
-		Constants.getLogger().fine("Initiating new thread for packet listening..");
-		listenerThread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						readPacket(inputStream);
-					}
-					catch (final Throwable t) {
-						endSession(null);
-						t.printStackTrace();
-						break;
-					}
-				}
+		while (true) {
+			try {
+				readPacket(inputStream);
 			}
-		}, "PacketReceiver");
-		listenerThread.start();
+			catch (final Throwable t) {
+				endSession(null);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -94,7 +72,17 @@ public abstract class Connection {
 	 * @param is the input stream that reads the packet
 	 * @throws IOException if the packet id can't be read
 	 */
-	protected abstract void readPacket(WrappedInputStream inputStream) throws IOException;
+	protected void readPacket(WrappedInputStream inputStream) throws IOException {
+		final int packetId = inputStream.readByte();
+		Constants.getLogger().fine("Notifying receivable that external packet " + packetId + " has been received."); // TODO chmsg
+		GhostPacket p = handler.get(packetId);
+		if (p != null && p.receive(this)) {
+			handler.firePacketReceived(p);
+		}
+		else {
+			endSession("Packet " + packetId + " was not handled");
+		}
+	}
 
 	/**
 	 * Called then the session must be terminated

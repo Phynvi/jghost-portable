@@ -6,9 +6,8 @@ import java.util.logging.Level;
 import javax.swing.SwingUtilities;
 
 import org.whired.ghost.Constants;
-import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.player.Player;
-import org.whired.ghostclient.client.GhostClientFrame;
+import org.whired.ghostclient.client.LocalGhostFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 
 /**
@@ -18,16 +17,16 @@ import org.whired.ghostclient.client.event.GhostEventAdapter;
 public class ModuleManager extends GhostEventAdapter {
 
 	HashSet<Module> modules = new HashSet<Module>();
-	private final GhostClientFrame frame;
+	private final LocalGhostFrame frame;
 
-	public ModuleManager(final Module[] initialModules, final GhostClientFrame frame) {
+	public ModuleManager(final Module[] initialModules, final LocalGhostFrame frame) {
 		this.frame = frame;
 		for (final Module m : initialModules) {
 			registerModule(m);
 		}
 	}
 
-	public ModuleManager(final GhostClientFrame frame) {
+	public ModuleManager(final LocalGhostFrame frame) {
 		this.frame = frame;
 	}
 
@@ -90,16 +89,6 @@ public class ModuleManager extends GhostEventAdapter {
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public void packetReceived(final GhostPacket packet) {
-		for (final Module m : modules) {
-			final GhostEventAdapter a = m.getEventListener();
-			if (a != null) {
-				a.packetReceived(packet);
-			}
-		}
 	}
 
 	@Override

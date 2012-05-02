@@ -12,7 +12,8 @@ import java.util.Iterator;
 
 import org.whired.ghost.Constants;
 import org.whired.ghost.net.Connection;
-import org.whired.ghost.net.Receivable;
+import org.whired.ghost.net.SessionManager;
+import org.whired.ghost.net.packet.PacketHandler;
 import org.whired.ghostserver.server.io.ServerConnection;
 
 public class Server implements Runnable {
@@ -21,64 +22,29 @@ public class Server implements Runnable {
 	private static final long MIN_THROTTLING_MS = 25000;
 	private final HashMap<String, Long> throttlerList = new HashMap<String, Long>();
 	private ServerSocket ssock;
-	private final Receivable receivable;
 	private final String passPhrase;
 	private Connection connection;
+	private final SessionManager sessionManager = new SessionManager();
+	private final PacketHandler packetHandler = new PacketHandler();
 
 	/**
-	 * Creates a new ghost server on the default port of {@code 43596}
-	 * <p>
-	 * The server initializes its own self-contained thread that will not tie up outside code. Any action initiated by the server is asynchronous. The recommended method of initializing a server is as follows:
-	 * </p>
-	 * 
-	 * <pre>
-	 * <code>
-	 * org.whired.ghostserver.Server ghostServer = new org.whired.ghostserver.Server(new org.whired.ghost.net.Receivable()
-	 * {
-	 * public boolean handlePacket(int id, int length, org.whired.ghost.net.Connection connection)
-	 * {
-	 * 	// Packet handling logic
-	 * }
-	 * }, "mylongpassphrase");
-	 * </code>
-	 * </pre>
-	 * 
-	 * The above code would be close to the entry point of a server application, where the RSPS server is initialized. For information on how to send a packet using {@link org.whired.ghostserver.Server#getConnection()}, see {@link org.whired.ghost.net.Connection#sendPacket(int, java.lang.Object[])}
-	 * @param receivable the receivable that will handle incoming packets
+	 * Creates a new ghost server on the default port of {@code 43596} with the specified passphrase
 	 * @param passPhrase required by any connecting ghost clients. Must be at least 6 characters with symbols/numerals or 12 characters without
 	 * @throws IOException if the server cannot be initialized
 	 * @throws IllegalArgumentException if {@code passPhrase} does not meet the specified criteria
 	 */
-	public Server(final Receivable receivable, final String passPhrase) throws IOException, IllegalArgumentException {
-		this(43596, receivable, passPhrase);
+	public Server(final String passPhrase) throws IOException, IllegalArgumentException {
+		this(43596, passPhrase);
 	}
 
 	/**
-	 * Creates a new ghost server on the port specified
-	 * <p>
-	 * The server initializes its own self-contained thread that will not tie up outside code. Any action initiated by the server is asynchronous. The recommended method of initializing a server is as follows:
-	 * </p>
-	 * 
-	 * <pre>
-	 * <code>
-	 * org.whired.ghostserver.Server ghostServer = new org.whired.ghostserver.Server(new org.whired.ghost.net.Receivable()
-	 * {
-	 * public boolean handlePacket(int id, int length, org.whired.ghost.net.Connection connection)
-	 * {
-	 * 	// Packet handling logic
-	 * }
-	 * }, "mylongpassphrase");
-	 * </code>
-	 * </pre>
-	 * 
-	 * The above code would be close to the entry point of a server application, where the RSPS server is initialized. For information on how to send a packet using {@link org.whired.ghostserver.Server#getConnection()}, see {@link org.whired.ghost.net.Connection#sendPacket(int, java.lang.Object[])}
+	 * Creates a new ghost server on the specified port
 	 * @param port the port the server will listen on
-	 * @param receivable the receivable that will handle incoming packets
 	 * @param passPhrase required by any connecting ghost clients. Must be at least 6 characters with symbols/numerals or 12 characters without
 	 * @throws IOException if the server cannot be initialized
 	 * @throws IllegalArgumentException if {@code passPhrase} does not meet the specified criteria
 	 */
-	public Server(final int port, final Receivable receivable, final String passPhrase) throws IOException, IllegalArgumentException {
+	public Server(final int port, final String passPhrase) throws IOException, IllegalArgumentException {
 		boolean canBeShort = false;
 		for (final char c : passPhrase.toCharArray()) {
 			if (!Character.isLetter(c)) {
@@ -88,13 +54,13 @@ public class Server implements Runnable {
 		}
 		if (passPhrase.length() >= 6 && canBeShort || passPhrase.length() >= 12) {
 			this.PORT_NUM = port;
-			this.receivable = receivable;
 			this.passPhrase = passPhrase;
 			this.ssock = new ServerSocket(this.PORT_NUM, 50);
 			Constants.getLogger().info("Ghost server is running.");
 			new Thread(this, "ClientAccepter").start();
 		}
 		else {
+			Constants.getLogger().severe("Ghost server not started:");
 			throw new IllegalArgumentException("Password must be at least 6 characters with symbols/numerals or 12 characters without.");
 		}
 		final PrintStream con = new PrintStream(System.out);
@@ -131,7 +97,8 @@ public class Server implements Runnable {
 					throttlerList.remove(address);
 					s.setSoTimeout(400);
 					if (s.getInputStream().read() == 48) {
-						this.connection = new ServerConnection(s, this.receivable, this.passPhrase);
+						this.connection = new ServerConnection(s, this.passPhrase, sessionManager, packetHandler);
+						sessionManager.setConnection(connection);
 						this.connection.startReceiving();
 						this.connection = null;
 						s.close();
@@ -155,6 +122,14 @@ public class Server implements Runnable {
 	 */
 	public Connection getConnection() {
 		return this.connection;
+	}
+
+	public SessionManager getSessionManager() {
+		return this.sessionManager;
+	}
+
+	public PacketHandler getPacketHandler() {
+		return this.packetHandler;
 	}
 
 	private boolean isThrottling(final InetAddress address) {

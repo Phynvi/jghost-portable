@@ -19,7 +19,7 @@ import org.whired.ghost.Constants;
 import org.whired.ghost.util.GhostFormatter;
 import org.whired.ghostclient.awt.GhostScrollBarUI;
 import org.whired.ghostclient.awt.JAutoScrollPane;
-import org.whired.ghostclient.client.GhostClientFrame;
+import org.whired.ghostclient.client.LocalGhostFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 import org.whired.ghostclient.client.module.Module;
 
@@ -31,7 +31,7 @@ public class DebugModule implements Module {
 
 	private final JAutoScrollPane scrollPane = new JAutoScrollPane();
 	private final JTextPane textPane = new JTextPane();
-	private GhostClientFrame frame;
+	private LocalGhostFrame frame;
 	private final OutputStream out = new OutputStream() {
 		@Override
 		public void write(final int b) throws IOException {
@@ -130,7 +130,7 @@ public class DebugModule implements Module {
 	}
 
 	@Override
-	public void setFrame(final GhostClientFrame frame) {
+	public void setFrame(final LocalGhostFrame frame) {
 		this.frame = frame;
 	}
 

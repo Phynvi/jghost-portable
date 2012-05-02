@@ -5,7 +5,7 @@ import javax.swing.ImageIcon;
 import org.whired.ghost.player.DefaultRightsConstants;
 import org.whired.ghost.player.Rank;
 import org.whired.ghost.player.RankManager;
-import org.whired.ghostclient.client.GhostClientFrame;
+import org.whired.ghostclient.client.LocalGhostFrame;
 import org.whired.ghostclient.client.user.GhostUser;
 
 /**
@@ -22,7 +22,7 @@ public class DefaultController {
 		v.setModel(c);
 	}
 
-	public GhostClientFrame getModel() {
+	public LocalGhostFrame getModel() {
 		return c;
 	}
 }

@@ -4,12 +4,10 @@ import java.util.logging.Level;
 
 import org.whired.ghost.Constants;
 import org.whired.ghost.net.packet.ModeratePacket;
-import org.whired.ghost.net.packet.PrivateChatPacket;
-import org.whired.ghost.net.packet.PublicChatPacket;
 import org.whired.ghost.player.Player;
 import org.whired.ghost.player.RankManager;
-import org.whired.ghostclient.client.GhostClientFrame;
 import org.whired.ghostclient.client.GhostClientView;
+import org.whired.ghostclient.client.LocalGhostFrame;
 import org.whired.ghostclient.client.settings.SessionSettings;
 import org.whired.ghostclient.client.settings.SettingsFactory;
 import org.whired.ghostclient.client.user.GhostUser;
@@ -17,7 +15,7 @@ import org.whired.ghostclient.client.user.GhostUser;
 /**
  * @author Whired
  */
-public class DefaultClientGhostFrame extends GhostClientFrame {
+public class DefaultClientGhostFrame extends LocalGhostFrame {
 
 	public DefaultClientGhostFrame(final GhostClientView view, final GhostUser user) {
 		super(view, user);
@@ -30,13 +28,11 @@ public class DefaultClientGhostFrame extends GhostClientFrame {
 	@Override
 	public void displayPublicChat(final Player sender, final String message) {
 		getModuleManager().publicMessageLogged(sender, message);
-		new PublicChatPacket(sender, message).send(getSessionManager().getConnection());
 	}
 
 	@Override
 	public void displayPrivateChat(final Player sender, final Player recipient, final String message) {
 		getModuleManager().privateMessageLogged(sender, recipient, message);
-		new PrivateChatPacket(sender, recipient, message).send(getSessionManager().getConnection());
 	}
 
 	@Override

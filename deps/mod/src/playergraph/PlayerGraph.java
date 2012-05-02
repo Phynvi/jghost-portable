@@ -11,7 +11,7 @@ import org.whired.ghost.player.RankManager;
 import org.whired.ghostclient.awt.ImageUtil;
 import org.whired.ghostclient.awt.RoundedBorder;
 import org.whired.ghostclient.client.ClientPlayerList;
-import org.whired.ghostclient.client.GhostClientFrame;
+import org.whired.ghostclient.client.LocalGhostFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 import org.whired.ghostclient.client.module.Module;
 import org.whired.graph.Legend;
@@ -36,7 +36,7 @@ public class PlayerGraph extends LineGraph implements Module {
 	}
 
 	@Override
-	public void setFrame(final GhostClientFrame frame) {
+	public void setFrame(final LocalGhostFrame frame) {
 		this.playerList = frame.getPlayerList();
 		this.rankManager = frame.getRankManager();
 	}

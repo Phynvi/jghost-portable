@@ -11,6 +11,11 @@ import org.whired.ghost.net.event.SessionEventListener;
 public class SessionManager {
 	private Connection connection;
 	private final HashSet<SessionEventListener> listeners = new HashSet<SessionEventListener>();
+	private final RemoteGhostFrame remoteFrame;
+
+	public SessionManager() {
+		remoteFrame = new RemoteGhostFrame(this);
+	}
 
 	/**
 	 * Adds an event listener to this session manager
@@ -70,6 +75,14 @@ public class SessionManager {
 	 */
 	public Connection getConnection() {
 		return this.connection;
+	}
+
+	/**
+	 * Gets the current remote frame if one exists
+	 * @return the current {@link org.whired.ghost.net.RemoteGhostFrame} if one exists, otherwise {@code null}
+	 */
+	public RemoteGhostFrame getRemoteFrame() {
+		return this.remoteFrame;
 	}
 
 	/**

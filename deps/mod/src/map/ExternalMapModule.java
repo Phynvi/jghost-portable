@@ -1,10 +1,11 @@
 import java.awt.Component;
 
 import org.whired.ghost.net.packet.GhostPacket;
+import org.whired.ghost.net.packet.PacketListener;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.packet.PlayerMovementPacket;
 import org.whired.ghost.player.Player;
-import org.whired.ghostclient.client.GhostClientFrame;
+import org.whired.ghostclient.client.LocalGhostFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 import org.whired.ghostclient.client.module.Module;
 import org.whired.rsmap.impl.PlayerRSMap;
@@ -27,18 +28,6 @@ public class ExternalMapModule extends PlayerRSMap implements Module {
 		public void playerRemoved(final Player player) {
 			removePlayer(player);
 		}
-
-		@Override
-		public void packetReceived(final GhostPacket packet) {
-			if (packet.getId() == PacketType.PLAYER_MOVEMENT) {
-				final PlayerMovementPacket pmp = (PlayerMovementPacket) packet;
-				final Player p = getPlayer(pmp.playerName);
-				if (p != null) {
-					p.setLocation(pmp.newAbsX, pmp.newAbsY);
-					playerMoved(p);
-				}
-			}
-		}
 	};
 
 	@Override
@@ -52,7 +41,18 @@ public class ExternalMapModule extends PlayerRSMap implements Module {
 	}
 
 	@Override
-	public void setFrame(final GhostClientFrame frame) {
+	public void setFrame(final LocalGhostFrame frame) {
+		frame.getPacketHandler().addPacketListener(PacketType.PLAYER_MOVEMENT, new PacketListener() {
+			@Override
+			public void packetReceived(GhostPacket packet) {
+				final PlayerMovementPacket pmp = (PlayerMovementPacket) packet;
+				final Player p = getPlayer(pmp.playerName);
+				if (p != null) {
+					p.setLocation(pmp.newAbsX, pmp.newAbsY);
+					playerMoved(p);
+				}
+			}
+		});
 	}
 
 	@Override

@@ -15,7 +15,7 @@ import org.whired.ghost.Constants;
 import org.whired.ghost.player.Player;
 import org.whired.ghostclient.awt.GhostScrollBarUI;
 import org.whired.ghostclient.awt.JAutoScrollPane;
-import org.whired.ghostclient.client.GhostClientFrame;
+import org.whired.ghostclient.client.LocalGhostFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 import org.whired.ghostclient.client.impl.LinkEventListener;
 import org.whired.ghostclient.client.impl.LinkingJTextPane;
@@ -27,7 +27,7 @@ import org.whired.ghostclient.client.module.Module;
  */
 public class PublicChatModule extends LinkingJTextPane implements Module {
 
-	private GhostClientFrame frame;
+	private LocalGhostFrame frame;
 	private final JAutoScrollPane scrollPane = new JAutoScrollPane();
 
 	private final LinkEventListener linkListener = new LinkEventListener() {
@@ -98,7 +98,7 @@ public class PublicChatModule extends LinkingJTextPane implements Module {
 	}
 
 	@Override
-	public void setFrame(final GhostClientFrame frame) {
+	public void setFrame(final LocalGhostFrame frame) {
 		this.frame = frame;
 	}
 

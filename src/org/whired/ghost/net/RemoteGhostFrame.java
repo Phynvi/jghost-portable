@@ -1,15 +1,14 @@
-package org.whired.ghostserver.server;
+package org.whired.ghost.net;
 
 import java.util.logging.Level;
 
 import org.whired.ghost.Constants;
-import org.whired.ghost.net.Connection;
-import org.whired.ghost.net.GhostFrame;
 import org.whired.ghost.net.packet.DebugPacket;
 import org.whired.ghost.net.packet.PrivateChatPacket;
 import org.whired.ghost.net.packet.PublicChatPacket;
 import org.whired.ghost.player.Player;
 import org.whired.ghost.player.PlayerList;
+import org.whired.ghostserver.server.RemotePlayerList;
 
 /**
  * Provides access to the client from the server
@@ -19,8 +18,8 @@ public class RemoteGhostFrame extends GhostFrame {
 
 	private final PlayerList playerList = new RemotePlayerList(this);
 
-	public RemoteGhostFrame(final Connection connection) {
-		getSessionManager().setConnection(connection);
+	public RemoteGhostFrame(final SessionManager manager) {
+		super(manager);
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package org.whired.ghostclient.client.module;
 import java.awt.Component;
 import java.io.Serializable;
 
-import org.whired.ghostclient.client.GhostClientFrame;
+import org.whired.ghostclient.client.LocalGhostFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 
 /**
@@ -27,7 +27,7 @@ public interface Module extends Serializable {
 	/**
 	 * Invoked when the frame that uses this module is adding it; implementing module should save {@code frame} as a reference
 	 */
-	public void setFrame(GhostClientFrame frame);
+	public void setFrame(LocalGhostFrame frame);
 
 	/**
 	 * Gets the event listener for this module, can be {@code null}

@@ -6,10 +6,10 @@ import org.whired.ghost.Constants;
 import org.whired.ghost.net.Connection;
 
 /**
- * The layout a standard packet
+ * A standard packet
  * @author Whired
  */
-public class GhostPacket {
+public abstract class GhostPacket {
 
 	/**
 	 * The ID of this packet
@@ -18,7 +18,7 @@ public class GhostPacket {
 	/**
 	 * Whether or not this packet has been received
 	 */
-	private boolean isReceived;
+	boolean isReceived;
 	/**
 	 * The receivable action
 	 */
