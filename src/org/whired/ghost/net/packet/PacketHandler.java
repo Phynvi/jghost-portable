@@ -31,6 +31,15 @@ public class PacketHandler {
 	}
 
 	/**
+	 * Registers a packet
+	 * @param packet the packet to register
+	 */
+	public void registerPacket(final GhostPacket packet) {
+		Constants.getLogger().info("Registering packet " + packet.getId());
+		packets.put(packet.getId(), packet);
+	}
+
+	/**
 	 * Registers all of the given packets
 	 * @param packets the packets to register
 	 */

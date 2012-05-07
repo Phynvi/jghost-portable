@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.WrappedInputStream;
 import org.whired.ghost.net.WrappedOutputStream;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 
 /**
  * @author Whired
@@ -23,7 +23,7 @@ public class PublicChatPacket extends GhostChatPacket {
 			public boolean onTransmit(final Connection connection) {
 				try {
 					final WrappedInputStream is = connection.getInputStream();
-					PublicChatPacket.this.sender = new Player(is.readString(), is.readByte());
+					PublicChatPacket.this.sender = new GhostPlayer(is.readString(), is.readByte());
 					PublicChatPacket.this.message = is.readString();
 					return true;
 				}
@@ -39,7 +39,7 @@ public class PublicChatPacket extends GhostChatPacket {
 	 * @param sender the player that sent the message
 	 * @param message the message that was sent
 	 */
-	public PublicChatPacket(final Player sender, final String message) {
+	public PublicChatPacket(final GhostPlayer sender, final String message) {
 		super(PacketType.PUBLIC_CHAT);
 		this.sender = sender;
 		this.message = message;
@@ -67,7 +67,7 @@ public class PublicChatPacket extends GhostChatPacket {
 	 * @param packedMessage the packed message that was sent
 	 * @param packedSize the packed size of the message that was sent
 	 */
-	public PublicChatPacket(final Player sender, final byte[] packedMessage, final int packedSize) {
+	public PublicChatPacket(final GhostPlayer sender, final byte[] packedMessage, final int packedSize) {
 		this(sender, getUnpackedMessage(packedMessage, packedSize));
 	}
 }

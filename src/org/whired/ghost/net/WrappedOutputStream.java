@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 import org.whired.ghost.Constants;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.util.JTF16Charset;
 
 /**
@@ -99,7 +99,7 @@ public class WrappedOutputStream {
 	 * Writes a player to this stream
 	 * @param plr they player to write
 	 */
-	public void writePlayer(final Player plr) throws IOException {
+	public void writePlayer(final GhostPlayer plr) throws IOException {
 		writeString(plr.getName());
 		writeByte(plr.getRights());
 	}
@@ -108,9 +108,9 @@ public class WrappedOutputStream {
 	 * Writes an array of players to this stream
 	 * @param plrs the players to write
 	 */
-	public void writePlayers(final Player[] plrs) throws IOException {
+	public void writePlayers(final GhostPlayer[] plrs) throws IOException {
 		writeShort(plrs.length);
-		for (final Player p : plrs) {
+		for (final GhostPlayer p : plrs) {
 			writePlayer(p);
 		}
 	}

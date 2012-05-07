@@ -15,9 +15,10 @@ import org.whired.ghost.net.packet.PacketListener;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.packet.PlayerConnectionPacket;
 import org.whired.ghost.net.packet.PlayerListUpdatePacket;
+import org.whired.ghost.net.packet.PlayerMovementPacket;
 import org.whired.ghost.net.packet.PrivateChatPacket;
 import org.whired.ghost.net.packet.PublicChatPacket;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.player.RankManager;
 import org.whired.ghostclient.client.command.CommandMalformedException;
 import org.whired.ghostclient.client.command.CommandManager;
@@ -27,7 +28,7 @@ import org.whired.ghostclient.client.module.ModuleManager;
 import org.whired.ghostclient.client.user.GhostUser;
 
 /**
- * A client ghost frame
+ * A local ghost frame
  * @author Whired
  */
 public abstract class LocalGhostFrame extends GhostFrame implements GhostClient {
@@ -43,36 +44,38 @@ public abstract class LocalGhostFrame extends GhostFrame implements GhostClient 
 	private GhostUser ghostUser;
 	private final ClientPlayerList playerList = new ClientPlayerList(this) {
 
-		HashSet<Player> players = new HashSet<Player>();
+		HashSet<GhostPlayer> players = new HashSet<GhostPlayer>();
 
 		@Override
-		public synchronized void playerAdded(final Player player) {
-			view.playerAdded(player);
-			moduleManager.playerAdded(player);
-			players.add(player);
+		public synchronized void playerAdded(final GhostPlayer player) {
+			if (players.add(player)) {
+				view.playerAdded(player);
+				moduleManager.playerAdded(player);
+			}
 		}
 
 		@Override
-		public synchronized void playerRemoved(final Player player) {
-			view.playerRemoved(player);
-			moduleManager.playerRemoved(player);
-			players.remove(player);
+		public synchronized void playerRemoved(final GhostPlayer player) {
+			if (players.remove(player)) {
+				view.playerRemoved(player);
+				moduleManager.playerRemoved(player);
+			}
 		}
 
 		@Override
-		public synchronized Player[] getPlayers() {
-			return this.players.toArray(new Player[players.size()]);
+		public synchronized GhostPlayer[] getPlayers() {
+			return this.players.toArray(new GhostPlayer[players.size()]);
 		}
 
 		@Override
-		public void playerSelected(final Player player) {
+		public void playerSelected(final GhostPlayer player) {
 			moduleManager.playerSelected(player);
 		}
 
 		@Override
 		public synchronized void removeAll() {
-			final Iterator<Player> it = players.iterator();
-			Player next;
+			final Iterator<GhostPlayer> it = players.iterator();
+			GhostPlayer next;
 			while (it.hasNext()) {
 				next = it.next();
 				view.playerRemoved(next);
@@ -195,7 +198,7 @@ public abstract class LocalGhostFrame extends GhostFrame implements GhostClient 
 			@Override
 			public void packetReceived(GhostPacket packet) {
 				final PlayerListUpdatePacket plp = (PlayerListUpdatePacket) packet;
-				for (final Player p : plp.onlinePlayers) {
+				for (final GhostPlayer p : plp.onlinePlayers) {
 					getPlayerList().addPlayer(p);
 				}
 			}
@@ -233,6 +236,7 @@ public abstract class LocalGhostFrame extends GhostFrame implements GhostClient 
 				Constants.getLogger().log(Level.parse(Integer.toString(dpacket.level)), "[REMOTE] " + dpacket.message);
 			}
 		});
+		packetHandler.registerPacket(new PlayerMovementPacket());
 	}
 
 	/**

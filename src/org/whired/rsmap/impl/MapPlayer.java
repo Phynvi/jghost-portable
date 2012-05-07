@@ -4,12 +4,12 @@ import java.awt.Point;
 import java.util.LinkedList;
 
 import org.whired.ghost.math.GhostMath;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 
 /**
  * @author Whired
  */
-public class MapPlayer extends Player {
+public class MapPlayer extends GhostPlayer {
 
 	private int threshold = 20;
 	private final LinkedList<Point> locations = new LinkedList<Point>();
@@ -55,11 +55,11 @@ public class MapPlayer extends Player {
 		addLocation(getLocation());
 	}
 
-	public static MapPlayer fromPlayer(final Player from, final int maxMoves) {
+	public static MapPlayer fromPlayer(final GhostPlayer from, final int maxMoves) {
 		return new MapPlayer(from.getName(), from.getRights(), from.getLocation().x, from.getLocation().y, maxMoves);
 	}
 
-	public static MapPlayer fromPlayer(final Player from) {
+	public static MapPlayer fromPlayer(final GhostPlayer from) {
 		return new MapPlayer(from.getName(), from.getRights(), from.getLocation().x, from.getLocation().y, 20);
 	}
 }

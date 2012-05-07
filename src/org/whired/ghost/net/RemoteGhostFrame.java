@@ -6,7 +6,7 @@ import org.whired.ghost.Constants;
 import org.whired.ghost.net.packet.DebugPacket;
 import org.whired.ghost.net.packet.PrivateChatPacket;
 import org.whired.ghost.net.packet.PublicChatPacket;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.player.PlayerList;
 import org.whired.ghost.player.RemotePlayerList;
 
@@ -23,14 +23,14 @@ public class RemoteGhostFrame extends GhostFrame {
 	}
 
 	@Override
-	public void displayPublicChat(final Player sender, final String message) {
+	public void displayPublicChat(final GhostPlayer sender, final String message) {
 		if (!new PublicChatPacket(sender, message).send(getSessionManager().getConnection())) {
 			Constants.getLogger().warning("Chat not sent");
 		}
 	}
 
 	@Override
-	public void displayPrivateChat(final Player sender, final Player recipient, final String message) {
+	public void displayPrivateChat(final GhostPlayer sender, final GhostPlayer recipient, final String message) {
 		if (!new PrivateChatPacket(sender, recipient, message).send(getSessionManager().getConnection())) {
 			Constants.getLogger().warning("Chat not sent");
 		}

@@ -5,7 +5,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 
-import org.whired.ghost.player.Player;
+import org.whired.ghost.net.SessionManager;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.player.Rank;
 import org.whired.ghost.player.RankManager;
 import org.whired.ghostclient.awt.ImageUtil;
@@ -24,6 +25,7 @@ public class PlayerGraph extends LineGraph implements Module {
 	private final HashMap<Rank, Integer> counts = new HashMap<Rank, Integer>();
 	private ClientPlayerList playerList;
 	private RankManager rankManager;
+	private SessionManager sessionManager;
 
 	@Override
 	public String getModuleName() {
@@ -39,6 +41,7 @@ public class PlayerGraph extends LineGraph implements Module {
 	public void setFrame(final LocalGhostFrame frame) {
 		this.playerList = frame.getPlayerList();
 		this.rankManager = frame.getRankManager();
+		this.sessionManager = frame.getSessionManager();
 	}
 
 	@Override
@@ -76,7 +79,9 @@ public class PlayerGraph extends LineGraph implements Module {
 			@Override
 			public void run() {
 				while (true) {
-					updateGraph();
+					if (sessionManager.sessionIsOpen()) {
+						updateGraph();
+					}
 					try {
 						Thread.sleep(1000 * 60 * 60);
 					}
@@ -94,7 +99,7 @@ public class PlayerGraph extends LineGraph implements Module {
 		}
 
 		// Recount
-		for (final Player p : playerList.getPlayers()) {
+		for (final GhostPlayer p : playerList.getPlayers()) {
 			final Rank r = rankManager.rankForLevel(p.getRights());
 			final Integer oldCt = counts.get(r);
 			counts.put(r, oldCt + 1);

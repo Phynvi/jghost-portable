@@ -1,6 +1,6 @@
 package org.whired.ghostclient.client.event;
 
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.player.event.PlayerListEventListener;
 
 /**
@@ -13,12 +13,12 @@ public interface GhostEventListener extends PlayerListEventListener {
 	 * @param to the receiving player
 	 * @param message the message that was logged
 	 */
-	public void privateMessageLogged(Player from, Player to, String message);
+	public void privateMessageLogged(GhostPlayer from, GhostPlayer to, String message);
 
 	/**
 	 * Invoked when a public message is logged
 	 * @param from the sending player
 	 * @param message the message that was logged
 	 */
-	public void publicMessageLogged(Player from, String message);
+	public void publicMessageLogged(GhostPlayer from, String message);
 }

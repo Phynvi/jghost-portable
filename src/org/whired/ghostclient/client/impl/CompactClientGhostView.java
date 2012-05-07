@@ -49,7 +49,7 @@ import javax.swing.event.ListDataListener;
 
 import org.whired.ghost.Constants;
 import org.whired.ghost.net.packet.ModeratePacket;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.player.Rank;
 import org.whired.ghostclient.awt.ConnectDialog;
 import org.whired.ghostclient.awt.GhostContextMenu;
@@ -318,10 +318,10 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 
 					@Override
 					public Component getListCellRendererComponent(final JList list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
-						final Player player;
+						final GhostPlayer player;
 						final Rank playerRank;
-						if (value instanceof Player) {
-							player = (Player) value;
+						if (value instanceof GhostPlayer) {
+							player = (GhostPlayer) value;
 							playerRank = model.getRankManager().rankForLevel(player.getRights());
 						}
 						else {
@@ -363,7 +363,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 								if (x != null) {
 									if (e.getClickCount() == 1) {
 
-										model.getPlayerList().playerSelected((Player) x);
+										model.getPlayerList().playerSelected((GhostPlayer) x);
 									}
 									else if (e.getClickCount() == 2) {
 										textInput.setText("/pm " + x + " ");
@@ -381,7 +381,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 								idx = compPlayerList.locationToIndex(e.getPoint());
 								if (idx != -1) {
 									compPlayerList.setSelectedIndex(idx);
-									model.getPlayerList().playerSelected((Player) compPlayerList.getSelectedValue());
+									model.getPlayerList().playerSelected((GhostPlayer) compPlayerList.getSelectedValue());
 									mnuPlayerList.show(compPlayerList, e.getPoint().x, e.getPoint().y);
 								}
 							break;
@@ -652,7 +652,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 	}
 
 	@Override
-	public void playerAdded(final Player player) {
+	public void playerAdded(final GhostPlayer player) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -662,7 +662,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 	}
 
 	@Override
-	public void playerRemoved(final Player player) {
+	public void playerRemoved(final GhostPlayer player) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {

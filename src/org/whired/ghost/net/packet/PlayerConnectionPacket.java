@@ -5,15 +5,15 @@ import java.io.IOException;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.WrappedInputStream;
 import org.whired.ghost.net.WrappedOutputStream;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 
 public class PlayerConnectionPacket extends GhostPacket {
 	public static final int CONNECTING = 1;
 	public static final int DISCONNECTING = 0;
 	public int connectionType;
-	public Player player;
+	public GhostPlayer player;
 
-	public PlayerConnectionPacket(final Player player, final int connectionType) {
+	public PlayerConnectionPacket(final GhostPlayer player, final int connectionType) {
 		super(PacketType.PLAYER_CONNECTION);
 		this.connectionType = connectionType;
 		this.player = player;
@@ -42,7 +42,7 @@ public class PlayerConnectionPacket extends GhostPacket {
 			public boolean onTransmit(final Connection connection) {
 				try {
 					final WrappedInputStream is = connection.getInputStream();
-					PlayerConnectionPacket.this.player = new Player(is.readString(), is.readByte());
+					PlayerConnectionPacket.this.player = new GhostPlayer(is.readString(), is.readByte());
 					PlayerConnectionPacket.this.connectionType = is.readByte();
 					return true;
 				}

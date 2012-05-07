@@ -50,7 +50,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import org.whired.ghost.Constants;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.player.Rank;
 import org.whired.ghostclient.awt.GhostTabbedPane;
 import org.whired.ghostclient.awt.JRoundedButton;
@@ -300,7 +300,7 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 				final Object x = playerListComponent.getSelectedValue();
 				if (e.getClickCount() == 1) {
 					if (x != null) {
-						controller.getPlayerList().playerSelected((Player) x);
+						controller.getPlayerList().playerSelected((GhostPlayer) x);
 					}
 				}
 				else if (e.getClickCount() == 2) {
@@ -314,10 +314,10 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 
 			@Override
 			public Component getListCellRendererComponent(final JList list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
-				final Player player;
+				final GhostPlayer player;
 				final Rank playerRank;
-				if (value instanceof Player) {
-					player = (Player) value;
+				if (value instanceof GhostPlayer) {
+					player = (GhostPlayer) value;
 					playerRank = controller.getRankManager().rankForLevel(player.getRights());
 				}
 				else {
@@ -685,12 +685,12 @@ public class DefaultClientGhostView extends JFrame implements GhostClientView {
 	}
 
 	@Override
-	public void playerAdded(final Player player) {
+	public void playerAdded(final GhostPlayer player) {
 		this.playerListModel.addElement(player);
 	}
 
 	@Override
-	public void playerRemoved(final Player player) {
+	public void playerRemoved(final GhostPlayer player) {
 		this.playerListModel.removeElement(player);
 	}
 }

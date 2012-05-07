@@ -190,9 +190,6 @@ public class LinkingJTextPane extends JTextPane {
 			final int firstOffs = Utilities.getWordStart(this, inOffs);
 			final int lastOffs = Utilities.getWordEnd(this, firstOffs);
 			word = getStyledDocument().getText(firstOffs, lastOffs - firstOffs);
-			if (!caseSensitive) {
-				word = word.toLowerCase();
-			}
 			if (word.length() > 0 && this.matches.contains(word)) {
 				if (curOffs[0] != firstOffs || curOffs[1] != lastOffs) {
 					clearUnderlines();

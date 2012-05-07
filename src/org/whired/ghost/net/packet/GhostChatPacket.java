@@ -2,7 +2,7 @@ package org.whired.ghost.net.packet;
 
 import java.util.ArrayList;
 
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 
 /**
  * A typical chat packet
@@ -13,7 +13,7 @@ public abstract class GhostChatPacket extends GhostPacket {
 	/**
 	 * The sender
 	 */
-	public Player sender;
+	public GhostPlayer sender;
 	/**
 	 * The message
 	 */

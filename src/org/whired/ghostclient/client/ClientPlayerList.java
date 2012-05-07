@@ -1,7 +1,7 @@
 package org.whired.ghostclient.client;
 
 import org.whired.ghost.net.GhostFrame;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.player.PlayerList;
 
 /**
@@ -17,7 +17,7 @@ public abstract class ClientPlayerList extends PlayerList {
 	 * Invoked when a player on this list is selected
 	 * @param player the player that was selected
 	 */
-	public abstract void playerSelected(Player player);
+	public abstract void playerSelected(GhostPlayer player);
 
 	/**
 	 * Removes all players from this list

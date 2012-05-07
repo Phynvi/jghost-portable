@@ -5,7 +5,7 @@ import java.awt.Point;
 import java.util.HashMap;
 
 import org.whired.ghost.math.GhostMath;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.rsmap.ui.MapButton;
 import org.whired.rsmap.ui.RSMap;
 
@@ -19,28 +19,29 @@ public class PlayerRSMap extends RSMap {
 	private boolean showNames = false;
 	private MapPlayer selectedPlayer = null;
 
-	public MapPlayer addPlayer(final Player player) {
+	public MapPlayer addPlayer(final GhostPlayer player) {
 		final MapPlayer wrapped = MapPlayer.fromPlayer(player, 200);
 		players.put(player.getName(), wrapped);
 		repaint();
 		return wrapped;
 	}
 
-	public void removePlayer(final Player player) {
+	public void removePlayer(final GhostPlayer player) {
 		players.remove(player.getName());
 		repaint();
 	}
 
-	public Player getPlayer(final String name) {
+	public GhostPlayer getPlayer(final String name) {
 		return players.get(name);
 	}
 
-	public void playerMoved(final Player player) {
+	public void playerMoved(final GhostPlayer player) {
 		players.get(player.getName()).addLocation(player.getLocation());
+		repaint();
 	}
 
 	private void addButtons() {
-		final MapButton mb = new MapButton("Players", 44, PlayerRSMap.super.getHeight() - 14 - 2, 40, 14, 0xBEC7E8, 0x6382BF) {
+		final MapButton mb = new MapButton("Mode", 44, PlayerRSMap.super.getHeight() - 14 - 2, 40, 14, 0xBEC7E8, 0x6382BF) {
 
 			int mode = 0;
 

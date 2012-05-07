@@ -4,7 +4,7 @@ import java.util.logging.Level;
 
 import org.whired.ghost.Constants;
 import org.whired.ghost.net.Connection;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.player.Rank;
 import org.whired.ghostclient.client.command.Command;
 import org.whired.ghostclient.client.impl.DefaultController;
@@ -75,14 +75,14 @@ public class Main {
 					message += args[i] + " ";
 				}
 				int rights = 0;
-				for (final Player p : client.getModel().getPlayerList().getPlayers()) {
+				for (final GhostPlayer p : client.getModel().getPlayerList().getPlayers()) {
 					if (p.getName().equals(args[0])) {
 						rights = p.getRights();
 						break;
 					}
 				}
-				Player sender = client.getModel().getUser().getSettings().getPlayer();
-				Player recipient = new Player(args[0], rights);
+				GhostPlayer sender = client.getModel().getUser().getSettings().getPlayer();
+				GhostPlayer recipient = new GhostPlayer(args[0], rights);
 				client.getModel().displayPrivateChat(sender, recipient, message);
 				client.getModel().getSessionManager().getRemoteFrame().displayPrivateChat(sender, recipient, message);
 				return true;
@@ -110,7 +110,7 @@ public class Main {
 		}, new Command("whoami") {
 			@Override
 			public boolean handle(final String[] args) {
-				final Player p = client.getModel().getUser().getSettings().getPlayer();
+				final GhostPlayer p = client.getModel().getUser().getSettings().getPlayer();
 				Constants.getLogger().info("You are " + client.getModel().getRankManager().rankForLevel(p.getRights()).getTitle() + " " + p.getName());
 				return true;
 			}
@@ -123,7 +123,7 @@ public class Main {
 		}, new Command("addplayer", 2) {
 			@Override
 			public boolean handle(String[] args) {
-				client.getModel().getPlayerList().addPlayer(new Player(args[0], Integer.parseInt(args[1])));
+				client.getModel().getPlayerList().addPlayer(new GhostPlayer(args[0], Integer.parseInt(args[1])));
 				return true;
 			}
 		}, new Command("connect", 0) {

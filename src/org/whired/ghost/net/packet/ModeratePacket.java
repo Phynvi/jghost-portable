@@ -28,7 +28,7 @@ public class ModeratePacket extends GhostPacket {
 				try {
 					final WrappedInputStream is = connection.getInputStream();
 					playerName = is.readString();
-					operation = is.readInt();
+					operation = is.readByte();
 					return true;
 				}
 				catch (final IOException e) {

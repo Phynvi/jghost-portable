@@ -3,11 +3,11 @@ package org.whired.ghost.net.packet;
 import java.io.IOException;
 
 import org.whired.ghost.net.Connection;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 
 public class PlayerListUpdatePacket extends GhostPacket {
 
-	public Player[] onlinePlayers;
+	public GhostPlayer[] onlinePlayers;
 
 	public PlayerListUpdatePacket() {
 		super(PacketType.UPDATE_PLAYER_LIST);
@@ -25,7 +25,7 @@ public class PlayerListUpdatePacket extends GhostPacket {
 		});
 	}
 
-	public PlayerListUpdatePacket(final Player[] onlinePlayers) {
+	public PlayerListUpdatePacket(final GhostPlayer[] onlinePlayers) {
 		super(PacketType.UPDATE_PLAYER_LIST);
 		this.setSendAction(new TransmitAction() {
 			@Override

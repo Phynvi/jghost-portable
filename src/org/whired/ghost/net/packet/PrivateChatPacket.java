@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.whired.ghost.net.Connection;
 import org.whired.ghost.net.WrappedInputStream;
 import org.whired.ghost.net.WrappedOutputStream;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 
 /**
  * Represents a private chat packet
@@ -16,7 +16,7 @@ public class PrivateChatPacket extends GhostChatPacket {
 	/**
 	 * The recipient
 	 */
-	public Player recipient;
+	public GhostPlayer recipient;
 
 	/**
 	 * Creates a new private chat packet to be received
@@ -29,8 +29,8 @@ public class PrivateChatPacket extends GhostChatPacket {
 			public boolean onTransmit(final Connection connection) {
 				try {
 					final WrappedInputStream is = connection.getInputStream();
-					PrivateChatPacket.this.sender = new Player(is.readString(), is.readByte());
-					PrivateChatPacket.this.recipient = new Player(is.readString(), is.readByte());
+					PrivateChatPacket.this.sender = new GhostPlayer(is.readString(), is.readByte());
+					PrivateChatPacket.this.recipient = new GhostPlayer(is.readString(), is.readByte());
 					PrivateChatPacket.this.message = is.readString();
 					return true;
 				}
@@ -41,7 +41,7 @@ public class PrivateChatPacket extends GhostChatPacket {
 		});
 	}
 
-	public PrivateChatPacket(final Player sender, final Player recipient, final String message) {
+	public PrivateChatPacket(final GhostPlayer sender, final GhostPlayer recipient, final String message) {
 		super(PacketType.PRIVATE_CHAT);
 		this.sender = sender;
 		this.recipient = recipient;
@@ -66,7 +66,7 @@ public class PrivateChatPacket extends GhostChatPacket {
 		});
 	}
 
-	public PrivateChatPacket(final Player sender, final Player recipient, final byte[] chatText, final int chatTextSize) {
+	public PrivateChatPacket(final GhostPlayer sender, final GhostPlayer recipient, final byte[] chatText, final int chatTextSize) {
 		this(sender, recipient, getUnpackedMessage(chatText, chatTextSize));
 	}
 }

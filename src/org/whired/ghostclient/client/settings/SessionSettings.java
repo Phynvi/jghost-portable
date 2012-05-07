@@ -2,17 +2,17 @@ package org.whired.ghostclient.client.settings;
 
 import java.io.Serializable;
 
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 
 public class SessionSettings implements Serializable {
 
 	public String[] defaultConnect = new String[3];
 	public boolean debugOn = false;
-	private final Player player;
+	private final GhostPlayer player;
 	private String[] tabOrder = new String[0];
 	private final int idInTable;
 
-	public SessionSettings(final Player player, final int databaseId) {
+	public SessionSettings(final GhostPlayer player, final int databaseId) {
 		this.idInTable = databaseId;
 		this.player = player;
 	}
@@ -21,7 +21,7 @@ public class SessionSettings implements Serializable {
 	 * Gets the player representation of this user
 	 * @return the player for this user
 	 */
-	public Player getPlayer() {
+	public GhostPlayer getPlayer() {
 		return this.player;
 	}
 

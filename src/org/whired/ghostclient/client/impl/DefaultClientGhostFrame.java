@@ -4,7 +4,7 @@ import java.util.logging.Level;
 
 import org.whired.ghost.Constants;
 import org.whired.ghost.net.packet.ModeratePacket;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.player.RankManager;
 import org.whired.ghostclient.client.GhostClientView;
 import org.whired.ghostclient.client.LocalGhostFrame;
@@ -26,12 +26,12 @@ public class DefaultClientGhostFrame extends LocalGhostFrame {
 	}
 
 	@Override
-	public void displayPublicChat(final Player sender, final String message) {
+	public void displayPublicChat(final GhostPlayer sender, final String message) {
 		getModuleManager().publicMessageLogged(sender, message);
 	}
 
 	@Override
-	public void displayPrivateChat(final Player sender, final Player recipient, final String message) {
+	public void displayPrivateChat(final GhostPlayer sender, final GhostPlayer recipient, final String message) {
 		getModuleManager().privateMessageLogged(sender, recipient, message);
 	}
 
@@ -61,7 +61,7 @@ public class DefaultClientGhostFrame extends LocalGhostFrame {
 	}
 
 	@Override
-	public Player getUserPlayer() {
+	public GhostPlayer getUserPlayer() {
 		return getUser().getSettings().getPlayer();
 	}
 

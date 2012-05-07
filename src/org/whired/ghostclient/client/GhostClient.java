@@ -2,7 +2,7 @@ package org.whired.ghostclient.client;
 
 import org.whired.ghost.net.AbstractClient;
 import org.whired.ghost.net.SessionManager;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.player.RankManager;
 import org.whired.ghostclient.client.settings.SessionSettings;
 
@@ -33,7 +33,7 @@ public interface GhostClient extends AbstractClient {
 	 * Gets the player for the current user
 	 * @return the player
 	 */
-	Player getUserPlayer();
+	GhostPlayer getUserPlayer();
 
 	/**
 	 * Saves the settings for this session

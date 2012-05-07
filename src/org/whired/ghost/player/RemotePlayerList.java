@@ -14,17 +14,17 @@ public class RemotePlayerList extends PlayerList {
 	}
 
 	@Override
-	public void playerAdded(final Player player) {
+	public void playerAdded(final GhostPlayer player) {
 		new PlayerConnectionPacket(player, PlayerConnectionPacket.CONNECTING).send(getFrame().getSessionManager().getConnection());
 	}
 
 	@Override
-	public void playerRemoved(final Player player) {
+	public void playerRemoved(final GhostPlayer player) {
 		new PlayerConnectionPacket(player, PlayerConnectionPacket.DISCONNECTING).send(getFrame().getSessionManager().getConnection());
 	}
 
 	@Override
-	public Player[] getPlayers() {
+	public GhostPlayer[] getPlayers() {
 		throw new UnsupportedOperationException("Remote not supported yet.");// TODO
 	}
 }

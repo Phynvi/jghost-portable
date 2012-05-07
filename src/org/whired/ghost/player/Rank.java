@@ -3,7 +3,7 @@ package org.whired.ghost.player;
 import javax.swing.Icon;
 
 /**
- * A rank for {@link org.whired.ghost.net.model.player.Player}s
+ * A rank for {@link org.whired.ghost.net.GhostPlayer.player.Player}s
  * @author Whired
  */
 public class Rank implements DefaultRightsConstants {

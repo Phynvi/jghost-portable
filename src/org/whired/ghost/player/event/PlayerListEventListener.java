@@ -1,6 +1,6 @@
 package org.whired.ghost.player.event;
 
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 
 /**
  * Listens for events pertaining to the player list
@@ -11,11 +11,11 @@ public interface PlayerListEventListener {
 	 * Invoked when a player is added to the list
 	 * @param player the player that was added
 	 */
-	public void playerAdded(Player player);
+	public void playerAdded(GhostPlayer player);
 
 	/**
 	 * Invoked when a player is removed from the list
 	 * @param player the player that was removed
 	 */
-	public void playerRemoved(Player player);
+	public void playerRemoved(GhostPlayer player);
 }

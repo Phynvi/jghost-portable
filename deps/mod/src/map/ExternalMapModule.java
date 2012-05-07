@@ -4,7 +4,7 @@ import org.whired.ghost.net.packet.GhostPacket;
 import org.whired.ghost.net.packet.PacketListener;
 import org.whired.ghost.net.packet.PacketType;
 import org.whired.ghost.net.packet.PlayerMovementPacket;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghostclient.client.LocalGhostFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 import org.whired.ghostclient.client.module.Module;
@@ -20,12 +20,12 @@ public class ExternalMapModule extends PlayerRSMap implements Module {
 	private final GhostEventAdapter adapter = new GhostEventAdapter() {
 
 		@Override
-		public void playerAdded(final Player player) {
+		public void playerAdded(final GhostPlayer player) {
 			addPlayer(player);
 		}
 
 		@Override
-		public void playerRemoved(final Player player) {
+		public void playerRemoved(final GhostPlayer player) {
 			removePlayer(player);
 		}
 	};
@@ -46,7 +46,7 @@ public class ExternalMapModule extends PlayerRSMap implements Module {
 			@Override
 			public void packetReceived(GhostPacket packet) {
 				final PlayerMovementPacket pmp = (PlayerMovementPacket) packet;
-				final Player p = getPlayer(pmp.playerName);
+				final GhostPlayer p = getPlayer(pmp.playerName);
 				if (p != null) {
 					p.setLocation(pmp.newAbsX, pmp.newAbsY);
 					playerMoved(p);

@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import javax.swing.SwingUtilities;
 
 import org.whired.ghost.Constants;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghostclient.client.LocalGhostFrame;
 import org.whired.ghostclient.client.event.GhostEventAdapter;
 
@@ -92,7 +92,7 @@ public class ModuleManager extends GhostEventAdapter {
 	}
 
 	@Override
-	public void playerAdded(final Player player) {
+	public void playerAdded(final GhostPlayer player) {
 		for (final Module m : modules) {
 			final GhostEventAdapter a = m.getEventListener();
 			if (a != null) {
@@ -102,7 +102,7 @@ public class ModuleManager extends GhostEventAdapter {
 	}
 
 	@Override
-	public void playerRemoved(final Player player) {
+	public void playerRemoved(final GhostPlayer player) {
 		for (final Module m : modules) {
 			final GhostEventAdapter a = m.getEventListener();
 			if (a != null) {
@@ -112,7 +112,7 @@ public class ModuleManager extends GhostEventAdapter {
 	}
 
 	@Override
-	public void privateMessageLogged(final Player from, final Player to, final String message) {
+	public void privateMessageLogged(final GhostPlayer from, final GhostPlayer to, final String message) {
 		for (final Module m : modules) {
 			final GhostEventAdapter a = m.getEventListener();
 			if (a != null) {
@@ -122,7 +122,7 @@ public class ModuleManager extends GhostEventAdapter {
 	}
 
 	@Override
-	public void publicMessageLogged(final Player from, final String message) {
+	public void publicMessageLogged(final GhostPlayer from, final String message) {
 		for (final Module m : modules) {
 			final GhostEventAdapter a = m.getEventListener();
 			if (a != null) {

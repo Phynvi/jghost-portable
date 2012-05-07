@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.util.JTF16Charset;
 
 /**
@@ -96,16 +96,16 @@ public class WrappedInputStream {
 	 * Reads a player from this stream
 	 * @return the player that was read
 	 */
-	public Player readPlayer() throws IOException {
-		return new Player(readString(), readByte());
+	public GhostPlayer readPlayer() throws IOException {
+		return new GhostPlayer(readString(), readByte());
 	}
 
 	/**
 	 * Reads a collection of players from this stream
 	 * @return the players that were read
 	 */
-	public Player[] readPlayers() throws IOException {
-		final Player[] plrs = new Player[readShort()];
+	public GhostPlayer[] readPlayers() throws IOException {
+		final GhostPlayer[] plrs = new GhostPlayer[readShort()];
 		for (int i = 0; i < plrs.length; i++) {
 			plrs[i] = readPlayer();
 		}

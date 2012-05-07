@@ -91,7 +91,6 @@ public class Server implements Runnable {
 	public void run() {
 		while (true) {
 			try {
-				System.out.println("Waiting for GHOST connection");
 				final Socket s = this.ssock.accept();
 				final InetAddress address = s.getInetAddress();
 				s.setSoTimeout(400);
@@ -107,6 +106,7 @@ public class Server implements Runnable {
 					System.out.println("Connection is throttling!");
 					s.getOutputStream().write(0);
 					s.shutdownOutput();
+					s.close();
 				}
 			}
 			catch (final IOException ioe) {

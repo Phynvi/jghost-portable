@@ -11,7 +11,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import org.whired.ghost.Constants;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghostclient.awt.GhostScrollBarUI;
 import org.whired.ghostclient.awt.JAutoScrollPane;
 import org.whired.ghostclient.awt.LinkEventListener;
@@ -35,17 +35,17 @@ public class PrivateChatModule extends LinkingJTextPane implements Module {
 	private final GhostEventAdapter ghostEventListener = new GhostEventAdapter() {
 
 		@Override
-		public void playerAdded(final Player player) {
+		public void playerAdded(final GhostPlayer player) {
 			addMatch(player.getName());
 		}
 
 		@Override
-		public void playerRemoved(final Player player) {
+		public void playerRemoved(final GhostPlayer player) {
 			removeMatch(player.getName());
 		}
 
 		@Override
-		public void privateMessageLogged(final Player from, final Player to, final String message) {
+		public void privateMessageLogged(final GhostPlayer from, final GhostPlayer to, final String message) {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {

@@ -3,7 +3,7 @@ package org.whired.ghostclient.client.settings;
 import java.util.logging.Level;
 
 import org.whired.ghost.Constants;
-import org.whired.ghost.player.Player;
+import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghostclient.io.sql.Column;
 import org.whired.ghostclient.io.sql.Database;
 import org.whired.ghostclient.io.sql.Table;
@@ -36,7 +36,7 @@ public class SettingsFactory {
 			final String userId = "0"; // TODO Remove later
 			if (user.getRowCount() > 0) {
 				Object[] val = user.selectRow("userId", userId);
-				final Player player = new Player((String) val[1], (Integer) val[3]);
+				final GhostPlayer player = new GhostPlayer((String) val[1], (Integer) val[3]);
 				final SessionSettings settings = new SessionSettings(player, (Integer) val[0]);
 				settings.setTabOrder(decompressTabOrder((String) val[4]));
 				try {
@@ -59,7 +59,7 @@ public class SettingsFactory {
 			Constants.getLogger().log(Level.WARNING, "Unable to load settings from database: ", t);
 		}
 		Constants.getLogger().info("No session found, loading defaults");
-		return new SessionSettings(new Player("Admin", 6), 0);
+		return new SessionSettings(new GhostPlayer("Admin", 6), 0);
 	}
 
 	private final static String DELIMITER = ", ";

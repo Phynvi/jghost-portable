@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Provides basic details about a player
  * @author Whired
  */
-public class Player implements Serializable {
+public class GhostPlayer implements Serializable {
 
 	/**
 	 * The name of this player
@@ -26,7 +26,7 @@ public class Player implements Serializable {
 	 * @param x the x-coordinate of this player
 	 * @param y the y-coordinate of this player
 	 */
-	public Player(final String name, final int rights, final int x, final int y) {
+	public GhostPlayer(final String name, final int rights, final int x, final int y) {
 		this.name = name;
 		this.rights = (byte) rights;
 		this.x = x;
@@ -38,7 +38,7 @@ public class Player implements Serializable {
 	 * @param name the name of the player
 	 * @param rights the rights of the player (-128 to 127)
 	 */
-	public Player(final String name, final int rights) {
+	public GhostPlayer(final String name, final int rights) {
 		this.name = name;
 		this.rights = (byte) rights;
 	}
@@ -118,5 +118,20 @@ public class Player implements Serializable {
 	@Override
 	public String toString() {
 		return this.name;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.name.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object paramObject) {
+		if (this.hashCode() == paramObject.hashCode()) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }
