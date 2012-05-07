@@ -3,6 +3,8 @@ package org.whired.ghost.net.packet;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.whired.ghost.Constants;
+
 /**
  * Handles packets
  * @author Whired
@@ -23,6 +25,7 @@ public class PacketHandler {
 	 * @param packet the packet to register
 	 */
 	public void registerPacket(final GhostPacket packet, final PacketListener defaultListener) {
+		Constants.getLogger().info("Registering packet " + packet.getId());
 		packets.put(packet.getId(), packet);
 		addPacketListener(packet.getId(), defaultListener);
 	}

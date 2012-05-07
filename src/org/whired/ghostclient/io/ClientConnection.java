@@ -18,17 +18,19 @@ public class ClientConnection extends Connection {
 	public ClientConnection(final Socket sock, final String passPhrase, final SessionManager manager, PacketHandler handler) throws IOException {
 		super(sock, manager, handler);
 		Constants.getLogger().info("Connected");
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				startReceiving();
-			}
-		}).start();
-		Constants.getLogger().info("Listening for incoming data");
-		Constants.getLogger().info("Identifying...");
-		sock.getOutputStream().write(48);
-		Constants.getLogger().info("Authenticating...");
-		new GhostAuthenticationPacket(passPhrase).send(this);
+		if (sock.getInputStream().read() == 1) {
+			Constants.getLogger().info("Authenticating...");
+			new GhostAuthenticationPacket(passPhrase).send(this);
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					startReceiving();
+				}
+			}).start();
+		}
+		else {
+			endSession("Client is connecting too fast!");
+		}
 	}
 
 	public static Connection connect(final String IP, final int port, final String password, final SessionManager manager, final PacketHandler handler) throws UnknownHostException, IOException, InvalidStateException {

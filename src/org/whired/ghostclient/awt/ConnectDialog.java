@@ -1,7 +1,6 @@
 package org.whired.ghostclient.awt;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridLayout;
@@ -21,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
@@ -38,20 +38,6 @@ public class ConnectDialog extends JDialog {
 	private int port;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			ConnectDialog dialog = new ConnectDialog();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Create the dialog.
 	 */
 	public ConnectDialog() {
@@ -60,10 +46,10 @@ public class ConnectDialog extends JDialog {
 		setTitle("Connect");
 		setResizable(false);
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		setAlwaysOnTop(true);
 		setBounds(100, 100, 230, 102);
 		try {
-			bgImg = ImageIO.read(this.getClass().getResourceAsStream("/org/whired/ghostclient/client/impl/resources/blueleaf.jpg"));
+			// TODO use uimanager props
+			bgImg = ImageIO.read(this.getClass().getResourceAsStream("/org/whired/ghostclient/client/impl/resources/bluehex.jpg"));
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -82,7 +68,7 @@ public class ConnectDialog extends JDialog {
 		contentPanel.setOpaque(false);
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 
-		final Border lineBorder = new RoundedBorder(new Color(99, 130, 191));
+		final Border lineBorder = UIManager.getBorder("NiceBorder");//new RoundedBorder(new Color(99, 130, 191));
 		contentPanel.setLayout(new GridLayout(3, 1, 2, 4));
 		{
 			txtIp = new JTextField();
@@ -102,8 +88,6 @@ public class ConnectDialog extends JDialog {
 			txtIp.setText("IP");
 			txtIp.setOpaque(false);
 			txtIp.setBorder(lineBorder);
-			txtIp.setForeground(Color.WHITE);
-			txtIp.setCaretColor(Color.WHITE);
 			txtIp.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -132,8 +116,6 @@ public class ConnectDialog extends JDialog {
 			txtPort.setText("Port");
 			txtPort.setOpaque(false);
 			txtPort.setBorder(lineBorder);
-			txtPort.setForeground(Color.WHITE);
-			txtPort.setCaretColor(Color.WHITE);
 			txtPort.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -162,8 +144,6 @@ public class ConnectDialog extends JDialog {
 			txtPass.setText("password");
 			txtPass.setOpaque(false);
 			txtPass.setBorder(lineBorder);
-			txtPass.setForeground(Color.WHITE);
-			txtPass.setCaretColor(Color.WHITE);
 			txtPass.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {

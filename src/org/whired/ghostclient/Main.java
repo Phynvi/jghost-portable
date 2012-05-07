@@ -137,7 +137,7 @@ public class Main {
 						return false;
 					}
 					try {
-						client.getModel().getSessionManager().setConnection(ClientConnection.connect(con[0], Integer.parseInt(con[1]), con[2], client.getModel().getSessionManager(), client.getModel().getPacketHandler()));
+						ClientConnection.connect(con[0], Integer.parseInt(con[1]), con[2], client.getModel().getSessionManager(), client.getModel().getPacketHandler());
 						return true;
 					}
 					catch (final Exception e) {

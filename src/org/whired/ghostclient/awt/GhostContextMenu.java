@@ -16,9 +16,9 @@ public class GhostContextMenu extends JPopupMenu {
 			add(jmi);
 		}
 		this.setOpaque(true);
-		RoundedBorder b = new RoundedBorder(new Color(99, 130, 191));
+		RoundedBorder b = new RoundedBorder(new Color(46, 92, 123));
 		b.setBorderInsets(new Insets(2, 0, 2, 0));
 		this.setBorder(b);
-		this.setBackground(new Color(7, 59, 106));
+		this.setBackground(new Color(19, 41, 55));
 	}
 }

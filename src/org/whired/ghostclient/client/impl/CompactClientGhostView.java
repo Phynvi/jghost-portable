@@ -19,6 +19,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
@@ -54,7 +55,9 @@ import org.whired.ghostclient.awt.ConnectDialog;
 import org.whired.ghostclient.awt.GhostContextMenu;
 import org.whired.ghostclient.awt.GhostMenuItem;
 import org.whired.ghostclient.awt.GhostScrollBarUI;
+import org.whired.ghostclient.awt.GhostTabbedPane;
 import org.whired.ghostclient.awt.RoundedBorder;
+import org.whired.ghostclient.awt.SortedListModel;
 import org.whired.ghostclient.client.GhostClient;
 import org.whired.ghostclient.client.GhostClientView;
 import org.whired.ghostclient.client.module.Module;
@@ -64,7 +67,8 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 	private JTextField textInput;
 	private JLabel lblConnection;
 	private JList compPlayerList;
-	private final Color highlight = new Color(99, 130, 191, 120);
+	private final String search = "Search..";
+	private final Color diffBlue = new Color(46, 92, 123);
 	private final Color transparent = new Color(0, 0, 0, 0);
 	private Font ghostFontSmall = new Font("SansSerif", Font.PLAIN, 9);
 	private Font ghostFontMedium = ghostFontSmall.deriveFont(10F);
@@ -91,6 +95,14 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				try {
 					ghostFontSmall = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/ubuntu.ttf")).deriveFont(9F);
 					ghostFontMedium = ghostFontSmall.deriveFont(10F);
+					UIManager.put("NiceBorder", new RoundedBorder(diffBlue)); // TODO White?
+					UIManager.put("TextField.foreground", Color.WHITE);
+					UIManager.put("TextField.caretColor", Color.WHITE);
+					UIManager.put("PasswordField.caretForeground", Color.WHITE);
+					UIManager.put("TabbedPane.borderHightlightColor", diffBlue);
+					UIManager.put("TabbedPane.darkShadow", diffBlue);
+					UIManager.put("PasswordField.foreground", Color.WHITE);
+					UIManager.put("PasswordField.caretColor", Color.WHITE);
 					UIManager.put("ToolTip.font", ghostFontSmall);
 					UIManager.put("OptionPane.messageFont", ghostFontSmall);
 					UIManager.put("Label.foreground", Color.WHITE);
@@ -99,8 +111,8 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					UIManager.put("TextField.foreground", Color.WHITE);
 					UIManager.put("TextArea.foreground", Color.WHITE);
 					UIManager.put("TextPane.foreground", Color.WHITE);
-					UIManager.put("TextPane.selectionBackground", highlight);
-					UIManager.put("MenuItem.selectionBackground", highlight);
+					UIManager.put("TextPane.selectionBackground", diffBlue);
+					UIManager.put("MenuItem.selectionBackground", diffBlue);
 					UIManager.put("MenuItem.selectionForeground", Color.WHITE);
 					UIManager.put("TextPane.selectionForeground", Color.WHITE);
 					UIManager.put("List.font", ghostFontSmall);
@@ -118,6 +130,8 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					UIManager.put("TabbedPane.contentAreaColor", new Color(0, 0, 0, 0));
 					UIManager.put("TabbedPane.contentBorderInsets", new Insets(4, 2, 0, 4));
 					UIManager.put("TabbedPane.selected", transparent);
+					UIManager.put("TabbedPane.focus", diffBlue);
+					UIManager.put("TabbedPane.selectedTabPadInsets", new Insets(3, 3, 3, 3));
 				}
 				catch (final Exception e) {
 					Constants.getLogger().warning("Error while overriding look and feel:");
@@ -135,11 +149,11 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				});
 
 				final Border emptyBorder = BorderFactory.createEmptyBorder();
-				final Border lineBorder = new RoundedBorder(new Color(99, 130, 191));
+				final Border lineBorder = UIManager.getBorder("NiceBorder");//new RoundedBorder(new Color(99, 130, 191));
 
 				final JLabel imageLabel = new JLabel();
 				try {
-					imageLabel.setIcon(new ImageIcon(this.getClass().getResource("resources/blueleaf.jpg")));
+					imageLabel.setIcon(new ImageIcon(this.getClass().getResource("resources/bluehex.jpg")));
 				}
 				catch (final Exception e) {
 					Constants.getLogger().log(Level.WARNING, "Error while loading graphical resources:", e);
@@ -202,8 +216,16 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				textInput.setMargin(new Insets(0, 2, 0, 2));
 				textInput.setFont(ghostFontSmall);
 
-				lblConnection = new JLabel("Disconnected");
-				lblConnection.setOpaque(true);
+				lblConnection = new JLabel("Disconnected") {
+					@Override
+					protected void paintComponent(Graphics g) {
+						g.setColor(getBackground());
+						((java.awt.Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+						g.fillRoundRect(0, 0, this.getWidth(), this.getHeight(), 5, 5);
+						super.paintComponent(g);
+					}
+				};
+				lblConnection.setOpaque(false);
 				lblConnection.setBackground(transparent);
 				lblConnection.setBorder(lineBorder);
 				lblConnection.setHorizontalAlignment(SwingConstants.CENTER);
@@ -212,7 +234,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 
 				lblConnection.addMouseListener(new MouseAdapter() {
 					@Override
-					public void mouseClicked(final MouseEvent e) {
+					public void mouseReleased(final MouseEvent e) {
 						if (model.getSessionManager().sessionIsOpen()) {
 							model.handleCommand("disconnect");
 						}
@@ -311,7 +333,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 							@Override
 							public void paint(final Graphics g) {
 								if (isSelected) {
-									g.setColor(highlight);
+									g.setColor(diffBlue);
 									((java.awt.Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 									g.fillRoundRect(0, 0, this.getWidth() - 1, this.getHeight(), 5, 5);
 									g.drawRoundRect(0, 0, this.getWidth() - 2, this.getHeight() - 1, 5, 5);
@@ -338,14 +360,15 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 						switch (e.getButton()) {
 							case MouseEvent.BUTTON1:
 								final Object x = compPlayerList.getSelectedValue();
-								if (e.getClickCount() == 1) {
-									if (x != null) {
+								if (x != null) {
+									if (e.getClickCount() == 1) {
+
 										model.getPlayerList().playerSelected((Player) x);
 									}
-								}
-								else if (e.getClickCount() == 2) {
-									textInput.setText("/pm " + x + " ");
-									textInput.requestFocus();
+									else if (e.getClickCount() == 2) {
+										textInput.setText("/pm " + x + " ");
+										textInput.requestFocus();
+									}
 								}
 							break;
 							case MouseEvent.BUTTON2:
@@ -449,7 +472,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				textSearch.setBounds(0, 471, 137, 15);
 				textSearch.setOpaque(false);
 				textSearch.setBorder(lineBorder);
-				textSearch.setText("Search..");
+				textSearch.setText(search);
 				textSearch.getDocument().addDocumentListener(new DocumentListener() {
 					@Override
 					public void insertUpdate(final DocumentEvent e) {
@@ -464,65 +487,70 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					@Override
 					public void changedUpdate(final DocumentEvent e) {
 						final String search = textSearch.getText().toLowerCase();
-						if (search.length() > 0) {
+						if (search.length() > 0 && !search.equalsIgnoreCase(search)) {
 							Object sel = compPlayerList.getSelectedValue();
 							// No reason to iterate if we still match
 							if (sel != null && sel.toString().toLowerCase().startsWith(search) && search.length() <= sel.toString().length()) {
 								return;
 							}
-							final Object[] elems = new Object[mdlPlayerList.size()];
-							mdlPlayerList.copyInto(elems);
-							// Try startsWith first
-							for (final Object elem : elems) {
+							Iterator<Object> it = mdlPlayerList.iterator();
+							Object containsMatch = null;
+							while (it.hasNext()) {
+								Object elem = it.next();
+								// startsWith first -- more specific than contains
 								if (elem.toString().toLowerCase().startsWith(search.toLowerCase())) {
 									compPlayerList.setSelectedValue(elem, true);
 									return;
 								}
-							}
-							// No results from startsWith, try contains
-							for (final Object elem : elems) {
-								if (elem.toString().toLowerCase().contains(search.toLowerCase())) {
-									compPlayerList.setSelectedValue(elem, true);
-									break;
+								// If we don't already have a contains match, try this elem
+								else if (containsMatch == null && elem.toString().toLowerCase().contains(search.toLowerCase())) {
+									containsMatch = elem;
 								}
+
+							}
+							// If flow reaches here, we couldn't find a startsWith match
+							if (containsMatch != null) {
+								compPlayerList.setSelectedValue(containsMatch, true);
+							}
+							else {
+								compPlayerList.getSelectionModel().clearSelection();
 							}
 						}
 					}
 				});
 				textSearch.addKeyListener(new KeyAdapter() {
-
 					@Override
 					public void keyPressed(final KeyEvent ke) {
 						if (ke.getKeyCode() == KeyEvent.VK_ENTER) {
 							int sel = compPlayerList.getSelectedIndex();
 							final String search = textSearch.getText().toLowerCase();
-							if (ke.getKeyCode() == KeyEvent.VK_ENTER && sel != -1 && search.length() > 0) {
-								final Object[] elems = new Object[mdlPlayerList.size()];
-								mdlPlayerList.copyInto(elems);
-								outer: while (true) {
-									// Try startsWith first
-									for (int i = sel + 1; i < elems.length; i++) {
-										if (elems[i].toString().toLowerCase().startsWith(search.toLowerCase())) {
+							boolean over = false;
+							if (ke.getKeyCode() == KeyEvent.VK_ENTER && search.length() > 0) {
+								while (true) {
+									final Object[] elems = new Object[mdlPlayerList.size() - sel - 1];
+									mdlPlayerList.copyInto(sel + 1, elems);
+									// Loop through the sub selection
+									Object containsMatch = null;
+									for (int i = 0; i < elems.length; i++) {
+										if (!over && elems[i].toString().toLowerCase().startsWith(search)) {
 											compPlayerList.setSelectedValue(elems[i], true);
-											break outer;
+											return;
+										}
+										else if (containsMatch == null && elems[i].toString().toLowerCase().contains(search)) {
+											containsMatch = elems[i];
 										}
 									}
-									// No results from startsWith, try contains
-									for (int i = sel + 1; i < elems.length; i++) {
-										if (elems[i].toString().toLowerCase().contains(search.toLowerCase())) {
-											compPlayerList.setSelectedValue(elems[i], true);
-											break outer;
-										}
+									// If flow reaches here we couldn't get a startsWith match
+									if (containsMatch != null) {
+										compPlayerList.setSelectedValue(containsMatch, true);
+										return;
 									}
-									if (sel > 0) {
+									else { // If we're at the last match, start over
 										sel = -1;
-									}
-									else {
-										break outer;
+										over = true;
 									}
 								}
 							}
-
 						}
 					}
 				});
@@ -530,12 +558,17 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 
 					@Override
 					public void focusGained(final FocusEvent e) {
-						textSearch.setText("");
+						if (textSearch.getText().equals(search)) {
+							textSearch.setText("");
+						}
+						else {
+							textSearch.selectAll();
+						}
 					}
 
 					@Override
 					public void focusLost(final FocusEvent e) {
-						textSearch.setText("Search..");
+						//textSearch.setText("Search..");
 					}
 				});
 				// Add components to content pane
@@ -575,7 +608,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 			@Override
 			public void run() {
 				lblConnection.setText("Connected");
-				lblConnection.setBackground(highlight);
+				lblConnection.setBackground(diffBlue);
 				repaint();
 			}
 		});
@@ -645,8 +678,8 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 			public void run() {
 				final int bgTab = tabbedPane.indexOfComponent(module.getComponent());
 				final int selTab = tabbedPane.getSelectedIndex();
-				if (bgTab != -1 && selTab != -1 && selTab != bgTab && tabbedPane.getBackgroundAt(bgTab) != highlight) {
-					tabbedPane.setBackgroundAt(bgTab, highlight);
+				if (bgTab != -1 && selTab != -1 && selTab != bgTab && tabbedPane.getBackgroundAt(bgTab) != diffBlue) {
+					tabbedPane.setBackgroundAt(bgTab, diffBlue);
 				}
 			}
 		});

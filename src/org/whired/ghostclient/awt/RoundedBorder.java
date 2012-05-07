@@ -6,9 +6,9 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 
-import javax.swing.border.Border;
+import javax.swing.border.AbstractBorder;
 
-public class RoundedBorder implements Border {
+public class RoundedBorder extends AbstractBorder {
 
 	private final int radius;
 	private Insets insets = new Insets(2, 3, 2, 3);

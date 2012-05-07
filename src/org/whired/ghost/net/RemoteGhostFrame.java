@@ -8,7 +8,7 @@ import org.whired.ghost.net.packet.PrivateChatPacket;
 import org.whired.ghost.net.packet.PublicChatPacket;
 import org.whired.ghost.player.Player;
 import org.whired.ghost.player.PlayerList;
-import org.whired.ghostserver.server.RemotePlayerList;
+import org.whired.ghost.player.RemotePlayerList;
 
 /**
  * Provides access to the client from the server

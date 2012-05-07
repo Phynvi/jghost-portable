@@ -38,7 +38,6 @@ public abstract class Connection {
 
 	/**
 	 * Creates a new connection with the specified streams and listeners
-	 * 
 	 * @param socket the raw socket this connection uses
 	 * @param manager the session manager for this connection
 	 * @param handler the packet handler that tells this connection how to handle a packet
@@ -50,6 +49,7 @@ public abstract class Connection {
 		this.outputStream = new WrappedOutputStream(socket.getOutputStream());
 		this.manager = manager;
 		this.handler = handler;
+		manager.setConnection(this);
 	}
 
 	/**
@@ -74,7 +74,6 @@ public abstract class Connection {
 	 */
 	protected void readPacket(WrappedInputStream inputStream) throws IOException {
 		final int packetId = inputStream.readByte();
-		Constants.getLogger().fine("Notifying receivable that external packet " + packetId + " has been received."); // TODO chmsg
 		GhostPacket p = handler.get(packetId);
 		if (p != null && p.receive(this)) {
 			handler.firePacketReceived(p);
@@ -88,14 +87,15 @@ public abstract class Connection {
 	 * Called then the session must be terminated
 	 */
 	protected void endSession(final String reason) {
-		Constants.getLogger().log(Level.WARNING, "Session ended {0}", reason != null ? reason : "");
-		if (this.manager != null) {
+		// Sometimes things might be double-logged, it's not really a big deal
+		if (manager.sessionIsOpen()) {
+			Constants.getLogger().log(Level.WARNING, "Session ended {0}", reason != null ? reason : "");
 			this.manager.sessionEnded();
-		}
-		try {
-			socket.close();
-		}
-		catch (final IOException e) {
+			try {
+				socket.close();
+			}
+			catch (final IOException e) {
+			}
 		}
 	}
 

@@ -20,7 +20,6 @@ public class ServerConnection extends Connection {
 
 	public ServerConnection(final Socket sock, final String password, SessionManager manager, PacketHandler handler) throws IOException {
 		super(sock, manager, handler);
-
 		this.password = password;
 	}
 

@@ -91,24 +91,22 @@ public class Server implements Runnable {
 	public void run() {
 		while (true) {
 			try {
+				System.out.println("Waiting for GHOST connection");
 				final Socket s = this.ssock.accept();
 				final InetAddress address = s.getInetAddress();
+				s.setSoTimeout(400);
 				if (!isThrottling(address)) {
 					throttlerList.remove(address);
-					s.setSoTimeout(400);
-					if (s.getInputStream().read() == 48) {
-						this.connection = new ServerConnection(s, this.passPhrase, sessionManager, packetHandler);
-						sessionManager.setConnection(connection);
-						this.connection.startReceiving();
-						this.connection = null;
-						s.close();
-					}
-					else {
-						s.close();
-					}
+					s.getOutputStream().write(1);
+					this.connection = new ServerConnection(s, this.passPhrase, sessionManager, packetHandler);
+					this.connection.startReceiving();
+					this.connection = null;
+					s.close();
 				}
 				else {
-					s.close();
+					System.out.println("Connection is throttling!");
+					s.getOutputStream().write(0);
+					s.shutdownOutput();
 				}
 			}
 			catch (final IOException ioe) {
