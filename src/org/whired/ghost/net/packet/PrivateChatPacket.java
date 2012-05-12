@@ -66,7 +66,7 @@ public class PrivateChatPacket extends GhostChatPacket {
 		});
 	}
 
-	public PrivateChatPacket(final GhostPlayer sender, final GhostPlayer recipient, final byte[] chatText, final int chatTextSize) {
-		this(sender, recipient, getUnpackedMessage(chatText, chatTextSize));
+	public PrivateChatPacket(final GhostPlayer sender, final GhostPlayer recipient, final byte[] chatText, final int chatTextSize, final int charSize) {
+		this(sender, recipient, getUnpackedMessage(chatText, chatTextSize, charSize));
 	}
 }

@@ -67,7 +67,7 @@ public class PublicChatPacket extends GhostChatPacket {
 	 * @param packedMessage the packed message that was sent
 	 * @param packedSize the packed size of the message that was sent
 	 */
-	public PublicChatPacket(final GhostPlayer sender, final byte[] packedMessage, final int packedSize) {
-		this(sender, getUnpackedMessage(packedMessage, packedSize));
+	public PublicChatPacket(final GhostPlayer sender, final byte[] packedMessage, final int packedSize, final int charSize) {
+		this(sender, getUnpackedMessage(packedMessage, packedSize, charSize));
 	}
 }

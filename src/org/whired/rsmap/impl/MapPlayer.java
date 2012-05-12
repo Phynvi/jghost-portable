@@ -32,6 +32,7 @@ public class MapPlayer extends GhostPlayer {
 	}
 
 	public final void addLocation(final Point location) {
+		System.out.println("adding location " + location);
 		final Point last = locations.size() > 0 ? locations.getLast() : null;
 		if (last == null || GhostMath.getDistance(last, location) >= trackingPrecision) {
 			locations.addLast(location);
@@ -52,7 +53,9 @@ public class MapPlayer extends GhostPlayer {
 	private MapPlayer(final String name, final int rights, final int x, final int y, final int maxMoves) {
 		super(name, rights, x, y);
 		this.threshold = maxMoves;
-		addLocation(getLocation());
+		if (x > 0 && y > 0) {
+			addLocation(getLocation());
+		}
 	}
 
 	public static MapPlayer fromPlayer(final GhostPlayer from, final int maxMoves) {
