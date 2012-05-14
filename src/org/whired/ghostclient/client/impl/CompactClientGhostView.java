@@ -51,11 +51,13 @@ import org.whired.ghost.Constants;
 import org.whired.ghost.net.packet.ModeratePacket;
 import org.whired.ghost.player.GhostPlayer;
 import org.whired.ghost.player.Rank;
+import org.whired.ghost.player.RankManager;
 import org.whired.ghostclient.awt.ConnectDialog;
 import org.whired.ghostclient.awt.GhostContextMenu;
 import org.whired.ghostclient.awt.GhostMenuItem;
 import org.whired.ghostclient.awt.GhostScrollBarUI;
 import org.whired.ghostclient.awt.GhostTabbedPane;
+import org.whired.ghostclient.awt.RankManagerDialog;
 import org.whired.ghostclient.awt.RoundedBorder;
 import org.whired.ghostclient.awt.SortedListModel;
 import org.whired.ghostclient.client.GhostClient;
@@ -415,16 +417,31 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				scrlPlayerList.setBorder(lineBorder);
 				compPlayerList.setBorder(emptyBorder);
 
-				final JLabel btnRestart = new JLabel("Restart");
-				btnRestart.setBounds(31, 487, 106, 14);
+				final JLabel btnRestart = new JLabel("Ranks");
+				btnRestart.setBounds(69, 487, 68, 14);
 				btnRestart.setBorder(lineBorder);
 				btnRestart.setOpaque(true);
 				btnRestart.setBackground(transparent);
 				btnRestart.setHorizontalAlignment(SwingConstants.CENTER);
 				btnRestart.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				btnRestart.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseReleased(final MouseEvent arg0) {
+						// We're already on EDT
+						RankManager rm = model.getRankManager();
+						Rank[] oldRanks = rm.getAllRanks();
+						RankManagerDialog rmd = new RankManagerDialog(CompactClientGhostView.this, ((ImageIcon) imageLabel.getIcon()).getImage(), oldRanks);
+						rmd.setVisible(true);
+						if (!rmd.isCancelled()) {
+							rm.unregisterAll();
+							rm.registerAll(rmd.getRanks());
+							compPlayerList.repaint();
+						}
+					}
+				});
 
 				final JLabel btnBugs = new JLabel("Bugs");
-				btnBugs.setBounds(0, 487, 30, 14);
+				btnBugs.setBounds(0, 487, 68, 14);
 				btnBugs.setBorder(lineBorder);
 				btnBugs.setOpaque(true);
 				btnBugs.setBackground(transparent);
@@ -432,7 +449,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				btnBugs.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				btnBugs.addMouseListener(new MouseAdapter() {
 					@Override
-					public void mousePressed(final MouseEvent arg0) {
+					public void mouseReleased(final MouseEvent arg0) {
 						try {
 							Desktop.getDesktop().browse(Constants.BUG_REPORT_SITE);
 						}

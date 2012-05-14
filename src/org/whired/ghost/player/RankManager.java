@@ -13,7 +13,7 @@ public class RankManager {
 	 * @param ranks
 	 */
 	public RankManager(final Rank[] ranks) {
-		registerRanks(ranks);
+		registerAll(ranks);
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class RankManager {
 	 * Registers a set of ranks
 	 * @param ranks the ranks to register
 	 */
-	public void registerRanks(final Rank[] ranks) {
+	public void registerAll(final Rank[] ranks) {
 		for (final Rank r : ranks) {
 			registerRank(r);
 		}
@@ -76,6 +76,10 @@ public class RankManager {
 	 */
 	public Rank[] getAllRanks() {
 		return ranks.values().toArray(new Rank[ranks.size()]);
+	}
+
+	public void unregisterAll() {
+		ranks.clear();
 	}
 
 	private final TreeMap<Integer, Rank> ranks = new TreeMap<Integer, Rank>();

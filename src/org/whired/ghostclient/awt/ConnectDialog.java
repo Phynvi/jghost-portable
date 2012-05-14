@@ -43,10 +43,9 @@ public class ConnectDialog extends JDialog {
 	public ConnectDialog() {
 		setUndecorated(true);
 		setModal(true);
-		setTitle("Connect");
 		setResizable(false);
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		setBounds(100, 100, 230, 102);
+		setSize(230, 102);
 		try {
 			// TODO use uimanager props
 			bgImg = ImageIO.read(this.getClass().getResourceAsStream("/org/whired/ghostclient/client/impl/resources/bluehex.jpg"));
