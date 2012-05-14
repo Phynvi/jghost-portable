@@ -1,10 +1,8 @@
 package org.whired.ghostclient.client.settings;
 
-import java.io.Serializable;
-
 import org.whired.ghost.player.GhostPlayer;
 
-public class SessionSettings implements Serializable {
+public class SessionSettings {
 
 	public String[] defaultConnect = new String[3];
 	public boolean debugOn = false;

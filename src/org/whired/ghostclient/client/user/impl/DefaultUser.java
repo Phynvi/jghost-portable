@@ -15,7 +15,7 @@ public class DefaultUser implements GhostUser {
 
 	/**
 	 * Constructs a new GhostUser
-	 * @param frame the frame that provides access to the graphical client
+	 * @param settings the settings associated with this user
 	 */
 	public DefaultUser(final SessionSettings settings) {
 		this.settings = settings;

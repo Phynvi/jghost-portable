@@ -1,13 +1,12 @@
 package org.whired.ghost.player;
 
 import java.awt.Point;
-import java.io.Serializable;
 
 /**
  * Provides basic details about a player
  * @author Whired
  */
-public class GhostPlayer implements Serializable {
+public class GhostPlayer {
 
 	/**
 	 * The name of this player
@@ -27,7 +26,7 @@ public class GhostPlayer implements Serializable {
 	 * @param y the y-coordinate of this player
 	 */
 	public GhostPlayer(final String name, final int rights, final int x, final int y) {
-		this.name = name;
+		this.name = name.toLowerCase();
 		this.rights = (byte) rights;
 		this.x = x;
 		this.y = y;
@@ -39,7 +38,7 @@ public class GhostPlayer implements Serializable {
 	 * @param rights the rights of the player (-128 to 127)
 	 */
 	public GhostPlayer(final String name, final int rights) {
-		this.name = name;
+		this.name = name.toLowerCase();
 		this.rights = (byte) rights;
 	}
 
@@ -90,7 +89,7 @@ public class GhostPlayer implements Serializable {
 	 * @param name the name to set
 	 */
 	public void setName(final String name) {
-		this.name = name;
+		this.name = name.toLowerCase();
 	}
 
 	/**
