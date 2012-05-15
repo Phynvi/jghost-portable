@@ -131,7 +131,7 @@ public class Line implements Scrollable {
 	 * @return the point that was plotted
 	 */
 	public synchronized Point addNextY(final int y) {
-		final Point p = new Point(++maxX, y); // TODO concur
+		final Point p = new Point(++maxX, y);
 		addPoint(p);
 		return p;
 	}

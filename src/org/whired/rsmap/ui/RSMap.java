@@ -8,18 +8,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.whired.ghost.Constants;
 import org.whired.rsmap.graphics.OverviewArea;
 import org.whired.rsmap.graphics.RSCanvas;
 import org.whired.rsmap.graphics.TextRenderer;
 import org.whired.rsmap.graphics.sprites.Sprite;
-import org.whired.rsmap.graphics.sprites.StaticSprite;
 import org.whired.rsmap.graphics.sprites.TextSprite;
 import org.whired.rsmap.io.ByteBuffer;
 import org.whired.rsmap.io.CacheLoader;
@@ -132,16 +129,6 @@ public abstract class RSMap extends RSCanvas {
 
 		anIntArrayArray117 = new int[mapWidth][mapHeight];
 		method16(abyte1);
-		try {
-			// TODO IMPLEMENT ELSEWHERE
-			final Sprite uberSprite = new StaticSprite(new URL("http://icons.iconarchive.com/icons/google/chrome/16/Google-Chrome-icon.png"));
-			uberSprite.location = new Point(2460, 3090);
-			uberSprite.isRelativeToMap = true;
-			// addSprite(uberSprite);
-		}
-		catch (final Exception ex) {
-			Logger.getLogger(RSMap.class.getName()).log(Level.SEVERE, null, ex);
-		}
 		overviewArea = new OverviewArea(this, minimapWidth, minimapHeight);
 
 		renderMiniMap(overviewArea.area, new Dimension(minimapWidth, minimapHeight), 2, 2, mapWidth - 2, mapHeight - 2);

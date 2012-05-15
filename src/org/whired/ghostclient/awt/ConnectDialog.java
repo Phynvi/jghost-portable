@@ -11,22 +11,20 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+
+import org.whired.ghostclient.client.GhostUI;
 
 public class ConnectDialog extends JDialog {
 
-	private Image bgImg;
+	private final Image bgImg;
 
 	private final JPanel contentPanel = new JPanel();
 	private JPasswordField txtPass;
@@ -40,19 +38,13 @@ public class ConnectDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public ConnectDialog() {
+	public ConnectDialog(GhostUI ui) {
 		setUndecorated(true);
 		setModal(true);
 		setResizable(false);
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setSize(230, 102);
-		try {
-			// TODO use uimanager props
-			bgImg = ImageIO.read(this.getClass().getResourceAsStream("/org/whired/ghostclient/client/impl/resources/bluehex.jpg"));
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		bgImg = ui.getBackgroundImage();
 		this.setContentPane(new JPanel() {
 			@Override
 			public void paintComponent(Graphics g) {
@@ -67,7 +59,6 @@ public class ConnectDialog extends JDialog {
 		contentPanel.setOpaque(false);
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 
-		final Border lineBorder = UIManager.getBorder("NiceBorder");//new RoundedBorder(new Color(99, 130, 191));
 		contentPanel.setLayout(new GridLayout(3, 1, 2, 4));
 		{
 			txtIp = new JTextField();
@@ -86,7 +77,7 @@ public class ConnectDialog extends JDialog {
 			});
 			txtIp.setText("IP");
 			txtIp.setOpaque(false);
-			txtIp.setBorder(lineBorder);
+			txtIp.setBorder(ui.getBorder());
 			txtIp.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -114,7 +105,7 @@ public class ConnectDialog extends JDialog {
 			});
 			txtPort.setText("Port");
 			txtPort.setOpaque(false);
-			txtPort.setBorder(lineBorder);
+			txtPort.setBorder(ui.getBorder());
 			txtPort.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -142,7 +133,7 @@ public class ConnectDialog extends JDialog {
 			});
 			txtPass.setText("password");
 			txtPass.setOpaque(false);
-			txtPass.setBorder(lineBorder);
+			txtPass.setBorder(ui.getBorder());
 			txtPass.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -160,7 +151,7 @@ public class ConnectDialog extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JLabel btnOk = new JLabel("OK");
-				btnOk.setBorder(lineBorder);
+				btnOk.setBorder(ui.getBorder());
 				btnOk.setOpaque(false);
 				btnOk.addMouseListener(new MouseAdapter() {
 					@Override
@@ -172,7 +163,7 @@ public class ConnectDialog extends JDialog {
 			}
 			{
 				JLabel btnCancel = new JLabel("Cancel");
-				btnCancel.setBorder(lineBorder);
+				btnCancel.setBorder(ui.getBorder());
 				btnCancel.setOpaque(false);
 				btnCancel.addMouseListener(new MouseAdapter() {
 					@Override

@@ -7,7 +7,6 @@ import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -25,11 +24,11 @@ import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import org.whired.ghost.player.Rank;
+import org.whired.ghostclient.client.GhostUI;
 
 public class RankManagerDialog extends JDialog {
 
@@ -41,7 +40,7 @@ public class RankManagerDialog extends JDialog {
 	 * Creates a new rank manager dialog for the specified ranks
 	 * @param availableRanks the ranks to manage
 	 */
-	public RankManagerDialog(Frame owner, final Image bgImg, final Rank[] availableRanks) {
+	public RankManagerDialog(final GhostUI ghostUI, Frame owner, final Rank[] availableRanks) {
 		setUndecorated(true);
 		setResizable(false);
 		setModal(true);
@@ -51,9 +50,7 @@ public class RankManagerDialog extends JDialog {
 			@Override
 			public void paintComponent(Graphics g) {
 				g.clearRect(0, 0, this.getWidth(), this.getHeight());
-				if (bgImg != null) {
-					g.drawImage(bgImg, 0, 0, this.getWidth(), this.getHeight(), 0, 0, this.getWidth(), this.getHeight(), this);
-				}
+				g.drawImage(ghostUI.getBackgroundImage(), 0, 0, this.getWidth(), this.getHeight(), 0, 0, this.getWidth(), this.getHeight(), this);
 			};
 		});
 		getContentPane().setLayout(new BorderLayout());
@@ -102,13 +99,12 @@ public class RankManagerDialog extends JDialog {
 		list.setModel(mdl);
 		list.setOpaque(false);
 		final Border emptyBorder = BorderFactory.createEmptyBorder();
-		final Border lineBorder = UIManager.getBorder("NiceBorder");
 		scrollPane.setViewportView(list);
 		scrollPane.getViewport().setOpaque(false);
 		scrollPane.setOpaque(false);
 		scrollPane.getVerticalScrollBar().setUI(new GhostScrollBarUI(scrollPane.getVerticalScrollBar()));
 		list.setOpaque(false);
-		scrollPane.setBorder(lineBorder);
+		scrollPane.setBorder(ghostUI.getBorder());
 		list.setBorder(emptyBorder);
 		list.addKeyListener(new KeyAdapter() {
 			@Override
@@ -148,7 +144,7 @@ public class RankManagerDialog extends JDialog {
 				setVisible(false);
 			}
 		});
-		lblOk.setBorder(lineBorder);
+		lblOk.setBorder(ghostUI.getBorder());
 		buttonPane.add(lblOk);
 		JLabel lblCancel = new JLabel("Cancel");
 		lblCancel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -159,7 +155,7 @@ public class RankManagerDialog extends JDialog {
 				setVisible(false);
 			}
 		});
-		lblCancel.setBorder(lineBorder);
+		lblCancel.setBorder(ghostUI.getBorder());
 		buttonPane.add(lblCancel);
 	}
 

@@ -11,18 +11,20 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -62,6 +64,7 @@ import org.whired.ghostclient.awt.RoundedBorder;
 import org.whired.ghostclient.awt.SortedListModel;
 import org.whired.ghostclient.client.GhostClient;
 import org.whired.ghostclient.client.GhostClientView;
+import org.whired.ghostclient.client.GhostUI;
 import org.whired.ghostclient.client.module.Module;
 
 public class CompactClientGhostView extends JFrame implements GhostClientView {
@@ -78,13 +81,19 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 	private GhostClient model;
 	private final LinkedList<String> inputHistory = new LinkedList<String>();
 	private int historyIndex = 0;
+	private GhostUI compactUI;
 
 	public CompactClientGhostView() {
-		initAndShow();
+		try {
+			initAndShow();
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 
-	private final void initAndShow() {
-		SwingUtilities.invokeLater(new Runnable() {
+	private final void initAndShow() throws InterruptedException, InvocationTargetException {
+		SwingUtilities.invokeAndWait(new Runnable() {
 			@Override
 			public void run() {
 				try {
@@ -97,7 +106,6 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				try {
 					ghostFontSmall = Font.createFont(Font.TRUETYPE_FONT, this.getClass().getResourceAsStream("resources/ubuntu.ttf")).deriveFont(9F);
 					ghostFontMedium = ghostFontSmall.deriveFont(10F);
-					UIManager.put("NiceBorder", new RoundedBorder(diffBlue)); // TODO White?
 					UIManager.put("TextField.foreground", Color.WHITE);
 					UIManager.put("TextField.caretColor", Color.WHITE);
 					UIManager.put("PasswordField.caretForeground", Color.WHITE);
@@ -139,7 +147,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					Constants.getLogger().warning("Error while overriding look and feel:");
 					e.printStackTrace();
 				}
-				setTitle("GHOST lite");
+				setTitle("GHOST");
 				setResizable(false);
 				addWindowListener(new WindowAdapter() {
 
@@ -151,16 +159,15 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				});
 
 				final Border emptyBorder = BorderFactory.createEmptyBorder();
-				final Border lineBorder = UIManager.getBorder("NiceBorder");//new RoundedBorder(new Color(99, 130, 191));
 
 				final JLabel imageLabel = new JLabel();
 				try {
-					imageLabel.setIcon(new ImageIcon(this.getClass().getResource("resources/bluehex.jpg")));
+					compactUI = new GhostUI(new RoundedBorder(diffBlue), ImageIO.read(this.getClass().getResourceAsStream("resources/bluehex.jpg")));
 				}
 				catch (final Exception e) {
 					Constants.getLogger().log(Level.WARNING, "Error while loading graphical resources:", e);
 				}
-
+				imageLabel.setIcon(new ImageIcon(compactUI.getBackgroundImage()));
 				textInput = new JTextField();
 				textInput.addKeyListener(new KeyAdapter() {
 
@@ -213,7 +220,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 					}
 				});
 				textInput.setOpaque(false);
-				textInput.setBorder(lineBorder);
+				textInput.setBorder(compactUI.getBorder());
 				textInput.setBounds(138, 484, 496, 17);
 				textInput.setMargin(new Insets(0, 2, 0, 2));
 				textInput.setFont(ghostFontSmall);
@@ -229,7 +236,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				};
 				lblConnection.setOpaque(false);
 				lblConnection.setBackground(transparent);
-				lblConnection.setBorder(lineBorder);
+				lblConnection.setBorder(compactUI.getBorder());
 				lblConnection.setHorizontalAlignment(SwingConstants.CENTER);
 				lblConnection.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				lblConnection.setBounds(635, 487, 66, 14);
@@ -241,7 +248,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 							model.handleCommand("disconnect");
 						}
 						else if (e.getButton() == MouseEvent.BUTTON1) {
-							final ConnectDialog cd = new ConnectDialog();
+							final ConnectDialog cd = new ConnectDialog(compactUI);
 							cd.setLocationRelativeTo(CompactClientGhostView.this);
 							cd.setVisible(true);
 							if (!cd.isCancelled()) {
@@ -256,7 +263,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				});
 
 				final JLabel lblPlayerCount = new JLabel("Players: 0");
-				lblPlayerCount.setBorder(lineBorder);
+				lblPlayerCount.setBorder(compactUI.getBorder());
 				lblPlayerCount.setHorizontalAlignment(SwingConstants.CENTER);
 				lblPlayerCount.setBounds(0, 0, 137, 16);
 
@@ -414,12 +421,12 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				scrlPlayerList.setOpaque(false);
 				scrlPlayerList.getVerticalScrollBar().setUI(new GhostScrollBarUI(scrlPlayerList.getVerticalScrollBar()));
 				compPlayerList.setOpaque(false);
-				scrlPlayerList.setBorder(lineBorder);
+				scrlPlayerList.setBorder(compactUI.getBorder());
 				compPlayerList.setBorder(emptyBorder);
 
 				final JLabel btnRestart = new JLabel("Ranks");
 				btnRestart.setBounds(69, 487, 68, 14);
-				btnRestart.setBorder(lineBorder);
+				btnRestart.setBorder(compactUI.getBorder());
 				btnRestart.setOpaque(true);
 				btnRestart.setBackground(transparent);
 				btnRestart.setHorizontalAlignment(SwingConstants.CENTER);
@@ -427,14 +434,15 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				btnRestart.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseReleased(final MouseEvent arg0) {
-						// We're already on EDT
 						RankManager rm = model.getRankManager();
 						Rank[] oldRanks = rm.getAllRanks();
-						RankManagerDialog rmd = new RankManagerDialog(CompactClientGhostView.this, ((ImageIcon) imageLabel.getIcon()).getImage(), oldRanks);
+						RankManagerDialog rmd = new RankManagerDialog(compactUI, CompactClientGhostView.this, oldRanks);
 						rmd.setVisible(true);
 						if (!rmd.isCancelled()) {
 							rm.unregisterAll();
 							rm.registerAll(rmd.getRanks());
+
+							// Update current rank icons to match new
 							compPlayerList.repaint();
 						}
 					}
@@ -442,7 +450,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 
 				final JLabel btnBugs = new JLabel("Bugs");
 				btnBugs.setBounds(0, 487, 68, 14);
-				btnBugs.setBorder(lineBorder);
+				btnBugs.setBorder(compactUI.getBorder());
 				btnBugs.setOpaque(true);
 				btnBugs.setBackground(transparent);
 				btnBugs.setHorizontalAlignment(SwingConstants.CENTER);
@@ -488,7 +496,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 				final JTextField textSearch = new JTextField();
 				textSearch.setBounds(0, 471, 137, 15);
 				textSearch.setOpaque(false);
-				textSearch.setBorder(lineBorder);
+				textSearch.setBorder(compactUI.getBorder());
 				textSearch.setText(search);
 				textSearch.getDocument().addDocumentListener(new DocumentListener() {
 					@Override
@@ -571,7 +579,7 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 						}
 					}
 				});
-				textSearch.addFocusListener(new FocusListener() {
+				textSearch.addFocusListener(new FocusAdapter() {
 
 					@Override
 					public void focusGained(final FocusEvent e) {
@@ -581,11 +589,6 @@ public class CompactClientGhostView extends JFrame implements GhostClientView {
 						else {
 							textSearch.selectAll();
 						}
-					}
-
-					@Override
-					public void focusLost(final FocusEvent e) {
-						//textSearch.setText("Search..");
 					}
 				});
 				// Add components to content pane
